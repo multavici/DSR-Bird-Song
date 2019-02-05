@@ -18,6 +18,9 @@ def in_db(row):
 birds['found'] = birds.apply( lambda row: in_db(row), axis=1)
 
 birds_in_db = birds.loc[birds['found'],:]
+print(birds_in_db.columns)
+
+birds_in_db = birds_in_db.loc[:, ['order', 'family', 'genus', 'species']  ].reset_index(drop=True)
 print(birds_in_db)
 
-birds_in_db.to_csv('german_birds_in_db.csv')
+#birds_in_db.to_csv('german_birds_in_db.csv')
