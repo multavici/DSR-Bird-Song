@@ -1,0 +1,389 @@
+,Unnamed: 0,species,genus,family,order,german_name,comment,status,found
+0,3,jamaicensis,oxyura,anatidae,anseriformes,Schwarzkopf-Ruderente,,,True
+1,4,leucocephala,oxyura,anatidae,anseriformes,Weißkopf-Ruderente,,Ausnahmeerscheinung,True
+2,5,olor,cygnus,anatidae,anseriformes,Höckerschwan,,"Brut-, Jahres-, Zugvogel, Wintergast",True
+3,6,cygnus,cygnus,anatidae,anseriformes,Singschwan,RL R,"Brut-, Jahres-, Zugvogel, Wintergast",True
+4,7,columbianus,cygnus,anatidae,anseriformes,Pfeifschwan,,besondere Ausnahmeerscheinung,True
+6,9,ruficollis,branta,anatidae,anseriformes,Rothalsgans,,,True
+7,10,bernicla,branta,anatidae,anseriformes,Ringelgans,,"Zugvogel, Wintergast",True
+8,11,canadensis,branta,anatidae,anseriformes,Kanadagans,,"Brut-, Jahresvogel, Wintergast",True
+9,12,leucopsis,branta,anatidae,anseriformes,Weißwangengans,,"Brut-, Jahresvogel, Wintergast",True
+10,13,fabalis,anser,anatidae,anseriformes,Saatgans,,,True
+11,14,brachyrhynchus,anser,anatidae,anseriformes,Kurzschnabelgans,,,True
+12,15,erythropus,anser,anatidae,anseriformes,Zwerggans,,seltener Zugvogel und Wintergast,True
+13,16,albifrons,anser,anatidae,anseriformes,Blässgans,,,True
+14,17,anser,anser,anatidae,anseriformes,Graugans,,"Brut-, Jahres-, Zugvogel, Wintergast",True
+15,18,aegyptiaca,alopochen,anatidae,anseriformes,Nilgans,,"Brut-, Jahresvogel",True
+16,19,tadorna,tadorna,anatidae,anseriformes,Brandgans,,"Brut-, Jahres-, Zugvogel, Wintergast",True
+17,20,ferruginea,tadorna,anatidae,anseriformes,Rostgans,,"Brut-, Jahresvogel",True
+18,21,galericulata,aix,anatidae,anseriformes,Mandarinente,,"Brut-, Jahresvogel",True
+19,22,angustirostris,marmaronetta,anatidae,anseriformes,Marmelente,,besondere Ausnahmeerscheinung,True
+25,28,platyrhynchos,anas,anatidae,anseriformes,Stockente,,"Brut-, Jahres-, Zugvogel, Wintergast",True
+26,29,acuta,anas,anatidae,anseriformes,Spießente,RL 3,"Brut-, Jahres-, Zugvogel, Wintergast",True
+30,33,rufina,netta,anatidae,anseriformes,Kolbenente,,"Brut-, Jahres-, Zugvogel, Wintergast",True
+31,34,nyroca,aythya,anatidae,anseriformes,Moorente,RL 1,"Brutvogel, seltener Zugvogel und Wintergast",True
+32,35,ferina,aythya,anatidae,anseriformes,Tafelente,,"Brut-, Jahres-, Zugvogel, Wintergast",True
+33,36,collaris,aythya,anatidae,anseriformes,Ringschnabelente,,Ausnahmeerscheinung,True
+34,37,fuligula,aythya,anatidae,anseriformes,Reiherente,,"Brut-, Jahres-, Zugvogel, Wintergast",True
+35,38,marila,aythya,anatidae,anseriformes,Bergente,RL R,"Brut-, Jahres-, Zugvogel, Wintergast",True
+36,39,stelleri,polysticta,anatidae,anseriformes,Scheckente,,Ausnahmeerscheinung,True
+37,40,spectabilis,somateria,anatidae,anseriformes,Prachteiderente,,Ausnahmeerscheinung,True
+38,41,mollissima,somateria,anatidae,anseriformes,Eiderente,,"Brut-, Jahres-, Zugvogel, Wintergast",True
+39,42,histrionicus,histrionicus,anatidae,anseriformes,Kragenente,,besondere Ausnahmeerscheinung,True
+43,46,perspicillata,melanitta,anatidae,anseriformes,Brillenente,,besondere Ausnahmeerscheinung,True
+44,47,fusca,melanitta,anatidae,anseriformes,Samtente,,"Zugvogel, Wintergast",True
+45,48,islandica,bucephala,anatidae,anseriformes,Spatelente,,besondere Ausnahmeerscheinung,True
+46,49,clangula,bucephala,anatidae,anseriformes,Schellente,,"Brut-, Zugvogel, Wintergast",True
+48,51,merganser,mergus,anatidae,anseriformes,Gänsesäger,RL 2,"Brut-, Zugvogel, Wintergast",True
+49,52,serrator,mergus,anatidae,anseriformes,Mittelsäger,,"Brut-, Zugvogel, Wintergast",True
+50,3,coturnix,coturnix,phasianidae,galliformes,Wachtel,,"Brut-, Zugvogel, Wintergast",True
+51,4,graeca,alectoris,phasianidae,galliformes,Steinhuhn,RL 0,,True
+52,5,colchicus,phasianus,phasianidae,galliformes,Jagdfasan,,"Brut-, Jahresvogel",True
+53,6,perdix,perdix,phasianidae,galliformes,Rebhuhn,RL 2,"Brut-, Jahresvogel",True
+54,7,bonasia,tetrastes,phasianidae,galliformes,Haselhuhn,RL 2,"Brut-, Jahresvogel",True
+55,8,muta,lagopus,phasianidae,galliformes,Alpenschneehuhn,RL R,"Brut-, Jahresvogel",True
+57,10,urogallus,tetrao,phasianidae,galliformes,Auerhuhn,RL 1,"Brut-, Jahresvogel",True
+58,4,ruficollis,tachybaptus,podicipedidae,podicipediformes,Zwergtaucher,,"Brut-, Jahres-, Zugvogel, Wintergast",True
+59,5,cristatus,podiceps,podicipedidae,podicipediformes,Haubentaucher,,"Brut-, Jahres-, Zugvogel, Wintergast",True
+60,6,grisegena,podiceps,podicipedidae,podicipediformes,Rothalstaucher,,"Brut-, Jahres-, Zugvogel, Wintergast",True
+61,7,auritus,podiceps,podicipedidae,podicipediformes,Ohrentaucher,,"Brut-, Zugvogel, Wintergast",True
+62,8,nigricollis,podiceps,podicipedidae,podicipediformes,Schwarzhalstaucher,,"Brut-, Jahres-, Zugvogel, seltener Wintergast",True
+63,4,arctica,gavia,gaviidae,gaviiformes,Prachttaucher,,"Zugvogel, Wintergast",True
+64,5,immer,gavia,gaviidae,gaviiformes,Eistaucher,,,True
+65,6,adamsii,gavia,gaviidae,gaviiformes,Gelbschnabeltaucher,,Ausnahmeerscheinung,True
+66,4,leucorhoa,oceanodroma,hydrobatidae,procellariiformes,Wellenläufer,,,True
+70,7,puffinus,puffinus,procellariidae,procellariiformes,Atlantiksturmtaucher,,Ausnahmeerscheinung,True
+71,8,mauretanicus,puffinus,procellariidae,procellariiformes,Balearensturmtaucher,,Ausnahmeerscheinung,True
+72,9,assimilis,puffinus,procellariidae,procellariiformes,Kleiner Sturmtaucher,,besondere Ausnahmeerscheinung,True
+73,4,crispus,pelecanus,pelecanidae,pelecaniformes,Krauskopfpelikan,[9],besondere Ausnahmeerscheinung,True
+74,4,aristotelis,phalacrocorax,phalacrocoracidae,suliformes,Krähenscharbe,,Ausnahmeerscheinung,True
+76,4,leucorodia,platalea,threskiornithidae,pelecaniformes,Löffler,RL R,"Brut-, Zugvogel",True
+77,3,stellaris,botaurus,ardeidae,pelecaniformes,Rohrdommel,RL 2,"Brut-, Jahres-, Zugvogel, Wintergast",True
+78,4,minutus,ixobrychus,ardeidae,pelecaniformes,Zwergdommel,RL 1,"Brut-, Zugvogel",True
+79,5,nycticorax,nycticorax,ardeidae,pelecaniformes,Nachtreiher,RL 1,"Brutvogel, seltener Zugvogel",True
+80,6,ralloides,ardeola,ardeidae,pelecaniformes,Rallenreiher,,Ausnahmeerscheinung,True
+82,8,cinerea,ardea,ardeidae,pelecaniformes,Graureiher,,"Brut-, Jahres-, Zugvogel, Wintergast",True
+83,9,purpurea,ardea,ardeidae,pelecaniformes,Purpurreiher,RL R,"Brutvogel, seltener Zugvogel",True
+84,10,garzetta,egretta,ardeidae,pelecaniformes,Seidenreiher,,"Ausnahmeerscheinung, seltener Zugvogel",True
+85,11,thula,egretta,ardeidae,pelecaniformes,Schmuckreiher,,,True
+86,3,nigra,ciconia,ciconiidae,ciconiiformes,Schwarzstorch,,"Brut-, Zugvogel",True
+87,4,ciconia,ciconia,ciconiidae,ciconiiformes,Weißstorch,RL 3,"Brut-, Zugvogel, seltener Jahresvogel",True
+88,3,haliaetus,pandion,pandionidae,accipitriformes,Fischadler,RL 3,,True
+89,3,caeruleus,elanus,accipitridae,accipitriformes,Gleitaar,,,True
+90,4,barbatus,gypaetus,accipitridae,accipitriformes,Bartgeier,,,True
+91,5,percnopterus,neophron,accipitridae,accipitriformes,Schmutzgeier,,,True
+92,6,apivorus,pernis,accipitridae,accipitriformes,Wespenbussard,RL V,,True
+93,7,gallicus,circaetus,accipitridae,accipitriformes,Schlangenadler,RL 0,,True
+94,8,monachus,aegypius,accipitridae,accipitriformes,Mönchsgeier,,,True
+95,9,fulvus,gyps,accipitridae,accipitriformes,Gänsegeier,RL 0,,True
+99,13,chrysaetos,aquila,accipitridae,accipitriformes,Steinadler,RL 2,,True
+100,14,fasciata,aquila,accipitridae,accipitriformes,Habichtsadler,,,True
+101,15,nipalensis,aquila,accipitridae,accipitriformes,Steppenadler,,,True
+102,16,heliaca,aquila,accipitridae,accipitriformes,Kaiseradler,,,True
+103,17,macrourus,circus,accipitridae,accipitriformes,Steppenweihe,,,True
+104,18,cyaneus,circus,accipitridae,accipitriformes,Kornweihe,RL 2,,True
+105,19,pygargus,circus,accipitridae,accipitriformes,Wiesenweihe,RL 2,,True
+107,21,gentilis,accipiter,accipitridae,accipitriformes,Habicht,,,True
+108,22,nisus,accipiter,accipitridae,accipitriformes,Sperber,,,True
+109,23,milvus,milvus,accipitridae,accipitriformes,Rotmilan,,,True
+110,24,migrans,milvus,accipitridae,accipitriformes,Schwarzmilan,,,True
+111,25,albicilla,haliaeetus,accipitridae,accipitriformes,Seeadler,,,True
+112,26,lagopus,buteo,accipitridae,accipitriformes,Raufußbussard,,,True
+113,27,buteo,buteo,accipitridae,accipitriformes,Mäusebussard,,,True
+114,28,rufinus,buteo,accipitridae,accipitriformes,Adlerbussard,,,True
+115,3,columbarius,falco,falconidae,falconiformes,Merlin,,,True
+116,4,vespertinus,falco,falconidae,falconiformes,Rotfußfalke,,,True
+117,5,subbuteo,falco,falconidae,falconiformes,Baumfalke,RL 3,,True
+118,6,eleonorae,falco,falconidae,falconiformes,Eleonorenfalke,,,True
+119,7,peregrinus,falco,falconidae,falconiformes,Wanderfalke,,,True
+120,8,rusticolus,falco,falconidae,falconiformes,Gerfalke,,,True
+121,9,cherrug,falco,falconidae,falconiformes,Würgfalke,,,True
+122,10,tinnunculus,falco,falconidae,falconiformes,Turmfalke,,,True
+123,11,naumanni,falco,falconidae,falconiformes,Rötelfalke,,,True
+124,3,virgo,grus,gruidae,gruiformes,Jungfernkranich,,,True
+125,4,grus,grus,gruidae,gruiformes,Kranich,,,True
+126,3,tetrax,tetrax,otididae,otidiformes,Zwergtrappe,RL 0,,True
+127,4,tarda,otis,otididae,otidiformes,Großtrappe,RL 1,,True
+128,5,macqueenii,chlamydotis,otididae,otidiformes,Steppenkragentrappe,,,True
+129,3,aquaticus,rallus,rallidae,gruiformes,Wasserralle,RL V,,True
+130,4,crex,crex,rallidae,gruiformes,Wachtelkönig,RL 2,,True
+131,5,porzana,porzana,rallidae,gruiformes,Tüpfelsumpfhuhn,RL 1,,True
+132,6,parva,porzana,rallidae,gruiformes,Kleines Sumpfhuhn,RL 1,,True
+133,7,pusilla,porzana,rallidae,gruiformes,Zwergsumpfhuhn,RL 0,,True
+134,8,alleni,porphyrio,rallidae,gruiformes,Bronzesultanshuhn,,,True
+135,9,porphyrio,porphyrio,rallidae,gruiformes,Purpurhuhn,,,True
+136,10,chloropus,gallinula,rallidae,gruiformes,Teichhuhn,RL V,,True
+137,11,atra,fulica,rallidae,gruiformes,Blässhuhn,,,True
+138,3,oedicnemus,burhinus,burhinidae,charadriiformes,Triel,RL 0,,True
+139,3,ostralegus,haematopus,haematopodidae,charadriiformes,Austernfischer,,,True
+140,3,himantopus,himantopus,recurvirostridae,charadriiformes,Stelzenläufer,,,True
+141,4,avosetta,recurvirostra,recurvirostridae,charadriiformes,Säbelschnäbler,,,True
+142,3,squatarola,pluvialis,charadriidae,charadriiformes,Kiebitzregenpfeifer,,,True
+143,4,apricaria,pluvialis,charadriidae,charadriiformes,Goldregenpfeifer,RL 1,,True
+144,5,dominica,pluvialis,charadriidae,charadriiformes,Prärie-Goldregenpfeifer,,,True
+145,6,fulva,pluvialis,charadriidae,charadriiformes,Tundra-Goldregenpfeifer,,,True
+146,7,vanellus,vanellus,charadriidae,charadriiformes,Kiebitz,RL 2,,True
+147,8,gregarius,vanellus,charadriidae,charadriiformes,Steppenkiebitz,,,True
+148,9,leucurus,vanellus,charadriidae,charadriiformes,Weißschwanzkiebitz,,,True
+149,10,dubius,charadrius,charadriidae,charadriiformes,Flußregenpfeifer,,,True
+150,11,hiaticula,charadrius,charadriidae,charadriiformes,Sandregenpfeifer,RL 1,,True
+151,12,alexandrinus,charadrius,charadriidae,charadriiformes,Seeregenpfeifer,RL 1,,True
+152,13,leschenaultii,charadrius,charadriidae,charadriiformes,Wüstenregenpfeifer,,,True
+153,14,asiaticus,charadrius,charadriidae,charadriiformes,Wermutregenpfeifer,,,True
+154,15,morinellus,charadrius,charadriidae,charadriiformes,Mornellregenpfeifer,RL 0,,True
+155,3,longicauda,bartramia,scolopacidae,charadriiformes,Prärieläufer,,,True
+156,4,phaeopus,numenius,scolopacidae,charadriiformes,Regenbrachvogel,,,True
+157,5,tenuirostris,numenius,scolopacidae,charadriiformes,Dünnschnabel-Brachvogel,,,True
+158,6,arquata,numenius,scolopacidae,charadriiformes,Großer Brachvogel,RL 1,,True
+159,7,limosa,limosa,scolopacidae,charadriiformes,Uferschnepfe,RL 1,,True
+160,8,lapponica,limosa,scolopacidae,charadriiformes,Pfuhlschnepfe,,,True
+161,9,griseus,limnodromus,scolopacidae,charadriiformes,Kleiner Schlammläufer,,,True
+162,10,scolopaceus,limnodromus,scolopacidae,charadriiformes,Großer Schlammläufer,,,True
+163,11,rusticola,scolopax,scolopacidae,charadriiformes,Waldschnepfe,RL V,,True
+164,12,minimus,lymnocryptes,scolopacidae,charadriiformes,Zwergschnepfe,,,True
+165,13,media,gallinago,scolopacidae,charadriiformes,Doppelschnepfe,RL 0,,True
+166,14,gallinago,gallinago,scolopacidae,charadriiformes,Bekassine,RL 1,,True
+167,15,tricolor,phalaropus,scolopacidae,charadriiformes,Wilsonwassertreter,,,True
+168,16,lobatus,phalaropus,scolopacidae,charadriiformes,Odinshühnchen,,,True
+169,17,fulicarius,phalaropus,scolopacidae,charadriiformes,Thorshühnchen,,,True
+170,18,hypoleucos,actitis,scolopacidae,charadriiformes,Flußuferläufer,RL 2,,True
+171,19,macularius,actitis,scolopacidae,charadriiformes,Drosseluferläufer,,,True
+172,20,cinereus,xenus,scolopacidae,charadriiformes,Terekwasserläufer,,,True
+173,21,erythropus,tringa,scolopacidae,charadriiformes,Dunkler Wasserläufer,,,True
+174,22,totanus,tringa,scolopacidae,charadriiformes,Rotschenkel,RL V,,True
+175,23,stagnatilis,tringa,scolopacidae,charadriiformes,Teichwasserläufer,,,True
+176,24,nebularia,tringa,scolopacidae,charadriiformes,Grünschenkel,,,True
+177,25,flavipes,tringa,scolopacidae,charadriiformes,Kleiner Gelbschenkel,,,True
+178,26,ochropus,tringa,scolopacidae,charadriiformes,Waldwasserläufer,,,True
+179,27,glareola,tringa,scolopacidae,charadriiformes,Bruchwasserläufer,RL 1,,True
+181,29,interpres,arenaria,scolopacidae,charadriiformes,Steinwälzer,RL 2,,True
+183,31,himantopus,calidris,scolopacidae,charadriiformes,Bindenstrandläufer,,,True
+185,33,tenuirostris,calidris,scolopacidae,charadriiformes,Großer Knutt,,,True
+186,34,canutus,calidris,scolopacidae,charadriiformes,Knutt,,,True
+187,35,alba,calidris,scolopacidae,charadriiformes,Sanderling,,,True
+188,36,pusilla,calidris,scolopacidae,charadriiformes,Sandstrandläufer,,,True
+189,37,minuta,calidris,scolopacidae,charadriiformes,Zwergstrandläufer,,,True
+190,38,ruficollis,calidris,scolopacidae,charadriiformes,Rotkehl-Strandläufer,,,True
+191,39,temminckii,calidris,scolopacidae,charadriiformes,Temminckstrandläufer,,,True
+192,40,minutilla,calidris,scolopacidae,charadriiformes,Wiesenstrandläufer,,,True
+193,41,fuscicollis,calidris,scolopacidae,charadriiformes,Weißbürzel-Strandläufer,,,True
+194,42,bairdii,calidris,scolopacidae,charadriiformes,Baird-Strandläufer,,,True
+195,43,melanotos,calidris,scolopacidae,charadriiformes,Graubrust-Strandläufer,,,True
+196,44,ferruginea,calidris,scolopacidae,charadriiformes,Sichelstrandläufer,,,True
+197,45,maritima,calidris,scolopacidae,charadriiformes,Meerstrandläufer,,,True
+198,46,alpina,calidris,scolopacidae,charadriiformes,Alpenstrandläufer,RL 1,,True
+199,3,cursor,cursorius,glareolidae,charadriiformes,Rennvogel,,,True
+200,4,nordmanni,glareola,glareolidae,charadriiformes,Schwarzflügel-Brachschwalbe,,,True
+201,5,pratincola,glareola,glareolidae,charadriiformes,Rotflügel-Brachschwalbe,,,True
+202,3,parasiticus,stercorarius,stercorariidae,charadriiformes,Schmarotzerraubmöwe,,,True
+203,4,longicaudus,stercorarius,stercorariidae,charadriiformes,Falkenraubmöwe,,,True
+204,5,pomarinus,stercorarius,stercorariidae,charadriiformes,Spatelraubmöwe,,,True
+205,6,skua,stercorarius,stercorariidae,charadriiformes,Skua,,,True
+212,3,tridactyla,rissa,laridae,charadriiformes,Dreizehenmöwe,RL R,,True
+213,4,eburnea,pagophila,laridae,charadriiformes,Elfenbeinmöwe,,,True
+214,5,sabini,xema,laridae,charadriiformes,Schwalbenmöwe,,,True
+215,6,rosea,rhodostethia,laridae,charadriiformes,Rosenmöwe,,,True
+216,7,minutus,hydrocoloeus,laridae,charadriiformes,Zwergmöwe,RL R,,True
+217,8,philadelphia,chroicocephalus,laridae,charadriiformes,Bonapartemöwe,,,True
+218,9,ridibundus,chroicocephalus,laridae,charadriiformes,Lachmöwe,,,True
+219,10,genei,chroicocephalus,laridae,charadriiformes,Dünnschnabelmöwe,,,True
+220,11,atricilla,leucophaeus,laridae,charadriiformes,Aztekenmöwe,,,True
+221,12,pipixcan,leucophaeus,laridae,charadriiformes,Präriemöwe,,,True
+222,13,melanocephalus,ichthyaetus,laridae,charadriiformes,Schwarzkopfmöwe,,,True
+223,14,ichthyaetus,ichthyaetus,laridae,charadriiformes,Fischmöwe,,,True
+225,16,canus,larus,laridae,charadriiformes,Sturmmöwe,,,True
+226,17,delawarensis,larus,laridae,charadriiformes,Ringschnabelmöwe,,,True
+227,18,marinus,larus,laridae,charadriiformes,Mantelmöwe,RL R,,True
+228,19,hyperboreus,larus,laridae,charadriiformes,Eismöwe,,,True
+229,20,argentatus,larus,laridae,charadriiformes,Silbermöwe,,,True
+230,21,michahellis,larus,laridae,charadriiformes,Mittelmeermöwe,,,True
+231,22,cachinnans,larus,laridae,charadriiformes,Steppenmöwe,RL R,,True
+232,23,fuscus,larus,laridae,charadriiformes,Heringsmöwe,,,True
+234,25,smithsonianus,larus,laridae,charadriiformes,Kanadamöwe,,,True
+235,26,glaucoides,larus,laridae,charadriiformes,Polarmöwe,,,True
+251,3,paradoxus,syrrhaptes,pteroclidae,pterocliformes,Steppenflughuhn,,,True
+254,4,oenas,columba,columbidae,columbiformes,Hohltaube,,,True
+255,5,palumbus,columba,columbidae,columbiformes,Ringeltaube,,,True
+256,6,decaocto,streptopelia,columbidae,columbiformes,Türkentaube,,,True
+257,7,turtur,streptopelia,columbidae,columbiformes,Turteltaube,RL 3,,True
+258,8,orientalis,streptopelia,columbidae,columbiformes,Orientturteltaube,,,True
+260,3,erythropthalmus,coccyzus,cuculidae,cuculiformes,Schwarzschnabelkuckuck,,,True
+261,4,glandarius,clamator,cuculidae,cuculiformes,Häherkuckuck,,,True
+262,5,canorus,cuculus,cuculidae,cuculiformes,Kuckuck,RL V,,True
+263,3,alba,tyto,tytonidae,strigiformes,Schleiereule,,,True
+264,3,funereus,aegolius,strigidae,strigiformes,Raufußkauz,,,True
+265,4,noctua,athene,strigidae,strigiformes,Steinkauz,RL 2,,True
+266,5,ulula,surnia,strigidae,strigiformes,Sperbereule,,,True
+267,6,passerinum,glaucidium,strigidae,strigiformes,Sperlingskauz,,,True
+268,7,scops,otus,strigidae,strigiformes,Zwergohreule,,,True
+269,8,otus,asio,strigidae,strigiformes,Waldohreule,,,True
+270,9,flammeus,asio,strigidae,strigiformes,Sumpfohreule,RL 1,,True
+271,10,bubo,bubo,strigidae,strigiformes,Uhu,,,True
+272,11,scandiacus,bubo,strigidae,strigiformes,Schneeeule,,,True
+273,12,aluco,strix,strigidae,strigiformes,Waldkauz,,,True
+274,13,uralensis,strix,strigidae,strigiformes,Habichtskauz,RL R,,True
+275,3,europaeus,caprimulgus,caprimulgidae,caprimulgiformes,Ziegenmelker,RL 3,,True
+276,4,aegyptius,caprimulgus,caprimulgidae,caprimulgiformes,Pharaonenziegenmelker,,,True
+282,3,atthis,alcedo,alcedinidae,coraciiformes,Eisvogel,,,True
+283,3,apiaster,merops,meropidae,coraciiformes,Bienenfresser,,,True
+284,4,persicus,merops,meropidae,coraciiformes,Blauwangenspint,,,True
+285,3,epops,upupa,upupidae,bucerotiformes,Wiedehopf,RL 2,,True
+286,3,torquilla,jynx,picidae,piciformes,Wendehals,RL 2,,True
+287,4,canus,picus,picidae,piciformes,Grauspecht,RL 2,,True
+288,5,viridis,picus,picidae,piciformes,Grünspecht,,,True
+289,6,martius,dryocopus,picidae,piciformes,Schwarzspecht,,,True
+290,7,tridactylus,picoides,picidae,piciformes,Dreizehenspecht,RL 2,,True
+291,8,major,dendrocopos,picidae,piciformes,Buntspecht,,,True
+294,3,olivaceus,vireo,vireonidae,passeriformes,Rotaugenvireo,,,True
+295,4,flavifrons,vireo,vireonidae,passeriformes,Gelbkehlvireo,,,True
+296,3,oriolus,oriolus,oriolidae,passeriformes,Pirol,RL V,,True
+297,3,senator,lanius,laniidae,passeriformes,Rotkopfwürger,RL 1,,True
+298,4,minor,lanius,laniidae,passeriformes,Schwarzstirnwürger,RL 0,,True
+299,5,cristatus,lanius,laniidae,passeriformes,Braunwürger,,,True
+300,6,isabellinus,lanius,laniidae,passeriformes,Isabellwürger,,,True
+301,7,collurio,lanius,laniidae,passeriformes,Neuntöter,,,True
+303,3,graculus,pyrrhocorax,corvidae,passeriformes,Alpendohle,RL R,,True
+304,4,pyrrhocorax,pyrrhocorax,corvidae,passeriformes,Alpenkrähe,,,True
+305,5,pica,pica,corvidae,passeriformes,Elster,,,True
+306,6,glandarius,garrulus,corvidae,passeriformes,Eichelhäher,,,True
+307,7,caryocatactes,nucifraga,corvidae,passeriformes,Tannenhäher,,,True
+310,10,frugilegus,corvus,corvidae,passeriformes,Saatkrähe,,,True
+311,11,corone,corvus,corvidae,passeriformes,Rabenkrähe,,,True
+312,12,cornix,corvus,corvidae,passeriformes,Nebelkrähe,,,True
+313,13,corax,corvus,corvidae,passeriformes,Kolkrabe,,,True
+317,5,major,parus,paridae,passeriformes,Kohlmeise,,,True
+322,3,calandra,melanocorypha,alaudidae,passeriformes,Kalanderlerche,,,True
+323,4,bimaculata,melanocorypha,alaudidae,passeriformes,Bergkalanderlerche,,,True
+325,6,yeltoniensis,melanocorypha,alaudidae,passeriformes,Mohrenlerche,,,True
+328,9,cristata,galerida,alaudidae,passeriformes,Haubenlerche,RL 1,,True
+329,10,arborea,lullula,alaudidae,passeriformes,Heidelerche,RL V,,True
+330,11,arvensis,alauda,alaudidae,passeriformes,Feldlerche,RL 3,,True
+331,12,alpestris,eremophila,alaudidae,passeriformes,Ohrenlerche,,,True
+332,3,riparia,riparia,hirundinidae,passeriformes,Uferschwalbe,,,True
+333,4,rupestris,ptyonoprogne,hirundinidae,passeriformes,Felsenschwalbe,RL R,,True
+334,5,rustica,hirundo,hirundinidae,passeriformes,Rauchschwalbe,RL V,,True
+335,6,urbicum,delichon,hirundinidae,passeriformes,Mehlschwalbe,RL V,,True
+336,7,daurica,cecropis,hirundinidae,passeriformes,Rötelschwalbe,,,True
+340,3,sibilatrix,phylloscopus,phylloscopidae,passeriformes,Waldlaubsänger,,,True
+341,4,bonelli,phylloscopus,phylloscopidae,passeriformes,Berglaubsänger,,,True
+342,5,schwarzi,phylloscopus,phylloscopidae,passeriformes,Bartlaubsänger,,,True
+343,6,fuscatus,phylloscopus,phylloscopidae,passeriformes,Dunkellaubsänger,,,True
+344,7,trochilus,phylloscopus,phylloscopidae,passeriformes,Fitis,,,True
+345,8,collybita,phylloscopus,phylloscopidae,passeriformes,Zilpzalp,,,True
+346,9,ibericus,phylloscopus,phylloscopidae,passeriformes,Iberienzilpzalp,,,True
+347,10,proregulus,phylloscopus,phylloscopidae,passeriformes,Goldhähnchen-Laubsänger,,,True
+348,11,inornatus,phylloscopus,phylloscopidae,passeriformes,Gelbbrauen-Laubsänger,,,True
+349,12,humei,phylloscopus,phylloscopidae,passeriformes,Tienschan-Laubsänger,,,True
+350,13,trochiloides,phylloscopus,phylloscopidae,passeriformes,Grünlaubsänger,RL R,,True
+351,14,nitidus,phylloscopus,phylloscopidae,passeriformes,Wacholderlaubsänger,,,True
+352,15,borealis,phylloscopus,phylloscopidae,passeriformes,Wanderlaubsänger,,,True
+353,16,coronatus,phylloscopus,phylloscopidae,passeriformes,Kronenlaubsänger,,,True
+359,3,melanopogon,acrocephalus,acrocephalidae,passeriformes,Mariskenrohrsänger,,,True
+360,4,paludicola,acrocephalus,acrocephalidae,passeriformes,Seggenrohrsänger,RL 1,,True
+361,5,schoenobaenus,acrocephalus,acrocephalidae,passeriformes,Schilfrohrsänger,RL V,,True
+362,6,dumetorum,acrocephalus,acrocephalidae,passeriformes,Buschrohrsänger,,,True
+363,7,palustris,acrocephalus,acrocephalidae,passeriformes,Sumpfrohrsänger,,,True
+364,8,scirpaceus,acrocephalus,acrocephalidae,passeriformes,Teichrohrsänger,,,True
+365,9,agricola,acrocephalus,acrocephalidae,passeriformes,Feldrohrsänger,,,True
+366,10,arundinaceus,acrocephalus,acrocephalidae,passeriformes,Drosselrohrsänger,RL V,,True
+367,11,pallida,iduna,acrocephalidae,passeriformes,Blassspötter,,,True
+368,12,caligata,iduna,acrocephalidae,passeriformes,Buschspötter,,,True
+369,13,rama,iduna,acrocephalidae,passeriformes,Steppenspötter,,,True
+370,14,icterina,hippolais,acrocephalidae,passeriformes,Gelbspötter,,,True
+371,15,polyglotta,hippolais,acrocephalidae,passeriformes,Orpheusspötter,,,True
+386,3,garrulus,bombycilla,bombycillidae,passeriformes,Seidenschwanz,,,True
+387,3,muraria,tichodroma,tichodromidae,passeriformes,Mauerläufer,RL R,,True
+388,3,europaea,sitta,sittidae,passeriformes,Kleiber,,,True
+389,3,familiaris,certhia,certhiidae,passeriformes,Waldbaumläufer,,,True
+390,4,brachydactyla,certhia,certhiidae,passeriformes,Gartenbaumläufer,,,True
+391,3,troglodytes,troglodytes,troglodytidae,passeriformes,Zaunkönig,,,True
+392,3,carolinensis,dumetella,mimidae,passeriformes,Katzenvogel,,,True
+393,3,vulgaris,sturnus,sturnidae,passeriformes,Star,,,True
+395,3,cinclus,cinclus,cinclidae,passeriformes,Wasseramsel,,,True
+396,3,aurea,zoothera,turdidae,passeriformes,Erddrosel,,,True
+398,5,guttatus,catharus,turdidae,passeriformes,Einsiedlerdrossel,,,True
+399,6,ustulatus,catharus,turdidae,passeriformes,Zwergdrossel,,,True
+400,7,minimus,catharus,turdidae,passeriformes,Grauwangendrossel,,,True
+401,8,viscivorus,turdus,turdidae,passeriformes,Misteldrossel,,,True
+402,9,torquatus,turdus,turdidae,passeriformes,Ringdrossel,,,True
+403,10,merula,turdus,turdidae,passeriformes,Amsel,,,True
+404,11,obscurus,turdus,turdidae,passeriformes,Weißbrauendrossel,,,True
+405,12,unicolor,turdus,turdidae,passeriformes,Einfarbdrossel,,,True
+406,13,naumanni,turdus,turdidae,passeriformes,Rotschwanzdrossel,,,True
+407,14,eunomus,turdus,turdidae,passeriformes,Rostflügeldrossel,,,True
+408,15,ruficollis,turdus,turdidae,passeriformes,Rotkehldrossel,,,True
+409,16,atrogularis,turdus,turdidae,passeriformes,Schwarzkehldrossel,,,True
+410,17,pallidus,turdus,turdidae,passeriformes,Fahldrossel,,,True
+411,18,pilaris,turdus,turdidae,passeriformes,Wacholderdrossel,,,True
+412,19,philomelos,turdus,turdidae,passeriformes,Singdrossel,,,True
+413,20,iliacus,turdus,turdidae,passeriformes,Rotdrossel,,,True
+414,21,migratorius,turdus,turdidae,passeriformes,Wanderdrossel,,,True
+415,3,galactotes,cercotrichas,muscicapidae,passeriformes,Heckensänger,,,True
+416,4,striata,muscicapa,muscicapidae,passeriformes,Grauschnäpper,,,True
+417,5,parva,ficedula,muscicapidae,passeriformes,Zwergschnäpper,,,True
+418,6,hypoleuca,ficedula,muscicapidae,passeriformes,Trauerschnäpper,,,True
+419,7,albicollis,ficedula,muscicapidae,passeriformes,Halsbandschnäpper,RL 3,,True
+420,8,saxatilis,monticola,muscicapidae,passeriformes,Steinrötel,RL 1,,True
+421,9,rubetra,saxicola,muscicapidae,passeriformes,Braunkehlchen,RL 3,,True
+422,10,rubicola,saxicola,muscicapidae,passeriformes,Schwarzkehlchen,RL V,,True
+423,11,maurus,saxicola,muscicapidae,passeriformes,Pallasschwarzkehlchen,,,True
+424,12,rubecula,erithacus,muscicapidae,passeriformes,Rotkehlchen,,,True
+425,13,cyanurus,tarsiger,muscicapidae,passeriformes,Blauschwanz,,,True
+426,14,luscinia,luscinia,muscicapidae,passeriformes,Sprosser,,,True
+427,15,megarhynchos,luscinia,muscicapidae,passeriformes,Nachtigall,,,True
+429,17,svecica,luscinia,muscicapidae,passeriformes,Blaukehlchen,RL V,,True
+430,18,ochruros,phoenicurus,muscicapidae,passeriformes,Hausrotschwanz,,,True
+431,19,phoenicurus,phoenicurus,muscicapidae,passeriformes,Gartenrotschwanz,,,True
+432,20,isabellina,oenanthe,muscicapidae,passeriformes,Isabellsteinschmätzer,,,True
+433,21,deserti,oenanthe,muscicapidae,passeriformes,Wüstensteinschmätzer,,,True
+434,22,oenanthe,oenanthe,muscicapidae,passeriformes,Steinschmätzer,RL 1,,True
+436,24,pleschanka,oenanthe,muscicapidae,passeriformes,Nonnensteinschmätzer,,,True
+437,25,leucopyga,oenanthe,muscicapidae,passeriformes,Saharasteinschmätzer,,,True
+438,3,collaris,prunella,prunellidae,passeriformes,Alpenbraunelle,RL R,,True
+439,4,modularis,prunella,prunellidae,passeriformes,Heckenbraunelle,,,True
+440,5,atrogularis,prunella,prunellidae,passeriformes,Schwarzkehbraunelle,,,True
+441,3,domesticus,passer,passeridae,passeriformes,Haussperling,RL V,,True
+442,4,montanus,passer,passeridae,passeriformes,Feldsperling,RL V,,True
+443,5,petronia,petronia,passeridae,passeriformes,Steinsperling,RL 0,,True
+444,6,nivalis,montifringilla,passeridae,passeriformes,Schneesperling,RL R,,True
+445,3,richardi,anthus,motacillidae,passeriformes,Spornpieper,,,True
+446,4,godlewskii,anthus,motacillidae,passeriformes,Steppenpieper,,,True
+447,5,campestris,anthus,motacillidae,passeriformes,Brachpieper,RL 1,,True
+448,6,hodgsoni,anthus,motacillidae,passeriformes,Waldpieper,,,True
+449,7,trivialis,anthus,motacillidae,passeriformes,Baumpieper,RL V,,True
+450,8,pratensis,anthus,motacillidae,passeriformes,Wiesenpieper,RL V,,True
+451,9,cervinus,anthus,motacillidae,passeriformes,Rotkehlpieper,,,True
+452,10,rubescens,anthus,motacillidae,passeriformes,Pazifikpieper,,,True
+453,11,spinoletta,anthus,motacillidae,passeriformes,Bergpieper,,,True
+454,12,petrosus,anthus,motacillidae,passeriformes,Strandpieper,,,True
+455,13,cinerea,motacilla,motacillidae,passeriformes,Gebirgsstelze,,,True
+456,14,citreola,motacilla,motacillidae,passeriformes,Zitronenstelze,,,True
+457,15,flava,motacilla,motacillidae,passeriformes,Wiesenschafstelze,,,True
+463,21,alba,motacilla,motacillidae,passeriformes,Bachstelze,,,True
+465,3,coelebs,fringilla,fringillidae,passeriformes,Buchfink,,,True
+466,4,montifringilla,fringilla,fringillidae,passeriformes,Bergfink,,,True
+467,5,coccothraustes,coccothraustes,fringillidae,passeriformes,Kernbeißer,,,True
+468,6,enucleator,pinicola,fringillidae,passeriformes,Hakengimpel,,,True
+469,7,pyrrhula,pyrrhula,fringillidae,passeriformes,Gimpel,,,True
+470,8,githagineus,bucanetes,fringillidae,passeriformes,Wüstengimpel,,,True
+471,9,erythrinus,carpodacus,fringillidae,passeriformes,Karmingimpel,,,True
+472,10,serinus,serinus,fringillidae,passeriformes,Girlitz,,,True
+474,12,pytyopsittacus,loxia,fringillidae,passeriformes,Kiefernkreuzschnabel,,,True
+475,13,curvirostra,loxia,fringillidae,passeriformes,Fichtenkreuzschnabel,,,True
+477,15,carduelis,carduelis,fringillidae,passeriformes,Stieglitz,,,True
+478,16,citrinella,carduelis,fringillidae,passeriformes,Zitronenzeisig,RL 3,,True
+487,5,calandra,emberiza,emberizidae,passeriformes,Grauammer,RL 3,,True
+488,6,citrinella,emberiza,emberizidae,passeriformes,Goldammer,,,True
+489,7,leucocephalos,emberiza,emberizidae,passeriformes,Fichtenammer,Emberiza leucocephalos,,True
+490,8,cirlus,emberiza,emberizidae,passeriformes,Zaunammer,RL 2,,True
+491,9,cia,emberiza,emberizidae,passeriformes,Zippammer,RL 1,,True
+492,10,cineracea,emberiza,emberizidae,passeriformes,Türkenammer,,,True
+493,11,hortulana,emberiza,emberizidae,passeriformes,Ortolan,RL 3,,True
+494,12,caesia,emberiza,emberizidae,passeriformes,Grauortolan,,,True
+495,13,schoeniclus,emberiza,emberizidae,passeriformes,Rohrammer,,,True
+496,14,pusilla,emberiza,emberizidae,passeriformes,Zwergammer,,,True
+497,15,rustica,emberiza,emberizidae,passeriformes,Waldammer,,,True
+498,16,spodocephala,emberiza,emberizidae,passeriformes,Maskenammer,,,True
+499,17,melanocephala,emberiza,emberizidae,passeriformes,Kappenammer,,,True
+500,18,bruniceps,emberiza,emberizidae,passeriformes,Braunkopfammer,,,True
+501,19,aureola,emberiza,emberizidae,passeriformes,Weidenammer,,,True
