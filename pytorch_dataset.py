@@ -19,22 +19,13 @@ from torch.utils.data import Dataset
 import matplotlib.pyplot as plt
 import re
 
-train_path = 'Test Birdsounds'
-labels = [name.split('.')[0].replace('%20', ' ') for name in os.listdir(train_path)]
-labels = [re.sub(r'\d+', '', label) for label in labels]
-paths = [os.path.join(train_path, name) for name in os.listdir(train_path)]
-ids = list(range(len(labels)))
+#TODO:
+# Load h5 here
+# Adapt dataset to fit new format
 
-df = pd.DataFrame({'ID' : ids, 'label' : labels, 'path' : paths })
-"""
-labels = pd.read_csv(os.path.join(train_path, 'train.csv'))
-file_names = os.listdir(os.path.join(train_path, 'Train'))
-#Sort numerically
-file_names.sort(key = lambda x: int(x.split('.')[0]))
-# Append file path column
-labels['path'] = ['./Urban Sound/train/Train/' + x for x in  file_names]
-"""
 
+###############################################################################
+# Dataset Class
 class SoundDataset(Dataset):
     def __init__(self, df):
         
@@ -53,7 +44,7 @@ class SoundDataset(Dataset):
     
     def load_audio(self, path):
         raw, sr = librosa.load(path)
-        print(sr)
+        print(librosa.get_duration(raw))
         return raw
     
     def get_spectogram(self, path):
@@ -81,7 +72,7 @@ class SoundDataset(Dataset):
         l = stop - start
         cols = 4
         rows = l // cols + 1
-        for i in range(start, stop):
+        for i in range(0, l):
             s, _ = self[i]
             ax = plt.subplot(rows, cols, i+1)
             librosa.display.specshow(s, y_axis='log', x_axis='time', sr=sr)
@@ -91,4 +82,8 @@ class SoundDataset(Dataset):
         
 test = SoundDataset(df)
 
-test.plot(0,4)
+test.plot(101,102)
+
+s, _ = test[101]
+librosa.display.specshow(s, y_axis='log', x_axis='time', sr=sr)
+plt.tight_layout()
