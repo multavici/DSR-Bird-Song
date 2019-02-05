@@ -17,12 +17,13 @@ import librosa.display
 import os
 from torch.utils.data import Dataset
 import matplotlib.pyplot as plt
-
+import re
 
 train_path = 'Test Birdsounds'
-labels = [name.split('.')[0] for name in os.listdir(train_path)]
+labels = [name.split('.')[0].replace('%20', ' ') for name in os.listdir(train_path)]
+labels = [re.sub(r'\d+', '', label) for label in labels]
 paths = [os.path.join(train_path, name) for name in os.listdir(train_path)]
-ids = list(range(4))
+ids = list(range(len(labels)))
 
 df = pd.DataFrame({'ID' : ids, 'label' : labels, 'path' : paths })
 """
