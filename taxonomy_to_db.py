@@ -1,33 +1,69 @@
 import sqlite3
 import json
+import pandas as pd
 
-conn = sqlite3.connect("bird_song.sqlite")
+# Create connection to database
+conn = sqlite3.connect("db.sqlite")
+c = conn.cursor()
 
-conn.execute('''CREATE TABLE taxonomy
-    (id INTEGER PRIMARY KEY, bird_order TEXT, family TEXT, genus TEXT, species TEXT, subspecies TEXT)''') # order is a reserved key-word so it's called bird_order
+def create_taxonomy():
+    conn.execute('''CREATE TABLE taxonomy
+        (id INTEGER PRIMARY KEY, bird_order TEXT, family TEXT, genus TEXT, 
+        species TEXT, german BOOLEAN, xeno_canto BOOLEAN, mc_aulay BOOLEAN)''')
+        # order is a reserved key-word so it's called bird_order
+    conn.commit()
 
-conn.commit()
+def add_xeno_canto_species():
+    # Read JSON text file
+    with open('taxonomy.txt') as f:
+        tax_string = f.read()
+    tax_dict = json.loads(tax_string)
 
-with open('taxonomy.txt') as f:
-    tax_string = f.read()
-
-tax_dict = json.loads(tax_string)
-
-print(type(tax_dict))
-
-for order, families in tax_dict.items():
-    for family, geni in families.items():
-        for genus, species in geni.items():
-            for specie, subspecies in species.items():
-                for subscspecie in subspecies:
-                    print(order)
-                    print(family)
-                    print(genus)
-                    print(specie)
-                    print(subscspecie)
-                    print((order, family, genus, specie, subscspecie))
+    # Save to database table
+    for order, families in tax_dict.items():
+        for family, geni in families.items():
+            for genus, species in geni.items():
+                for specie in species:
                     conn.execute("""
-                    INSERT INTO taxonomy (bird_order, family, genus, species, subspecies) VALUES (?, ?, ?, ?, ?)
-                    """, (order, family, genus, specie, subscspecie)  )
+                        INSERT INTO taxonomy (bird_order, family, genus, 
+                            species, xeno_canto) 
+                        VALUES (?, ?, ?, ?, ?)
+                        """, 
+                        (order, family, genus, specie.split(" ")[1], True)  )
+                # Use this to also save subspecies in database    
+                '''for specie, subspecies in species.items():
+                    for subscspecie in subspecies:
+                        conn.execute("""
+                        INSERT INTO taxonomy (bird_order, family, genus, 
+                            species, subspecies) 
+                        VALUES (?, ?, ?, ?, ?)
+                        """, (order, family, genus, specie, subscspecie)  )'''
+    conn.commit()
 
-conn.commit()
+def add_german_species():
+    birds = pd.read_csv('german_birds.csv')
+    print(birds)
+
+    for index, bird in birds.iterrows():
+        genus = bird['genus']
+        species = bird['species']
+        print(genus, species)
+        
+        c.execute('''UPDATE taxonomy SET german = 1 
+            WHERE species = ? and genus = ?''', (species, genus) )
+        print(c.rowcount)
+        # If update was not succesful, add the species
+        if c.rowcount != 1:
+            print("bla")
+            order = bird['order']
+            family = bird['family']
+            c.execute('''INSERT INTO taxonomy (bird_order, family, genus, 
+                species, german) 
+                VALUES (?, ?, ?, ?, 1)''', (order, family, genus, species)  )
+    
+    conn.commit()
+
+
+#create_taxonomy()
+#add_xeno_canto_species()
+add_german_species()

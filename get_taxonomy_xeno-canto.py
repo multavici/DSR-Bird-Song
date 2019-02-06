@@ -6,7 +6,6 @@ import json
 d = {}
 orders = get_orders()
 for order in orders:
-    print(order)
     families = get_families(order=order)
     d[order] = {}
     for family in families:
