@@ -10,9 +10,10 @@ import pandas as pd
 import librosa
 import os
 import re
+from imageio import imwrite
 
 train_path = 'Test Birdsounds'
-labels = [name.split('.')[0].replace('%20', ' ') for name in os.listdir(train_path) if name[0] != '.']
+labels = [name.split('.')[0].replace('%20', '_') for name in os.listdir(train_path) if name[0] != '.']
 labels = [re.sub(r'\d+', '', label) for label in labels]
 paths = [os.path.join(train_path, name) for name in os.listdir(train_path) if name[0] != '.']
 ids = list(range(len(labels)))
@@ -35,22 +36,24 @@ df['duration'] = durations
 # Compute spectogram for each sound file and split spectograms into len == 100 segments
 # with an overlap of 50 -> store into lobaled dictionary and export as json
 
-samples = {}
-i = 1
+samples = {'label' : [],
+           'path'  : []}
+c = 1
 for path, label in zip(df.path, df.label):
-    print(i)
+    print(path)
     raw, sr = librosa.load(path)
     a, phase = librosa.magphase(librosa.stft(raw))
-    list_ = [a[:, i:i+100] for i in range(0, a.shape[1]-100, 50)]
-    label = label.replace(' ', '_')
-    if label not in samples.keys():
-        samples[label] = list_
-    else:
-        samples[label] += list_
-    i += 1
+    a -= a.min()
+    a /= a.max()
+    a *= 255
+    a = a.astype('uint8') 
+    for i in range(0, a.shape[1]-200, 100):
+        slice_ = a[:, i:i+200] 
+        path = f'spectral_slices/{c}.png'
+        samples['label'] += [label]
+        samples['path'] += [path]
+        imwrite(path, slice_)
+        c += 1
 
-
-    
-import deepdish as dd
-dd.io.save('spectral_slices.h5', samples)
-
+sample_data = pd.DataFrame(samples)
+sample_data.to_csv('spectral_slices.csv')
