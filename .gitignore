@@ -3,4 +3,5 @@ Test Birdsounds
 *.png
 *.h5
 *.png
-
+*.ipynb
+__pycache__
