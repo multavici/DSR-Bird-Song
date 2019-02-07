@@ -26,7 +26,7 @@ sample = ['oxyura%20jamaicensis',
 
 def get_recordings(species):
     for specie in species:
-        ans_dict = get_bird_songs(genus)
+        ans_dict = get_bird_songs(specie)
         recordings = ans_dict['recordings']
         i = 0
         for recording in recordings:

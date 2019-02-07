@@ -1,6 +1,7 @@
 import pandas as pd
 import json
 
+# Get all the bird species in Germany from csv file
 birds = pd.read_csv('german_birds.csv')
 
 with open('taxonomy.txt') as f:
@@ -17,7 +18,5 @@ def in_db(row):
 
 birds['found'] = birds.apply( lambda row: in_db(row), axis=1)
 
-birds_in_db = birds.loc[birds['found'],:]
-birds_in_db = birds_in_db.loc[:, ['order', 'family', 'genus', 'species']  ].reset_index(drop=True)
-
+birds_in_db = birds.loc[birds['found'],['order', 'family', 'genus', 'species']].reset_index(drop=True)
 birds_in_db.to_csv('german_birds_in_db.csv')
