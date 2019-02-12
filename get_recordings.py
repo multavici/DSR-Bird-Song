@@ -27,6 +27,8 @@ def get_recordings(**kwargs):
             + list(kwargs.values())[0] +"'")
     c.execute(query)
     response = c.fetchall()
+    
+    # download all files
     downloads = []
     for recording in response:
         print(recording)
@@ -36,15 +38,7 @@ def get_recordings(**kwargs):
             downloads.append(recording[0])
         except urllib.error.HTTPError:
             print(f'file {recording[0]} not found')
+    
     return downloads
 
 get_recordings(genus='struthio')
-    
-"""for specie in species:
-    ans_dict = get_bird_songs(specie)
-    recordings = ans_dict['recordings']
-    i = 0
-    for recording in recordings:
-        print(recording['file'])
-        urllib.request.urlretrieve ("http:"+recording['file'], "songs/"+genus+str(i)+".mp3")
-        i += 1"""
