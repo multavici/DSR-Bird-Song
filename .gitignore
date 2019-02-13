@@ -1,6 +1,11 @@
-Test Birdsounds
+#Test Birdsounds
 *.wav
 *.png
 *.h5
 *.ipynb
 __pycache__
+.DS_store
+__pycache__/
+.vscode
+storage/
+.ps_project
