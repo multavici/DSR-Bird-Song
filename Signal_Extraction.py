@@ -7,8 +7,15 @@ Created on Tue Feb 12 17:27:26 2019
 """
 
 """
-Following the methodology described in Lasseck 2013 and Sprengler 2017
+The following functions serve to highlight sections of bird vocalizations in a
+audio recording. They are based on the methodologies described in Lasseck 2013 
+and Sprengler 2017.
 
+Usage:
+import the function "signal_timestamps" from this script and pass it a path to
+a audio file. It will then return the total duration, the summed duration of 
+foreground bird-vocalizations and a json of start and stop timestamps for
+sections with bird vocalizations. 
 """
 
 import librosa
