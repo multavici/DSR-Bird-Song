@@ -52,10 +52,9 @@ def threads(urls):
 threadpool = ThreadPool(6)
 
 
-for i in range(16, 26):
-    p,l,t = get_entry(df, i)
+files = [get_entry(df, i) for i in range(16, 26)]
 
-threadpool.map(preload, )
+threadpool.map(preload, [(p, l, t, 500, 200) for p,l,t in files])
 
 
 
