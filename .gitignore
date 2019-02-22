@@ -1,7 +1,21 @@
-Test Birdsounds
+#Test Birdsounds
 *.wav
 *.png
 *.h5
 *.ipynb
-__pycache__
 .directory
+.DS_store
+__pycache__/
+.vscode
+storage/
+.ps_project
+.dockerignore
+Dockerfile
+docker-compose.debug.yml
+docker-compose.yml
+environment.yml
+requirements.txt
+test.py
+env/
+db.sqlite
+*.sqlite
