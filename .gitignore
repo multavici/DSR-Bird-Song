@@ -16,3 +16,5 @@ docker-compose.yml
 environment.yml
 requirements.txt
 test.py
+env/
+db.sqlite
