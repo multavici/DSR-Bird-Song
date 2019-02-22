@@ -7,7 +7,7 @@ def get_records_from_classes(class_ids, seconds_per_class):
     Returns an amount of recordings so that the total seconds of signal
     is equal to or more than the argument seconds_per class
     """
-    conn = sqlite3.connect('/storage/db.sqlite')
+    conn = sqlite3.connect('../storage/db.sqlite')
     c = conn.cursor()
 
     result = []
