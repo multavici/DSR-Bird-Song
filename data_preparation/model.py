@@ -77,7 +77,7 @@ def german_recordings_df():
     query = '''SELECT t.bird_order, t.family, t.genus, t.species, r.id
         FROM taxonomy AS t
         JOIN recordings AS r ON t.id = r.taxonomy_id
-        WHERE t.german = 1.0
+        WHERE t.german = 1.0 AND r.downloaded <> 0
         ORDER BY r.id'''
     df = pd.read_sql(sql=query, con=conn)
     return df

@@ -15,11 +15,12 @@ for file in downloaded:
         downloaded_ids.append(int(file[:-4]))
     except:
         pass
-print(len(downloaded))
+print(f'files downloaded already: {len(downloaded)}')
 
 # remove already downloaded files from the list
 downloaded = german_recordings['id'].isin(downloaded_ids)
 to_download = german_recordings.loc[~downloaded,:]
+print(f'files still to download: {len(to_download.index)}')
 
 # download recordings
 for id_rec in to_download['id']:
