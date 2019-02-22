@@ -1,10 +1,11 @@
 # get german recordings
 import pandas as pd
-from model import german_recordings_df, flag_nonexisting_recording
+from model import german_recordings_df, flag_unavailable_recording
 import urllib.request
 import os
 
 german_recordings = german_recordings_df()
+print(f'german recordings: {len(german_recordings.index)}')
 
 # get already downloaded files
 files_dir = os.path.join(os.getcwd(), 'storage', 'german_birds')
@@ -31,6 +32,6 @@ for id_rec in to_download['id']:
         print(f'file {id_rec} downloaded')
     except urllib.error.HTTPError:
         print(f'file {id_rec} not found')
-        flag_nonexisting_recording(id_rec)
+        flag_unavailable_recording(id_rec)
         pass
 

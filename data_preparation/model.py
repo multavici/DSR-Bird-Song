@@ -77,15 +77,15 @@ def german_recordings_df():
     query = '''SELECT t.bird_order, t.family, t.genus, t.species, r.id
         FROM taxonomy AS t
         JOIN recordings AS r ON t.id = r.taxonomy_id
-        WHERE t.german = 1.0 AND r.downloaded <> 0
+        WHERE t.german = 1.0 AND r.downloaded IS NULL
         ORDER BY r.id'''
     df = pd.read_sql(sql=query, con=conn)
     return df
 
 
-def flag_nonexisting_recording(rec_id):
-    query = 'UPDATE recordings SET downloaded = 0 WHERE id = ?'
+def flag_unavailable_recording(rec_id):
+    query = 'UPDATE recordings SET downloaded = "NA" WHERE id = ?'
     c = conn.cursor()
     c.execute(query, (rec_id, ))
-    print(f'recording {rec_id} flagged as nonexisting (downloaded = 0)')
+    print(f'recording {rec_id} flagged as unavailable (downloaded = 0)')
     return 1
