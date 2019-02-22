@@ -2,12 +2,13 @@
 import pandas as pd
 from model import german_recordings_df
 import urllib.request
+import os
 
 german_recordings = german_recordings_df()
 
 # get already downloaded files
-import os
-downloaded = os.listdir("../storage/german_birds")
+files_dir = os.path.join(os.getcwd(), 'storage', 'german_birds')
+downloaded = os.listdir(files_dir)
 downloaded_ids = []
 for file in downloaded:
     try:
@@ -25,7 +26,7 @@ for id_rec in to_download['id']:
     try:
         urllib.request.urlretrieve("http://www.xeno-canto.org/" 
             + str(id_rec) + "/download",
-            "/storage/german_birds/" + str(id_rec) + ".mp3")
+            os.path.join(files_dir, str(id_rec) + ".mp3"))
         print(f'file {id_rec} downloaded')
     except urllib.error.HTTPError:
         print(f'file {id_rec} not found')

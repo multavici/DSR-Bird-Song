@@ -3,9 +3,12 @@
 import sqlite3
 import json
 import pandas as pd
+import os
 
-# Create connection to database
-conn = sqlite3.connect("../storage/db.sqlite")
+# Create connection to database, always run commands from main directory
+db_dir = os.path.join(os.getcwd(), 'storage', 'db.sqlite')
+print(db_dir)
+conn = sqlite3.connect(db_dir)
 
 def species_df():
     query = '''SELECT t.bird_order, t.family, t.genus, t.species, t.german,
