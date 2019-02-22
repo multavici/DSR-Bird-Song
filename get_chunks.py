@@ -38,6 +38,7 @@ def get_records_from_classes(class_ids, seconds_per_class):
 
     return pd.DataFrame.from_records(result, columns=['recording_id', 'taxonomy_id', 'duration', 'total_signal', 'timestamps'])
 
+
 def main():
     class_ids = [5096, 4996, 4993, 4990, 4980]
     seconds_per_class = 10
@@ -46,9 +47,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-"""
-class_ids = [5096, 4996, 4993, 4990, 4980]
-seconds_per_class = 10
-get_records_from_classes(class_ids, seconds_per_class)
-"""
