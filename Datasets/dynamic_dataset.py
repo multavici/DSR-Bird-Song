@@ -119,7 +119,7 @@ class Preloader(Process): # Threading here?
 
 # Dataset Class
 class SoundDataset(Dataset):
-    def __init__(self, df, window = 300, stride = 100, spectrogram_func = None, augmentation_func = None):
+    def __init__(self, df, batchsize, window = 300, stride = 100, spectrogram_func = None, augmentation_func = None):
         """ Initialize with a dataframe containing:
         (path, label, duration, total_signal, timestamps)
         and pass the desired spectral slice length in miliseconds and the overlap
@@ -153,7 +153,7 @@ class SoundDataset(Dataset):
         return X, y
 
     def check_bucket(self):
-        if self.q.qsize() <= 2*BATCHSIZE:
+        if self.q.qsize() <= 2*batchsize:
             if not self.Preloader.e.is_set():
                 print('\n Running low')
                 self.Preloader.e.set()
