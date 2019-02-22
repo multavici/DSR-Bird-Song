@@ -3,7 +3,7 @@
 *.png
 *.h5
 *.ipynb
-__pycache__
+.directory
 .DS_store
 __pycache__/
 .vscode
@@ -19,4 +19,3 @@ test.py
 env/
 db.sqlite
 *.sqlite
-.gitignore
