@@ -125,6 +125,7 @@ class SoundDataset(Dataset):
         and pass the desired spectral slice length in miliseconds and the overlap
         between successive spectral slices in miliseconds."""
 
+        self.batchsize = batchsize
         self.sum_total_signal = np.sum(df.total_signal)
         self.length = int(self.sum_total_signal * 1000 - (window - stride) // stride)
 
@@ -153,7 +154,7 @@ class SoundDataset(Dataset):
         return X, y
 
     def check_bucket(self):
-        if self.q.qsize() <= 2*batchsize:
+        if self.q.qsize() <= 2 * self.batchsize:
             if not self.Preloader.e.is_set():
                 print('\n Running low')
                 self.Preloader.e.set()
