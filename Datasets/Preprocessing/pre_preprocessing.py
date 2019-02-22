@@ -30,6 +30,6 @@ def slice_spectrogram(spec, window, stride):
 
 def slice_audio(audio, sr, window, stride):
     # window, stride from nanosec to s and in samples
-    window = int(window/1000 * sr)
+    window = int(window / 1000 * sr)
     stride = int(stride / 1000 * sr)
     return [audio[i:i+window] for i in range(0, len(audio)-window, stride)]
