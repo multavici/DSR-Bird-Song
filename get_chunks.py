@@ -29,6 +29,7 @@ def get_records_from_classes(class_ids, seconds_per_class):
         recordings = c.fetchall()
         cumulative_sum_signal, i = 0, 0
         while True:
+            recordings[i][0] = os.path.join(os.getcwd(), 'storage', 'german_birds', str(recordings[i][0]))
             result.append(recordings[i])
             cumulative_sum_signal += recordings[i][3]
             print(cumulative_sum_signal)
@@ -36,7 +37,7 @@ def get_records_from_classes(class_ids, seconds_per_class):
                 break
             i += 1
 
-    return pd.DataFrame.from_records(result, columns=['recording_id', 'taxonomy_id', 'duration', 'total_signal', 'timestamps'])
+    return pd.DataFrame.from_records(result, columns=['path', 'label', 'duration', 'total_signal', 'timestamps'])
 
 
 def main():
