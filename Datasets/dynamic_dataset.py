@@ -29,13 +29,11 @@ Remaining questions are:
 
 """
 
-import pandas as pd
-import librosa
-import librosa.display
 from torch.utils.data import Dataset
 import numpy as np
-from pre_preprocessing import load_audio, get_signal, slice_spectrogram
+from .Preprocessing.pre_preprocessing import load_audio, get_signal, slice_spectrogram
 from multiprocessing import Process, Queue, Event
+import time
 
 
 # Preloader class outline
@@ -82,22 +80,24 @@ class Preloader(Process): # Threading here?
         self.q = queue
 
         # Initial fill
+        print('[Preloader] Loading initial slices')
         self.update_bucket()
 
     def run(self):
         while True:
             event_is_set = self.e.wait()
             if event_is_set:
-                # Begin refilling:
-                print('Refilling bucket...')
+                print('[Preloader] Refilling bucket...')
+                s = time.time()
                 #some check here if there is more data available or if last batch will be shorter
                 self.get_bucket_list()
                 self.update_bucket()
                 self.e.clear()
+                print(f'[Preloader] Done after {time.time() -s} seconds.')
 
     def get_bucket_list(self):
-        self.bucket_list = self.ids[:4]
-        del self.ids[:4]
+        self.bucket_list = self.ids[:6]
+        del self.ids[:6]
         return
 
     def update_bucket(self):
@@ -135,6 +135,7 @@ class SoundDataset(Dataset):
 
         self.Preloader = Preloader(df, spectrogram_func, window, stride, e, self.q)
         self.Preloader.start()
+        #self.Preloader.join()
 
     def __len__(self):
         """ The length of the dataset is not the number of audio
@@ -152,16 +153,21 @@ class SoundDataset(Dataset):
         return X, y
 
     def check_bucket(self):
-        if self.q.qsize() < 10:
-            self.Preloader.e.set()
+        if self.q.qsize() <= 2*BATCHSIZE:
+            if not self.Preloader.e.is_set():
+                print('\n Running low')
+                self.Preloader.e.set()
 
 
 ###############################################################################
+"""
+
 # Test Run
+import pandas as pd
 from spectrograms import stft_s
 from torch.utils.data import DataLoader
-
-BATCHSIZE = 64
+import time
+BATCHSIZE = 10
 
 df = pd.read_csv('test_df.csv')
 
@@ -174,9 +180,9 @@ def label_encoder(label_col):
         i += 1
     return label_col
 
+
 df.label = label_encoder(df.label)
-
-
+#df.groupby('label').agg({'total_signal' : 'sum'}).plot.bar()
 
 # Instantiate and do training loop
 
@@ -185,4 +191,9 @@ test_ds = SoundDataset(df, spectrogram_func = stft_s)
 test_dl = DataLoader(test_ds, batch_size=BATCHSIZE)
 
 for i, batch in enumerate(test_dl):
-    print(batch[0].shape, batch[1])
+    print('\n', batch[0].shape, batch[1].shape, test_ds.q.qsize())
+    for i in range(5):
+        print(f'{i+1}', end = '')
+        time.sleep(1)
+
+"""

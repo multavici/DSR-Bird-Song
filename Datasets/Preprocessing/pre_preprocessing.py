@@ -13,7 +13,10 @@ def get_signal(audio, sr, timestamps):
     # Convert timestamps from seconds to sample indeces
     timestamps = np.round(np.array(json.loads(timestamps)) * sr).astype(np.int)
     r = np.arange(audio.shape[0])
-    mask = (timestamps[:,0][:,None] <= r) & (timestamps[:,1][:,None] >= r)
+    try:
+        mask = (timestamps[:,0][:,None] <= r) & (timestamps[:,1][:,None] >= r)
+    except IndexError:
+        print(f'Issue with slicing for audio length {r} and timestamps {timestamps}')
     # Signal as concatenation of all masked sections
     signal = audio.reshape(1, -1).repeat(mask.shape[0], axis = 0)[mask]
     return signal
