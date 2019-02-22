@@ -17,5 +17,3 @@ environment.yml
 requirements.txt
 test.py
 env/
-db.sqlite
-*.sqlite

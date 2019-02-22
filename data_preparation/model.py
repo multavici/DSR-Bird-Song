@@ -5,7 +5,7 @@ import json
 import pandas as pd
 
 # Create connection to database
-conn = sqlite3.connect("db.sqlite")
+conn = sqlite3.connect("../storage/db.sqlite")
 
 def species_df():
     query = '''SELECT t.bird_order, t.family, t.genus, t.species, t.german,
