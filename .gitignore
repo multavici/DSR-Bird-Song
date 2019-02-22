@@ -18,3 +18,5 @@ requirements.txt
 test.py
 env/
 db.sqlite
+*.sqlite
+.gitignore
