@@ -31,89 +31,21 @@ Remaining questions are:
 
 from torch.utils.data import Dataset
 import numpy as np
-from .Preprocessing.pre_preprocessing import load_audio, get_signal, slice_spectrogram
-from multiprocessing import Process, Queue, Event
+from .Preprocessing.pre_preprocessing import load_audio, get_signal, slice_audio
+from multiprocessing import Pool
 import time
 
 
 # Preloader class outline
-class Preloader(Process): # Threading here?
-    """ always preload a specific number of audiofiles and for each extract
-    signal, compute spec, and slice spec. Store in two lists or simply dict
-    with label and slices, let getitem take from this one.
-    Figure a way to refresh this in the background.
-    And come up with an idea for a sensible dataset length...
+def preload(path, label, timestamps, window, stride):
+    audio, sr = load_audio(path)
+    signal = get_signal(audio, sr, timestamps)
+    slices = slice_audio(signal, sr, window, stride)
+    labels = len(slices) * [label]
+    return [(slice_, label) for slice_ ,label in zip(slices, labels)]
 
 
-    This class should be able to take a df from SoundDataset and group it by
-    classes as a start.
-    It will then begin filling up a cache of spectrogram slices aiming to always
-    ensure equal class representation in its cache. From this cache, SoundDataset
-    will grab files when queried.
 
-
-    -> Memory problem: are slices deleted once they were retrieved? Can they be
-    re-retrieved? Is it necessary?
-    """
-    def __init__(self, df, spectogram_func, window, stride, event, queue):
-        super(Preloader, self).__init__()
-
-        # DF attributes
-        self.path = df.path
-        self.label = df.label
-        self.total_signal = df.total_signal
-        self.timestamps = df.timestamps
-        self.sum_total_signal = np.sum(df.total_signal)
-
-        # Spectrogram
-        self.window = window
-        self.stride = stride
-        self.spectrogram = spectogram_func
-
-        # Bucket list
-        self.ids = list(np.random.permutation(list(range(len(df)))))   #TODO: Think of more sophisticated sampling strategies
-        self.bucket_list = []
-        self.get_bucket_list()
-
-        # Bucket as a queue
-        self.e = event
-        self.q = queue
-
-        # Initial fill
-        print('[Preloader] Loading initial slices')
-        self.update_bucket()
-
-    def run(self):
-        while True:
-            event_is_set = self.e.wait()
-            if event_is_set:
-                print('[Preloader] Refilling bucket...')
-                s = time.time()
-                #some check here if there is more data available or if last batch will be shorter
-                self.get_bucket_list()
-                self.update_bucket()
-                self.e.clear()
-                print(f'[Preloader] Done after {time.time() -s} seconds.')
-
-    def get_bucket_list(self):
-        self.bucket_list = self.ids[:6]
-        del self.ids[:6]
-        return
-
-    def update_bucket(self):
-        for idx in self.bucket_list:
-            path = self.path[idx]
-            timestamps = self.timestamps[idx]
-            label = self.label[idx]
-            audio, sr = load_audio(path)
-            signal = get_signal(audio, sr, timestamps)
-            spec = self.spectrogram(signal)
-            slices = slice_spectrogram(spec, self.window, self.stride)
-
-            labels = len(slices) * [label]
-            for slice_ ,label in zip(slices, labels):
-                self.q.put((slice_, label))
-        return
 
 
 

@@ -1,7 +1,7 @@
 Test Birdsounds
+.ipynb_checkpoints/
 *.wav
 *.png
 *.h5
-*.ipynb
 __pycache__
 .directory
