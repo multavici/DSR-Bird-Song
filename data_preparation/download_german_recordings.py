@@ -1,6 +1,6 @@
 # get german recordings
 import pandas as pd
-from model import german_recordings_df
+from model import german_recordings_df, flag_nonexisting_recording
 import urllib.request
 import os
 
@@ -30,5 +30,6 @@ for id_rec in to_download['id']:
         print(f'file {id_rec} downloaded')
     except urllib.error.HTTPError:
         print(f'file {id_rec} not found')
+        flag_nonexisting_recording(id_rec)
         pass
 

@@ -81,3 +81,11 @@ def german_recordings_df():
         ORDER BY r.id'''
     df = pd.read_sql(sql=query, con=conn)
     return df
+
+
+def flag_nonexisting_recording(rec_id):
+    query = 'UPDATE recordings SET downloaded = 0 WHERE id = ?'
+    c = conn.cursor()
+    c.execute(query, (rec_id, ))
+    print(f'recording {rec_id} flagged as nonexisting (downloaded = 0)')
+    return 1
