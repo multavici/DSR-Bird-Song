@@ -6,12 +6,15 @@ Created on Fri Feb 22 13:58:09 2019
 @author: tim
 """
 
-from Datasets.dynamic_dataset import preload
 import pandas as pd
 from multiprocessing import Pool
-
 from multiprocessing.pool import ThreadPool
+import time
+import os
+from .Preprocessing.pre_preprocessing import load_audio, get_signal, slice_audio
 
+
+###############################################################################
 df = pd.read_csv('Testing/test_df.csv')
 def label_encoder(label_col):
     codes = {}
@@ -24,45 +27,79 @@ def label_encoder(label_col):
 df.label = label_encoder(df.label)
 # Remove that one file without signal
 df = df[df.total_signal > 0].reset_index(drop = True)
+###############################################################################
 
+# Preloader process
+def preload(path, label, timestamps, window, stride):
+    audio, sr = load_audio(path)
+    signal = get_signal(audio, sr, timestamps)
+    slices = slice_audio(signal, sr, window, stride)
+    labels = len(slices) * [label]
+    return [(slice_, label) for slice_ ,label in zip(slices, labels)]
+
+
+def timeit(func):
+    def wrapper(*args, **kwargs): #generic to work with any function
+        t0 = time.time()
+        value = func(*args, **kwargs)
+        print(f'{func.__name__} took {time.time() - t0}s')
+        return value
+    return wrapper
 
 def get_entry(df, i):
     return df.path[i], df.label[i], df.timestamps[i]
 
-
-pool = Pool(processes = 3)
-
-results = []
-for i in range(16, 26):
-    p,l,t = get_entry(df, i)
-    result = pool.apply_async(preload, args = (p ,l , t, 1500, 500))
-    results.append(result)
-    
-output = [p.get() for p in results]
+def do_it(i):
+    print("Proccess id: ", os.getpid())
+    p, l, t = get_entry(df, i)
+    result = preload(p, l, t, 2000, 500)
+    return result
 
 
-#Multithreading instead
-"""
-def threads(urls):
-    pool = ThreadPool(6)
-    results = pool.map(requests.get, urls)
+
+
+# Multiprocessing
+@timeit
+def multiprocess(n):
+    pool = Pool(processes = n)
+    results = []
+    for i in range(16, 26):
+        result = pool.apply_async(do_it, args = (i,))
+        results.append(result)    
+    output = [p.get() for p in results]
+    return output
+
+# Multithreading
+@timeit
+def multithread(n):
+    threadpool = ThreadPool(n)
+    output = threadpool.map(do_it, list(range(16, 26)))
+    return output
+
+@timeit
+def sync():
+    results = []
+    for i in range(16, 26):
+        results.append(do_it(i))
     return results
+
+
+o1 = multiprocess(4)
+
+o2 = multithread(8)
+
+o3 = sync()
+
+
+
+from Spectrogram.spectrograms import stft_s
+
+a = o2[1][1][0]
+
+s = stft_s(a)
+
+
 """
-
-threadpool = ThreadPool(6)
-
-
-files = [get_entry(df, i) for i in range(16, 26)]
-
-threadpool.map(preload, [(p, l, t, 500, 200) for p,l,t in files])
-
-
-
-
-"""
-sr = 22050
-
-
 ###############################################################################
 # Comparing actual and computed length
 def check_length(df, i, window, stride):

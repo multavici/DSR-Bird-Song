@@ -45,22 +45,6 @@ def preload(path, label, timestamps, window, stride):
     return [(slice_, label) for slice_ ,label in zip(slices, labels)]
 
 
-"""
-def get_entry(df, i):
-    return df.path[i], df.label[i], df.timestamps[i]
-
-pool = Pool(processes = 3)
-
-results = []
-for i in range(16, 36):
-    p,l,t = get_entry(df, i)
-    result = pool.apply_async(preload, args = (p ,l , t, 500, 200))
-    results.append(result)
-    
-    
-output = [p.get() for p in results]
-"""
-
 
 # Dataset Class
 class SoundDataset(Dataset):
