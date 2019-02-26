@@ -9,6 +9,7 @@ def get_records_from_classes(class_ids, seconds_per_class):
     is equal to or more than the argument seconds_per class
     """
     db_dir = os.path.join(os.getcwd(), 'storage', 'db.sqlite')
+    print(db_dir)
     conn = sqlite3.connect(db_dir)
     c = conn.cursor()
 
