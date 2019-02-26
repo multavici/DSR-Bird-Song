@@ -17,7 +17,7 @@ from sklearn.metrics import accuracy_score, log_loss
 
 DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
 
-"""
+
 ##########################################################################
 class_ids = [6088, 3912, 4397, 7091, 4876, 4873, 5477, 6265, 4837, 4506] # all have at least 29604 s of signal, originally 5096, 4996, 4993, 4990, 4980
 df = get_records_from_classes(class_ids=class_ids, seconds_per_class=1000)
@@ -35,9 +35,7 @@ df.label = label_encoder(df.label)
 
 # Check sample distribution:
 df.groupby('label').agg({'total_signal':'sum'})
-"""
-df = pd.read_csv('Testing/test_df.csv')
-class_ids = [1,2,3,4]
+
 
 
 # Split into train and test
