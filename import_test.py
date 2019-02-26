@@ -1,6 +1,7 @@
 
 # Test Run
 import pandas as pd
+import numpy as np
 from Spectrogram.spectrograms import mel_s, stft_s
 from torch.utils.data import DataLoader
 from Datasets.static_dataset import SoundDataset
@@ -10,14 +11,16 @@ from models.bulbul import BulBul
 
 
 ##########################################################################
-class_ids =  [5096, 4996, 4993, 4990, 4980]
-df = get_records_from_classes(class_ids, 100)
+class_ids = [6088, 3912, 4397, 7091, 4876, 4873, 5477, 6265, 4837, 4506] # all have at least 29604 s of signal, originally 5096, 4996, 4993, 4990, 4980
+df = get_records_from_classes(class_ids, 1000)
 
 # Check sample distribution:
 df.groupby('label').agg({'total_signal':'sum'})
 
 # Split into train and test
-
+msk = np.random.rand(len(df)) < 0.8
+df_train = df[msk]
+df_test = df[~msk]
 ##########################################################################
 
 
