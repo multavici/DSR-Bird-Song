@@ -35,7 +35,7 @@ class SoundDataset(Dataset):
         kwargs: batchsize = 10, window = 1500, stride = 500, spectrogram_func = None, augmentation_func = None"""
         
         self.df = df
-        self.df.loc[:, 'loaded'] = 0
+        self.df.loc['loaded'] = 0
         self.sr = 22050
         
         for k,v in kwargs.items():
