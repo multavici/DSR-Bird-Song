@@ -38,7 +38,7 @@ import time
 
 
 class Preloader(Process):
-    def __init__(self, event, queue):
+    def __init__(self, event, queue, task_queue):
         super(Preloader, self).__init__()
 
         # Bucket list -> list of files that its supposed to get - updated by Dataset
@@ -46,18 +46,22 @@ class Preloader(Process):
 
         self.e = event
         self.q = queue
-
+        self.t = task_queue
+        
     def run(self):
         while True:
             event_is_set = self.e.wait()
             if event_is_set:
                 print('[Preloader] Refilling bucket...')
+                bucket_list = self.t.get()
+                self.bucket_list = bucket_list
                 self.update_bucket()
                 self.e.clear()
 
                 
     def update_bucket(self):
         print('check')
+        print(self.bucket_list)
         pool = ThreadPool(4)
         output = pool.map(self.preload, list(range(len(self.bucket_list))))
         print('check2')
@@ -70,20 +74,6 @@ class Preloader(Process):
         signal = get_signal(audio, sr, t)
         return (l, list(signal))
         
-"""
-e = Event()
-q = Queue()
-p = Preloader(e, q)
-p.bucket_list = bucket_list
-p.start()
-p.is_alive()
-p.e.is_set()
-e.set()
-
-p.q.qsize()
-
-o = p.q.get()
-"""
 
 
 class SoundDataset(Dataset):
@@ -111,7 +101,8 @@ class SoundDataset(Dataset):
         # Instantiate Preloader:
         e = Event()
         self.q = Queue()
-        self.Preloader = Preloader(e, self.q)
+        self.t = Queue()
+        self.Preloader = Preloader(e, self.q, self.t)
         self.Preloader.start()
 
 
@@ -141,7 +132,8 @@ class SoundDataset(Dataset):
 
         # If preloader is not already working:
         if len(bucket_list) > 0 and not self.Preloader.e.is_set():
-            self.Preloader.bucket_list = bucket_list   #update the bucket list
+            
+            self.t.put(bucket_list)   #update the bucket list
             self.Preloader.e.set()
 
                 
