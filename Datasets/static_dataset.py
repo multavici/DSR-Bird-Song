@@ -35,7 +35,7 @@ class SoundDataset(Dataset):
         kwargs: batchsize = 10, window = 1500, stride = 500, spectrogram_func = None, augmentation_func = None"""
         
         self.df = df
-        self.df.loc['loaded'] = 0
+        #self.df.loc[:, 'loaded'] = 0
         self.sr = 22050
         
         for k,v in kwargs.items():
@@ -105,11 +105,14 @@ class SoundDataset(Dataset):
             audio, sr = load_audio(p)
             signal = get_signal(audio, sr, t)
             return (l, signal)
-        #nr_threads = min([8, len(bucket_list)])
-        nr_threads = len(bucket_list)
+        """
+        nr_threads = min([8, len(bucket_list)])
         print(f'Initiating {nr_threads} threads to preload files')
         pool = ThreadPool(nr_threads)
-        output = pool.map(_preload, list(range(len(bucket_list))))
+        output = pool.map(_preload, list(range(len(bucket_list))))"""
+        output = []
+        for i in range(len(bucket_list)):
+            output.append(_preload(i))
         return output 
             
     def make_request(self, k):
