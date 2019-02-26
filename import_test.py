@@ -53,9 +53,9 @@ EPOCHS = 10
 
 # Parameters for sample loading
 params = {'batchsize' : BATCHSIZE, 
-          'window' : 1500, 
-          'stride' : 500, 
-          'spectrogram_func' : mel_s, 
+          'window' : 2500, 
+          'stride' : 1000, 
+          'spectrogram_func' : stft_s, 
           'augmentation_func' : None}
 
 
