@@ -1,4 +1,7 @@
-#Test Birdsounds
+.ipynb_checkpoints/
+*.wav
+*.png
+*.h5
 *.wav
 *.png
 *.h5

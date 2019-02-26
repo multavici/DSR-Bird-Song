@@ -16,7 +16,8 @@ def stft_s(audio):
     return np.abs(librosa.stft(audio, center=False))
 
 ##### 2. Mel  spectorgram
-def mel_s(audio, sr):
+def mel_s(audio):
+    sr = 22050
     return librosa.feature.melspectrogram(audio, sr=sr, n_fft=2048, hop_length=512, n_mels=128, fmax=8000)
 
 ##### 3. chirp

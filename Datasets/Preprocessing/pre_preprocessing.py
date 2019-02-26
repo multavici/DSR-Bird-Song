@@ -11,7 +11,7 @@ def load_audio(path):
 def get_signal(audio, sr, timestamps):
     """ Extract and concatenate bird vocalizations at timesteps from audio"""
     # Convert timestamps from seconds to sample indeces
-    timestamps = np.round(np.array(json.loads(timestamps)) * sr).astype(np.int)
+    timestamps = np.round(np.array(json.loads(timestamps)) * sr).astype(np.int)  #TODO: CHeck for possibility of empty ones
     r = np.arange(audio.shape[0])
     try:
         mask = (timestamps[:,0][:,None] <= r) & (timestamps[:,1][:,None] >= r)
@@ -21,9 +21,4 @@ def get_signal(audio, sr, timestamps):
     signal = audio.reshape(1, -1).repeat(mask.shape[0], axis = 0)[mask]
     return signal
 
-def slice_spectrogram(spec, window, stride):
-    #TODO: Implement this!
-    # Depending on spec properties, dim1 can vary!
-    #window = int(self.window / 1000 * self.sr)
-    #stride = int(self.stride / 1000 * self.sr)
-    return [spec[:, i:i+window] for i in range(0, spec.shape[1]-window, stride)]
+ 
