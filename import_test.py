@@ -28,8 +28,8 @@ df.groupby('label').agg({'total_signal':'sum'})
 
 # Split into train and test
 msk = np.random.rand(len(df)) < 0.8
-df_train = df[msk]
-df_test = df[~msk]
+df_train = df.iloc[msk]
+df_test = df.iloc[~msk]
 print('train and test dataframes created')
 ##########################################################################
 
