@@ -140,11 +140,13 @@ for epoch in range(EPOCHS):  # loop over the dataset multiple times
         loss = criterion(y_pred, y)
         loss.backward()
         optimizer.step()
+        print("batch finished")
     
     lltest, acctest = evaluate_model(net, dl_test)
     lltrain, acctrain = evaluate_model(net, dl_train)
 
     collect_metrics.append((lltest, lltrain, acctest, acctrain))
+    print(f"----------EPOCH: {epoch} ----------")
     print("test: loss: {}  acc: {}".format(lltest, acctest))
     print("train: loss: {}  acc: {}".format(lltrain, acctrain))
     print('{"chart": "accuracy", "y": {}}'.format(acctrain))
