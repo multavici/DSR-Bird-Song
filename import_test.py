@@ -68,7 +68,7 @@ net = BulBul(time_axis, freq_axis, len(class_ids))
 
 criterion = nn.CrossEntropyLoss()
 #optimizer = optim.SGD(Bulbul.parameters(), lr=0.0001, momentum=0.9)
-optimizer = optim.Adam(Bulbul.parameters(), lr = 0.0001)
+optimizer = optim.Adam(net.parameters(), lr = 0.0001)
 
 
 def evaluate_model(model, test_loader, print_info=False):
