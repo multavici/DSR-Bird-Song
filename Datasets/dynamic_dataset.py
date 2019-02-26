@@ -34,7 +34,6 @@ import numpy as np
 from .Preprocessing.pre_preprocessing import load_audio, get_signal
 from multiprocessing import Process, Queue, Event, active_children
 from multiprocessing.pool import ThreadPool
-import time
 
 
 class Preloader(Process):
@@ -153,6 +152,7 @@ class SoundDataset(Dataset):
         label = sample.label.values[0]
         timestamps = sample.timestamps.values[0]
         return (path, label, timestamps)
+    
         
 
 
