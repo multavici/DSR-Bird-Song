@@ -21,6 +21,7 @@ DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
 ##########################################################################
 class_ids = [6088, 3912, 4397, 7091, 4876, 4873, 5477, 6265, 4837, 4506] # all have at least 29604 s of signal, originally 5096, 4996, 4993, 4990, 4980
 df = get_records_from_classes(class_ids, 1000)
+print('df created')
 
 # Check sample distribution:
 df.groupby('label').agg({'total_signal':'sum'})
@@ -29,6 +30,7 @@ df.groupby('label').agg({'total_signal':'sum'})
 msk = np.random.rand(len(df)) < 0.8
 df_train = df[msk]
 df_test = df[~msk]
+print('train and test dataframes created')
 ##########################################################################
 
 

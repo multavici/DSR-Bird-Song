@@ -19,7 +19,6 @@ def get_records_from_classes(class_ids, seconds_per_class):
         c.execute(
             "SELECT SUM(sum_signal) FROM recordings WHERE taxonomy_id = ?", (class_id,))
         sum_signal = c.fetchone()[0]
-        print(sum_signal)
         assert sum_signal >= seconds_per_class, f"class with id {class_id} has only {sum_signal} seconds of data"
         c.execute("""SELECT r.id, t.id, r.duration, r.sum_signal, r.timestamps
             FROM recordings AS r
@@ -33,7 +32,6 @@ def get_records_from_classes(class_ids, seconds_per_class):
         while True:
             result.append(recordings[i])
             cumulative_sum_signal += recordings[i][3]
-            print(cumulative_sum_signal)
             if cumulative_sum_signal > seconds_per_class:
                 break
             i += 1
