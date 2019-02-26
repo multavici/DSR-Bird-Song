@@ -11,7 +11,7 @@ from multiprocessing import Pool
 from multiprocessing.pool import ThreadPool
 import time
 import os
-from .Preprocessing.pre_preprocessing import load_audio, get_signal, slice_audio
+from Datasets.Preprocessing.pre_preprocessing import load_audio, get_signal
 
 
 ###############################################################################
@@ -30,7 +30,9 @@ df = df[df.total_signal > 0].reset_index(drop = True)
 ###############################################################################
 
 # Preloader process
-def preload(path, label, timestamps, window, stride):
+def preload(*args):   
+    """ Expects:
+    path, label, timestamps, window, stride """
     audio, sr = load_audio(path)
     signal = get_signal(audio, sr, timestamps)
     slices = slice_audio(signal, sr, window, stride)
@@ -52,9 +54,8 @@ def get_entry(df, i):
 def do_it(i):
     print("Proccess id: ", os.getpid())
     p, l, t = get_entry(df, i)
-    result = preload(p, l, t, 2000, 500)
+    result = preload(*(p, l, t, 2000, 500))
     return result
-
 
 
 
@@ -92,11 +93,23 @@ o3 = sync()
 
 
 
-from Spectrogram.spectrograms import stft_s
+path, label, timestamps = get_entry(df, 1)
 
-a = o2[1][1][0]
+window = 1500
+stride = 500
 
-s = stft_s(a)
+args = (path, label, timestamps)
+
+bucket_list = [args]*10
+
+preload(bucket_list)
+
+def multithread(n):
+    threadpool = ThreadPool(n)
+    output = threadpool.map(preload, bucket_list)
+    return output
+
+o = multithread(4)
 
 
 """

@@ -31,74 +31,148 @@ Remaining questions are:
 
 from torch.utils.data import Dataset
 import numpy as np
-from .Preprocessing.pre_preprocessing import load_audio, get_signal, slice_audio
-from multiprocessing import Pool
+from .Preprocessing.pre_preprocessing import load_audio, get_signal
+from multiprocessing import Process, Queue, Event, active_children
+from multiprocessing.pool import ThreadPool
 import time
 
 
-# Preloader process
-def preload(path, label, timestamps, window, stride):
-    audio, sr = load_audio(path)
-    signal = get_signal(audio, sr, timestamps)
-    slices = slice_audio(signal, sr, window, stride)
-    labels = len(slices) * [label]
-    return [(slice_, label) for slice_ ,label in zip(slices, labels)]
+class Preloader(Process):
+    def __init__(self, event, queue):
+        super(Preloader, self).__init__()
+
+        # Bucket list -> list of files that its supposed to get - updated by Dataset
+        self.bucket_list = []
+
+        self.e = event
+        self.q = queue
+
+    def run(self):
+        while True:
+            event_is_set = self.e.wait()
+            if event_is_set:
+                print('[Preloader] Refilling bucket...')
+                self.update_bucket()
+                self.e.clear()
+
+                
+    def update_bucket(self):
+        print('check')
+        pool = ThreadPool(4)
+        output = pool.map(self.preload, list(range(len(self.bucket_list))))
+        print('check2')
+        self.q.put(output)
+    
+    def preload(self, i):
+        p, l, t = self.bucket_list[i]
+        print(p, l)
+        audio, sr = load_audio(p)
+        signal = get_signal(audio, sr, t)
+        return (l, list(signal))
+        
+"""
+e = Event()
+q = Queue()
+p = Preloader(e, q)
+p.bucket_list = bucket_list
+p.start()
+p.is_alive()
+p.e.is_set()
+e.set()
+
+p.q.qsize()
+
+o = p.q.get()
+"""
 
 
-
-# Dataset Class
 class SoundDataset(Dataset):
-    def __init__(self, df, window = 300, stride = 100, spectrogram_func = None, augmentation_func = None):
+    def __init__(self, df, **kwargs):
         """ Initialize with a dataframe containing:
         (path, label, duration, total_signal, timestamps)
-        and pass the desired spectral slice length in miliseconds and the overlap
-        between successive spectral slices in miliseconds."""
+        kwargs: batchsize = 10, window = 1500, stride = 500, spectrogram_func = None, augmentation_func = None"""
+        
+        self.df = df
+        self.df['loaded'] = 0
+        self.sr = 22050
+        
+        for k,v in kwargs.items():
+            setattr(self, k, v)
+        
+        # Window and stride in samples:
+        self.window = self.window/1000*self.sr
+        self.stride = self.stride/1000*self.sr
 
-        self.sum_total_signal = np.sum(df.total_signal)
-        self.length = int(self.sum_total_signal * 1000 - (window - stride) // stride)
 
+        # Stack - a list of continuous audio signal for each class
+        self.stack = {label:[] for label in set(self.df.label)}
+        self.classes = len(set(self.df.label))
+        
+        # Instantiate Preloader:
         e = Event()
         self.q = Queue()
-
-        self.augment = augmentation_func
-
-        self.Preloader = Preloader(df, spectrogram_func, window, stride, e, self.q)
+        self.Preloader = Preloader(e, self.q)
         self.Preloader.start()
-        #self.Preloader.join()
+
+
 
     def __len__(self):
-        """ The length of the dataset is not the number of audio
-        files but the maximum number of bird vocalization slices that could be
-        extracted from the sum total of vocalization parts given a slice duration
-        and an offset.
-        ."""
-        return 1000  #self.length    #TODO: Give an actual safe estimate here.
+        """ The length of the dataset is the (expected) maximum number of bird vocalization slices that could be
+        extracted from the sum total of vocalization parts given a slicing window
+        and stride."""
+        return 100  #self.length    #TODO: Give an actual safe estimate here.
 
     def __getitem__(self, i):
         """ Indices become meaningless here... The preloader returns items until
         it runs out. """
-        self.check_bucket()
-        X, y = self.q.get()
+        self.check_stack()
+        y = i % self.classes # loop through classes 
+        X = self.stack[y][:int(self.window)]     #Extract audio corresponding to window length
+        del self.stack[y][:int(self.stride/1000*self.sr)]     #Delete according to stride length
+        
         return X, y
 
-    def check_bucket(self):
-        if self.q.qsize() <= 2*BATCHSIZE:
-            if not self.Preloader.e.is_set():
-                print('\n Running low')
-                self.Preloader.e.set()
+    def check_stack(self):
+        # Check for short lists in stack
+        bucket_list = []
+        for k,v in self.stack.items():
+            if len(v) < 2* self.window:
+                bucket_list.append(self.make_request(k))
+
+        # If preloader is not already working:
+        if len(bucket_list) > 0 and not self.Preloader.e.is_set():
+            self.Preloader.bucket_list = bucket_list   #update the bucket list
+            self.Preloader.e.set()
+
+                
+    def receive_bucket(self):
+        if not self.q.empty():
+            bucket = self.q.get()
+            for sourcefile in bucket:
+                # Figure out how data is stored by Preloader
+                l = sourcefile[0]
+                self.stack[l].append(list(sourcefile[1]))
+                
+    
+    def make_request(self, k):
+        # search through the df and pick files for loading
+        sample = self.df[self.df.label == k].sample(n=1)
+        path = sample.path.values[0]
+        label = sample.label.values[0]
+        timestamps = sample.timestamps.values[0]
+        return (path, label, timestamps)
+        
 
 
 ###############################################################################
 """
-
 # Test Run
 import pandas as pd
-from spectrograms import stft_s
+from Spectrogram.spectrograms import stft_s
 from torch.utils.data import DataLoader
-import time
 BATCHSIZE = 10
 
-df = pd.read_csv('test_df.csv')
+df = pd.read_csv('Testing/test_df.csv')
 
 def label_encoder(label_col):
     codes = {}
@@ -115,7 +189,7 @@ df.label = label_encoder(df.label)
 
 # Instantiate and do training loop
 
-test_ds = SoundDataset(df, spectrogram_func = stft_s)
+test_ds = SoundDataset(df, BATCHSIZE, spectrogram_func = stft_s)
 
 test_dl = DataLoader(test_ds, batch_size=BATCHSIZE)
 
