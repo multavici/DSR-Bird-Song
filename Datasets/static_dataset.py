@@ -67,6 +67,7 @@ class SoundDataset(Dataset):
         self.stack[y] = np.delete(self.stack[y], np.s_[:self.stride])     #Delete according to stride length
         
         X = self.spectrogram_func(X)
+        X = np.expand_dims(X, 0)
         #TODO: Process to check for which files to augment:
         """ 
         if self.augmentation_func not None:
