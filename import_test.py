@@ -147,7 +147,7 @@ for epoch in range(EPOCHS):  # loop over the dataset multiple times
     collect_metrics.append((lltest, lltrain, acctest, acctrain))
     print("test: loss: {}  acc: {}".format(lltest, acctest))
     print("train: loss: {}  acc: {}".format(lltrain, acctrain))
-    print('{"chart": "accuracy", "y": "{acctrain}"}')
+    print('{"chart": "accuracy", "y": {}}'.format(acctrain))
 
 print('Finished Training')
 
