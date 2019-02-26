@@ -23,7 +23,7 @@ def get_records_from_classes(class_ids, seconds_per_class):
             FROM recordings AS r
             JOIN taxonomy AS t
             ON r.taxonomy_id = t.id
-            WHERE r.downloaded = 1.0 AND t.id = ?
+            WHERE r.downloaded = 1.0 AND t.id = ? AND r.sum_signal <> 0
             ORDER BY RANDOM()
             """, (class_id, ))
         recordings = c.fetchall()
@@ -37,7 +37,7 @@ def get_records_from_classes(class_ids, seconds_per_class):
 
     df = pd.DataFrame.from_records(result, columns=['id', 'label', 'duration', 'total_signal', 'timestamps'])
     df['path'] = df['id'].apply(lambda x: '/storage/german_birds/' + str(x) + '.mp3')
-    
+
     return df
 
 
