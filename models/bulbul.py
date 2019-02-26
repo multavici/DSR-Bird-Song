@@ -15,7 +15,7 @@ import numpy as np
 class BulBul(nn.Module):
 
            
-    def __init__(self, time_axis=1000, freq_axis=80,  no_classes=10):
+    def __init__(self, freq_axis=1000, time_axis=80,  no_classes=10):
 
         super(BulBul, self).__init__()
 
@@ -28,7 +28,6 @@ class BulBul(nn.Module):
         for i in range(2):
             self.freq_axis=np.floor_divide(self.freq_axis-2,3)
 
-        #print(dir(__call__))
         self.layer1 = nn.Sequential(
             nn.Conv2d(1,16, kernel_size=3, stride=1), #padding=1), 
             nn.ReLU(),
