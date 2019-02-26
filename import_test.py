@@ -36,6 +36,7 @@ print('train and test dataframes created')
 
 
 
+
 ##########################################################################
 BATCHSIZE = 64
 OPTIMIZER = 'Adam'
