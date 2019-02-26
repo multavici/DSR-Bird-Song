@@ -37,7 +37,7 @@ def get_records_from_classes(class_ids, seconds_per_class):
             i += 1
 
     df = pd.DataFrame.from_records(result, columns=['id', 'label', 'duration', 'total_signal', 'timestamps'])
-    df['path'] = df['id'].apply(lambda x: os.path.join(os.getcwd(), 'storage', 'german_birds', str(x) + '.mp3'))
+    df['path'] = df['id'].apply(lambda x: os.path.join('storage', 'german_birds', str(x) + '.mp3'))
     return df
 
 
