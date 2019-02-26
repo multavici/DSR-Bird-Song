@@ -23,6 +23,16 @@ class_ids = [6088, 3912, 4397, 7091, 4876, 4873, 5477, 6265, 4837, 4506] # all h
 df = get_records_from_classes(class_ids, 1000)
 print('df created')
 
+def label_encoder(label_col):
+    codes = {}
+    i = 0
+    for label in label_col.drop_duplicates():
+        codes['label'] = i
+        label_col[label_col == label] = i
+        i += 1
+    return label_col
+df.label = label_encoder(df.label)
+
 # Check sample distribution:
 df.groupby('label').agg({'total_signal':'sum'})
 
