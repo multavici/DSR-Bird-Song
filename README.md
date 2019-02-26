@@ -12,6 +12,6 @@ For model training we work with [Paperspace](https://www.paperspace.com/)
 Running a job: 
 
 ```
-paperspace jobs create --command <command> --container <container> --apiKey <apiKey> --workspace https://github.com/multavici/DSR-Bird-Song
+paperspace jobs create --command "python import_test.py" --container "multavici/bird-song:latest" --apiKey <api-Key> --workspace "https://github.com/multavici/DSR-Bird-Song" --machineType "G1"
 ````
 

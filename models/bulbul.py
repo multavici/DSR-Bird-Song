@@ -28,7 +28,7 @@ class BulBul(nn.Module):
         for i in range(2):
             self.freq_axis=np.floor_divide(self.freq_axis-2,3)
 
-        print(dir(__call__))
+        #print(dir(__call__))
         self.layer1 = nn.Sequential(
             nn.Conv2d(1,16, kernel_size=3, stride=1), #padding=1), 
             nn.ReLU(),

@@ -20,8 +20,18 @@ DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 ##########################################################################
 class_ids = [6088, 3912, 4397, 7091, 4876, 4873, 5477, 6265, 4837, 4506] # all have at least 29604 s of signal, originally 5096, 4996, 4993, 4990, 4980
-df = get_records_from_classes(class_ids, 1000)
+df = get_records_from_classes(class_ids, 100)
 print('df created')
+
+def label_encoder(label_col):
+    codes = {}
+    i = 0
+    for label in label_col.drop_duplicates():
+        codes['label'] = i
+        label_col[label_col == label] = i
+        i += 1
+    return label_col
+df.label = label_encoder(df.label)
 
 # Check sample distribution:
 df.groupby('label').agg({'total_signal':'sum'})
@@ -44,9 +54,9 @@ EPOCHS = 10
 
 # Parameters for sample loading
 params = {'batchsize' : BATCHSIZE, 
-          'window' : 1500, 
-          'stride' : 500, 
-          'spectrogram_func' : mel_s, 
+          'window' : 5000, 
+          'stride' : 1000, 
+          'spectrogram_func' : stft_s, 
           'augmentation_func' : None}
 
 
