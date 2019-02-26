@@ -80,7 +80,7 @@ dl_train = DataLoader(ds_train, BATCHSIZE)
 time_axis = ds_test[0][0].shape[2]
 freq_axis = ds_test[0][0].shape[1]
 
-net = BulBul(time_axis=time_axis, freq_axis=freq_axis, no_classes=len(class_ids))
+net = BulBul(time_axis=freq_axis, freq_axis=time_axis, no_classes=len(class_ids))
 
 
 criterion = nn.CrossEntropyLoss()
@@ -147,6 +147,7 @@ for epoch in range(EPOCHS):  # loop over the dataset multiple times
     collect_metrics.append((lltest, lltrain, acctest, acctrain))
     print("test: loss: {}  acc: {}".format(lltest, acctest))
     print("train: loss: {}  acc: {}".format(lltrain, acctrain))
+    print('{"chart": "accuracy", "y": "{acctrain}"}')
 
 print('Finished Training')
 
