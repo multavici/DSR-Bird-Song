@@ -15,7 +15,7 @@ def get_records_from_classes(class_ids, seconds_per_class):
     result = []
     for class_id in class_ids:
         c.execute(
-            "SELECT COUNT(sum_signal) FROM recordings WHERE taxonomy_id = ?", (class_id,))
+            "SELECT SUM(sum_signal) FROM recordings WHERE taxonomy_id = ?", (class_id,))
         sum_signal = c.fetchone()[0]
         print(sum_signal)
         assert sum_signal >= seconds_per_class, f"class with id {class_id} has only {sum_signal} seconds of data"
