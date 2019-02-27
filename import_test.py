@@ -13,8 +13,8 @@ from sklearn.metrics import accuracy_score, log_loss
 from Spectrogram.spectrograms import mel_s, stft_s
 from torch.utils.data import DataLoader
 from Datasets.dynamic_dataset import SoundDataset
-from get_chunks import get_records_from_classes
 from models.bulbul import Bulbul
+from data_preparation.get_chunks import get_records_from_classes
 
 
 ##########################################################################
