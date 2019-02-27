@@ -22,3 +22,5 @@ test.py
 env/
 Test Birdsounds/
 testing.py
+*.prof
+import_test_local.py
