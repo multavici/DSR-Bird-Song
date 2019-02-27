@@ -12,7 +12,7 @@ from sklearn.metrics import accuracy_score, log_loss
 
 from Spectrogram.spectrograms import mel_s, stft_s
 from torch.utils.data import DataLoader
-from Datasets.static_dataset import SoundDataset
+from Datasets.dynamic_dataset import SoundDataset
 from get_chunks import get_records_from_classes
 from models.bulbul import BulBul
 
@@ -85,10 +85,10 @@ dl_train = DataLoader(ds_train, BATCHSIZE)
 
 ##########################################################################
 
-time_axis = ds_test[0][0].shape[2]
-freq_axis = ds_test[0][0].shape[1]
+time_axis = ds_test.shape[1]
+freq_axis = ds_test.shape[0]
 
-net = BulBul(time_axis=freq_axis, freq_axis=time_axis, no_classes=len(class_ids))
+net = BulBul(time_axis=time_axis, freq_axis=freq_axis, no_classes=len(class_ids))
 
 
 criterion = nn.CrossEntropyLoss()
