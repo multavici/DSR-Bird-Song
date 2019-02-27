@@ -28,7 +28,7 @@ def get_records_from_classes(class_ids, seconds_per_class, min_signal_per_file=1
             ON r.taxonomy_id = t.id
             WHERE r.downloaded = 1.0 AND t.id = ? AND r.sum_signal >= ? AND r.duration < 120
             ORDER BY RANDOM()
-            """, (class_id, min_signal_per_file))
+            """, (class_id, min_signal_per_file / 1000))
         recordings = c.fetchall()
         cumulative_sum_signal, i = 0, 0
         while True:
