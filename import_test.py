@@ -34,7 +34,7 @@ OPTIMIZER = 'Adam'
 EPOCHS = 10
 
 class_ids = [6088, 3912, 4397, 7091] #, 4876, 4873, 5477, 6265, 4837, 4506] # all have at least 29604 s of signal, originally 5096, 4996, 4993, 4990, 4980
-seconds_per_class = 1000
+seconds_per_class = 500
 
 # Parameters for sample loading
 params = {'batchsize' : BATCHSIZE, 
