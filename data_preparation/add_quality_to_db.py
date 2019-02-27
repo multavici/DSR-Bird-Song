@@ -2,8 +2,8 @@ import requests
 import json
 import sqlite3
 
-# Create connection to database
-conn = sqlite3.connect("./storage/db.sqlite")
+# create connection to database
+conn = sqlite3.connect("/storage/db.sqlite")
 c = conn.cursor()
 
 def get_recordings_json(family):
@@ -23,6 +23,7 @@ families = []
 for resp in c.fetchall():
     families.append(resp[0])
 
+# update q column
 for family in families:
     data = get_recordings_json(family)
     print(family, len(data['recordings']))
