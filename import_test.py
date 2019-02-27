@@ -2,29 +2,53 @@
 # Test Run
 import pandas as pd
 import numpy as np
-from Spectrogram.spectrograms import mel_s, stft_s
-from torch.utils.data import DataLoader
-from Datasets.static_dataset import SoundDataset
-from get_chunks import get_records_from_classes
-from models.bulbul import BulBul
-
-import numpy as np
+import time
+import json
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 from sklearn.metrics import accuracy_score, log_loss
 
+from Spectrogram.spectrograms import mel_s, stft_s
+from torch.utils.data import DataLoader
+from Datasets.static_dataset import SoundDataset
+from get_chunks import get_records_from_classes
+from models.bulbul import BulBul
+
+
 ##########################################################################
 
+start_time = time.time()
 DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
 
-# initiate graph for paperspace
+# Initiate graph for paperspace
 print('{"chart": "accuracy", "axis": "time"}')
 
+
 ##########################################################################
+
+BATCHSIZE = 64
+OPTIMIZER = 'Adam'
+EPOCHS = 10
+
+# Parameters for sample loading
+params = {'batchsize' : BATCHSIZE, 
+          'window' : 5000, 
+          'stride' : 1000, 
+          'spectrogram_func' : stft_s, 
+          'augmentation_func' : None}
+
+
+##########################################################################
+
+# Get metadata of samples
 class_ids = [6088, 3912, 4397, 7091] #, 4876, 4873, 5477, 6265, 4837, 4506] # all have at least 29604 s of signal, originally 5096, 4996, 4993, 4990, 4980
-df = get_records_from_classes(class_ids=class_ids, seconds_per_class=1000)
+seconds_per_class = 500
+df = get_records_from_classes(
+    class_ids=class_ids, 
+    seconds_per_class=seconds_per_class, 
+    min_signal_per_file=params['window'])
 print('df created')
 
 def label_encoder(label_col):
@@ -41,30 +65,14 @@ df.label = label_encoder(df.label)
 df.groupby('label').agg({'total_signal':'sum'})
 
 
-
 # Split into train and test
 msk = np.random.rand(len(df)) < 0.8
 df_train = df.iloc[msk]
 df_test = df.iloc[~msk]
 print('train and test dataframes created')
-##########################################################################
-
-
-
 
 
 ##########################################################################
-BATCHSIZE = 64
-OPTIMIZER = 'Adam'
-EPOCHS = 10
-
-# Parameters for sample loading
-params = {'batchsize' : BATCHSIZE, 
-          'window' : 5000, 
-          'stride' : 1000, 
-          'spectrogram_func' : stft_s, 
-          'augmentation_func' : None}
-
 
 ds_test = SoundDataset(df_test, **params)
 dl_test = DataLoader(ds_test, BATCHSIZE)
@@ -73,10 +81,8 @@ ds_train = SoundDataset(df_train, **params)
 dl_train = DataLoader(ds_train, BATCHSIZE)
 
 
-
-
-
 ##########################################################################
+
 time_axis = ds_test[0][0].shape[2]
 freq_axis = ds_test[0][0].shape[1]
 
@@ -152,4 +158,24 @@ for epoch in range(EPOCHS):  # loop over the dataset multiple times
     print('{"chart": "accuracy", "y": {}}'.format(acctrain))
 
 print('Finished Training')
+total_time = time.time() - start_time
+
+log = {
+    'date': time.strftime('%d/%m/%Y'),
+    'no_classes': len(class_ids),
+    'seconds_per_class': seconds_per_class,
+    'batchsize': BATCHSIZE,
+    'optimizer': OPTIMIZER,
+    'epochs': EPOCHS,
+    'window': params['window'],
+    'stride': params['stride'],
+    'spectrogram_func': params['spectrogram_func'],
+    'augmentation_func': params['augmentation_func'],
+    'final_accuracy_test': acctest,
+    'final_accuracy_train': acctrain,
+    'final_loss_test': lltest,
+    'final_loss_train': lltrain,
+    'total_time': total_time
+}
+json.dump(log, open('/storage/runlog.txt', 'a+'))
 
