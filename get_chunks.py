@@ -31,11 +31,9 @@ def get_records_from_classes(class_ids, seconds_per_class, min_signal_per_file=1
             """, (class_id, min_signal_per_file / 1000))
         recordings = c.fetchall()
         cumulative_sum_signal, i = 0, 0
-        while True:
+        while cumulative_sum_signal < seconds_per_class:
             result.append(recordings[i])
             cumulative_sum_signal += recordings[i][3]
-            if cumulative_sum_signal > seconds_per_class:
-                break
             i += 1
 
     df = pd.DataFrame.from_records(result, columns=['id', 'label', 'duration', 'total_signal', 'timestamps'])
