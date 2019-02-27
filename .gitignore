@@ -1,7 +1,23 @@
-Test Birdsounds
 .ipynb_checkpoints/
 *.wav
 *.png
 *.h5
-__pycache__
+*.wav
+*.png
+*.h5
+*.ipynb
 .directory
+.DS_store
+__pycache__/
+.vscode
+storage/
+.ps_project
+.dockerignore
+Dockerfile
+docker-compose.debug.yml
+docker-compose.yml
+environment.yml
+requirements.txt
+test.py
+env/
+Test Birdsounds/
