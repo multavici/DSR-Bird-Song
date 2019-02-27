@@ -23,14 +23,18 @@ start_time = time.time()
 DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 # Initiate graph for paperspace
-print('{"chart": "accuracy", "axis": "time"}')
+print('{"chart": "train accuracy", "axis": "epochs"}')
+print('{"chart": "test accuracy", "axis": "epochs"}')
 
 
 ##########################################################################
 
-BATCHSIZE = 64
+BATCHSIZE = 32
 OPTIMIZER = 'Adam'
 EPOCHS = 10
+
+class_ids = [6088, 3912, 4397, 7091] #, 4876, 4873, 5477, 6265, 4837, 4506] # all have at least 29604 s of signal, originally 5096, 4996, 4993, 4990, 4980
+seconds_per_class = 1000
 
 # Parameters for sample loading
 params = {'batchsize' : BATCHSIZE, 
@@ -43,8 +47,6 @@ params = {'batchsize' : BATCHSIZE,
 ##########################################################################
 
 # Get metadata of samples
-class_ids = [6088, 3912, 4397, 7091] #, 4876, 4873, 5477, 6265, 4837, 4506] # all have at least 29604 s of signal, originally 5096, 4996, 4993, 4990, 4980
-seconds_per_class = 500
 df = get_records_from_classes(
     class_ids=class_ids, 
     seconds_per_class=seconds_per_class, 
@@ -155,7 +157,8 @@ for epoch in range(EPOCHS):  # loop over the dataset multiple times
     print(f"----------EPOCH: {epoch} ----------")
     print("test: loss: {}  acc: {}".format(lltest, acctest))
     print("train: loss: {}  acc: {}".format(lltrain, acctrain))
-    print('{"chart": "accuracy", "y": {}}'.format(acctrain))
+    print('{"chart": "train accuracy", "x": {}, "y": {}}'.format(epoch, acctrain))
+    print('{"chart": "test accuracy", "x": {}, "y": {}}'.format(epoch, acctest))
 
 print('Finished Training')
 total_time = time.time() - start_time
@@ -170,12 +173,15 @@ log = {
     'window': params['window'],
     'stride': params['stride'],
     'spectrogram_func': params['spectrogram_func'],
+    'spectrogram_params': 'defaults',
     'augmentation_func': params['augmentation_func'],
+    'model': net.__name__,
     'final_accuracy_test': acctest,
     'final_accuracy_train': acctrain,
     'final_loss_test': lltest,
     'final_loss_train': lltrain,
-    'total_time': total_time
+    'total_time': total_time,
+
 }
-json.dump(log, open('/storage/runlog.txt', 'a+'))
+json.dump(log, open('/storage/runlog.txt', 'w+'))
 
