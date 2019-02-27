@@ -52,8 +52,7 @@ class Preloader(Process):
             event_is_set = self.e.wait()
             if event_is_set:
                 #print('[Preloader] Refilling bucket...')
-                bucket_list = self.t.get()
-                self.bucket_list = bucket_list
+                self.bucket_list = self.t.get()
                 self.preload_batch()
                 self.e.clear()
                 #print('[Preloader] Done.')
@@ -64,10 +63,13 @@ class Preloader(Process):
         self.q.put(output)
 
     def _preload(self, i):
-        p, l, t = self.bucket_list[i]
-        print(p, l)
+        p, l, t, a = self.bucket_list[i]
         audio, sr = load_audio(p)
         signal = get_signal(audio, sr, t)
+        try:
+            assert len(signal) >= a
+        except AssertionError:
+            print(f'Issue with file {p}, supposed to be at least {a} long, but only {len(signal)}')
         return (l, list(signal))
 
 class SoundDataset(Dataset):
@@ -105,6 +107,7 @@ class SoundDataset(Dataset):
         self.shape = self.compute_shape()
         
         # Prepare the first batch: 
+        print('Preloading first batch... this might take a moment.')
         self.request_batch(0)
 
 
@@ -132,8 +135,13 @@ class SoundDataset(Dataset):
             self.receive_request()
         
         # Get actual sample and compute spectrogram:
-        X = self.retrieve_sample(y)
-        X = self.spectrogram_func(X)                                           
+        audio = self.retrieve_sample(y)
+        X = self.spectrogram_func(audio)                                           
+        
+        try:
+            X.shape == self.shape
+        except:
+            import pdb; pdb.set_trace()
         
         # Normlize:
         X -= X.min()
@@ -152,9 +160,10 @@ class SoundDataset(Dataset):
         and delete audio corresponding to stride length"""
         X = self.stack[k][:self.window]
         try: 
-            len(X) == self.window                                      
-        except:
-            import pdb; pdb.set_trace()
+            assert len(X) == self.window
+        except AssertionError:
+            import pdb; pdb.set_trace()                                   
+        
         self.stack[k] = np.delete(self.stack[k], np.s_[:self.stride])          
         return X
     
@@ -180,7 +189,8 @@ class SoundDataset(Dataset):
             self.Preloader.e.set()
             self.made_request = True
         else:
-            print('Still enough samples')
+            print(f'Still enough samples:')
+            self.inventory()
     
     def compute_need(self, y):
         next_batch = range(y, y + self.batchsize)
@@ -196,7 +206,7 @@ class SoundDataset(Dataset):
     def check_stack(self, k, s):
         """ Return true if the audio on stack for class k does only suffice for 
         a more serves, false if otherwise """
-        required_audio = self.window + ((s-1) * self.stride)
+        required_audio = self.window + ((s-1) * self.stride) + 20000            # Safety buffer #TODO: find out why this helps
         remaining_audio = len(self.stack[k])
         if remaining_audio < required_audio:
             return required_audio - remaining_audio
@@ -227,9 +237,13 @@ class SoundDataset(Dataset):
             label = sample.label.values[0]
             timestamps = sample.timestamps.values[0]
             audio_samples = sample.total_signal.values[0] * self.sr * 0.9 
-            request.append((path, label, timestamps))
+            request.append((path, label, timestamps, audio_samples))
             audio_to_preload += audio_samples
         return request
+    
+    def inventory(self):
+        for k,v in self.stack.items():
+            print(f'Class {k}: {len(v)} audio left')
 
     def compute_length(self):
         """ Provide an estimate of how many iterations of random, uniformly 
