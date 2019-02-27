@@ -132,12 +132,16 @@ collect_metrics = []
 collect_loss = []
 
 for epoch in range(EPOCHS):  # loop over the dataset multiple times
+    print("epoch", epoch)
 
     running_loss = 0.0
     for batch in dl_train:
+        print("batch")
         # get the inputs
         X, y = batch
-            
+        print("X", X.shape)
+        print("y", y.shape)
+
         X = X.to(DEVICE)
         y = y.to(DEVICE)
 
