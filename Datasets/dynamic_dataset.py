@@ -150,7 +150,11 @@ class SoundDataset(Dataset):
     def retrieve_sample(self, k):
         """ For class k extract audio corresponding to window length from stack
         and delete audio corresponding to stride length"""
-        X = self.stack[k][:self.window]                                        
+        X = self.stack[k][:self.window]
+        try: 
+            len(X) == self.window                                      
+        except:
+            import pdb; pdb.set_trace()
         self.stack[k] = np.delete(self.stack[k], np.s_[:self.stride])          
         return X
     
@@ -160,30 +164,44 @@ class SoundDataset(Dataset):
         only one serving remains. 
         If requests are necessary, send them to Preloader.
         """
+        samples_needed = self.compute_need(y)
         bucket_list = []
-        for i in range(y, y + self.batchsize):
-            k = i % self.classes
-            if self.check_stack(k):
-                bucket_list.append(self.make_request(k))
+        for k, s in samples_needed.items():
+            required_audio = self.check_stack(k, s)
+            if required_audio > 0:
+                requests = self.make_request(k, required_audio)
+                print(f'Need {required_audio} for class {k}, loading {len(requests)} file(s)')
+                for request in requests:
+                    bucket_list.append(request)
                 
-        if len(bucket_list) > 1:
+        if len(bucket_list) > 0:
             print('Making request')
             self.t.put(bucket_list)   #update the bucket list
             self.Preloader.e.set()
             self.made_request = True
         else:
             print('Still enough samples')
-            
+    
+    def compute_need(self, y):
+        next_batch = range(y, y + self.batchsize)
+        samples_needed = {}
+        for i in next_batch:
+            k = i % self.classes
+            if k in samples_needed.keys():
+                samples_needed[k] += 1
+            else:
+                samples_needed[k] = 1
+        return samples_needed            
 
-    def check_stack(self, k):
+    def check_stack(self, k, s):
         """ Return true if the audio on stack for class k does only suffice for 
-        one more serve (or less), false if otherwise """
-        audio = self.stack[k]
-        remaining_serves = ( (len(audio) - self.window) // self.stride + 1 )
-        if remaining_serves <= 2:
-            return True
+        a more serves, false if otherwise """
+        required_audio = self.window + ((s-1) * self.stride)
+        remaining_audio = len(self.stack[k])
+        if remaining_audio < required_audio:
+            return required_audio - remaining_audio
         else:
-            return False
+            return 0
 
     def receive_request(self):
         """ Check if Preloader has already filled the Queue and if so, sort data
@@ -198,14 +216,20 @@ class SoundDataset(Dataset):
                 self.stack[label] = np.append(self.stack[label], (sample[1]))
             self.made_request = False
         
-    def make_request(self, k):
+    def make_request(self, k, a):
         """ For class k sample a random corresponding sound file and return a
         tuple of path, label, timestamps required by the preloader. """
-        sample = self.df[self.df.label == k].sample(n=1)
-        path = sample.path.values[0]
-        label = sample.label.values[0]
-        timestamps = sample.timestamps.values[0]
-        return (path, label, timestamps)
+        request = []
+        audio_to_preload = 0
+        while audio_to_preload < a:
+            sample = self.df[self.df.label == k].sample(n=1)
+            path = sample.path.values[0]
+            label = sample.label.values[0]
+            timestamps = sample.timestamps.values[0]
+            audio_samples = sample.total_signal.values[0] * self.sr * 0.9 
+            request.append((path, label, timestamps))
+            audio_to_preload += audio_samples
+        return request
 
     def compute_length(self):
         """ Provide an estimate of how many iterations of random, uniformly 
