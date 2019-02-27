@@ -2,10 +2,11 @@ import pandas as pd
 import sqlite3
 import os
 
-def get_records_from_classes(class_ids, seconds_per_class):
+def get_records_from_classes(class_ids, seconds_per_class, min_signal_per_file=1000):
     """Get records from a list of classes. 
     Returns an amount of recordings so that the total seconds of signal
-    is equal to or more than the argument seconds_per class
+    is equal to or more than the argument seconds_per class.
+    Each recording has at least min_signal_per_file milliseconds of signal.
     """
     #db_dir = os.path.join(os.getcwd(), 'storage', 'db.sqlite')
     #print(db_dir)
@@ -23,9 +24,9 @@ def get_records_from_classes(class_ids, seconds_per_class):
             FROM recordings AS r
             JOIN taxonomy AS t
             ON r.taxonomy_id = t.id
-            WHERE r.downloaded = 1.0 AND t.id = ? AND r.sum_signal <> 0
+            WHERE r.downloaded = 1.0 AND t.id = ? AND r.sum_signal >= ?
             ORDER BY RANDOM()
-            """, (class_id, ))
+            """, (class_id, min_signal_per_file))
         recordings = c.fetchall()
         cumulative_sum_signal, i = 0, 0
         while True:
