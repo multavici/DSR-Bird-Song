@@ -16,10 +16,11 @@ def get_records_from_classes(class_ids, seconds_per_class, min_signal_per_file=1
 
     result = []
     for class_id in class_ids:
-        c.execute(
-            "SELECT SUM(sum_signal) FROM recordings WHERE taxonomy_id = ?", (class_id,))
+        c.execute("""SELECT SUM(sum_signal) FROM recordings 
+            WHERE taxonomy_id = ? AND downloaded = 1.0 AND sum_signal >= ? 
+                AND duration < 120""", (class_id, min_signal_per_file))
         sum_signal = c.fetchone()[0]
-        assert sum_signal >= seconds_per_class, f"class with id {class_id} has only {sum_signal} seconds of data"
+        assert sum_signal >= seconds_per_class, f"class with id {class_id} has only {sum_signal} seconds of data that meets the requirements"
         c.execute("""SELECT r.id, t.id, r.duration, r.sum_signal, r.timestamps
             FROM recordings AS r
             JOIN taxonomy AS t
