@@ -81,6 +81,7 @@ dl_test = DataLoader(ds_test, BATCHSIZE)
 
 ds_train = SoundDataset(df_train, **params)
 dl_train = DataLoader(ds_train, BATCHSIZE)
+print('dataloaders initialized')
 
 
 ##########################################################################
