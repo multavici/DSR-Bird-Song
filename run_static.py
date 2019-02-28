@@ -1,5 +1,6 @@
 
 # Test Run
+import os
 import pandas as pd
 import numpy as np
 import time
@@ -33,8 +34,8 @@ BATCHSIZE = 32
 OPTIMIZER = 'Adam'
 EPOCHS = 10
 
-class_ids = [6088, 3912, 4397, 7091] #, 4876, 4873, 5477, 6265, 4837, 4506] # all have at least 29604 s of signal, originally 5096, 4996, 4993, 4990, 4980
-seconds_per_class = 500
+class_ids = [6088, 3912, 4397] #, 7091] #, 4876, 4873, 5477, 6265, 4837, 4506] # all have at least 29604 s of signal, originally 5096, 4996, 4993, 4990, 4980
+seconds_per_class = 100
 
 # Parameters for sample loading
 params = {'batchsize' : BATCHSIZE, 
@@ -54,20 +55,23 @@ df = get_records_from_classes(
 print('df created')
 
 def label_encoder(label_col):
-    codes = {}
-    i = 0
-    for label in label_col.drop_duplicates():
-        codes['label'] = i
-        label_col[label_col == label] = i
-        i += 1
+    for i, label in enumerate(label_col.drop_duplicates()):
+        label_col.loc[label_col == label] = i
     return label_col
 df.label = label_encoder(df.label)
+print(df)
+
+# If working locally, download the specific files
+if not 'HOSTNAME' in os.environ:
+    from data_preparation.download_recording_by_id import download_recordings
+    download_recordings(df['id'].tolist())
 
 # Check sample distribution:
 df.groupby('label').agg({'total_signal':'sum'})
 
 
 # Split into train and test
+np.random.seed(123)
 msk = np.random.rand(len(df)) < 0.8
 df_train = df.iloc[msk]
 df_test = df.iloc[~msk]

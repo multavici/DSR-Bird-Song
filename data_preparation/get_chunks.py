@@ -11,7 +11,13 @@ def get_records_from_classes(class_ids, seconds_per_class, min_signal_per_file=1
     #db_dir = os.path.join(os.getcwd(), 'storage', 'db.sqlite')
     #print(db_dir)
     #conn = sqlite3.connect(db_dir)
-    conn = sqlite3.connect('/storage/db.sqlite')
+    if 'HOSTNAME' in os.environ:
+        db_dir = '/storage/db.sqlite'
+        files_dir = '/storage/german_birds/'
+    else: 
+        db_dir = 'storage/db.sqlite'
+        files_dir = 'storage/german_birds/'
+    conn = sqlite3.connect(db_dir)
     c = conn.cursor()
 
     result = []
@@ -37,7 +43,7 @@ def get_records_from_classes(class_ids, seconds_per_class, min_signal_per_file=1
             i += 1
 
     df = pd.DataFrame.from_records(result, columns=['id', 'label', 'duration', 'total_signal', 'timestamps'])
-    df['path'] = df['id'].apply(lambda x: '/storage/german_birds/' + str(x) + '.mp3')
+    df['path'] = df['id'].apply(lambda x: files_dir + str(x) + '.mp3')
 
     return df
 
