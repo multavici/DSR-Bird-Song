@@ -86,8 +86,8 @@ print('dataloaders initialized')
 
 ##########################################################################
 
-time_axis = ds_test.shape[1]
-freq_axis = ds_test.shape[0]
+time_axis = ds_test[0][0].shape[2]
+freq_axis = ds_test[0][0].shape[1]
 
 net = Bulbul(time_axis=time_axis, freq_axis=freq_axis, no_classes=len(class_ids))
 
