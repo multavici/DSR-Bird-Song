@@ -105,7 +105,7 @@ def evaluate_model(model, test_loader, print_info=False):
             y = y.to(DEVICE).detach().cpu().numpy()
             pred = net(X)
 
-            collect_results.append(F.softmax(pred).detach().cpu().numpy())
+            collect_results.append(F.softmax(pred, dim=-1).detach().cpu().numpy())
             collect_target.append(y) 
     
         preds_proba = np.concatenate(collect_results)
