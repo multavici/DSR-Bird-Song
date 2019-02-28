@@ -74,7 +74,7 @@ def all_recordings_df():
 
 
 def german_recordings_df():
-    query = '''SELECT t.bird_order, t.family, t.genus, t.species, r.id
+    query = '''SELECT t.bird_order, t.family, t.genus, t.species, r.id, r.xeno_canto_id
         FROM taxonomy AS t
         JOIN recordings AS r ON t.id = r.taxonomy_id
         WHERE t.german = 1.0 AND r.downloaded IS NULL
