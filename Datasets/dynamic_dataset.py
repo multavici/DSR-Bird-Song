@@ -31,7 +31,7 @@ Remaining questions are:
 
 from torch.utils.data import Dataset
 import numpy as np
-from .Preprocessing.pre_preprocessing import load_audio, get_signal
+from .Preprocessing.utils import load_audio, get_signal
 from multiprocessing import Process, Queue, Event, active_children
 from multiprocessing.pool import ThreadPool
 import time
