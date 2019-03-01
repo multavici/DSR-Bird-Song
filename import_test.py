@@ -1,5 +1,6 @@
 
 # Test Run
+import sqlite3
 import pandas as pd
 import numpy as np
 import time
@@ -17,18 +18,30 @@ import os
 
 ##########################################################################
 # Get df of paths for pickled slices
-def get_df():    
+def get_df(): 
+    conn = sqlite3.connect('storage/db.sqlite')
+    c = conn.cursor()
+    def lookup(id):
+        c.execute("""SELECT r.taxonomy_id FROM recordings
+            WHERE r.id = ?""", (id,))
+        tax_id = c.fetchone()[0]
+        return tax_id
     list_recs = []
     for dirpath, dirname, filenames in os.walk('storage/slices'):
         for name in filenames:
             path = os.path.join(dirpath, name)
-            list_recs.append(str(path))
-            
-    df = pd.DataFrame(list_recs).rename(columns={0:'path'})
-
+            id = dirpath.split("/")[2]
+            species = lookup(id)
+            list_recs.append((str(path), species))   
+    df = pd.DataFrame(list_recs, columns=['path', 'label'])
     return df
 
 df = get_df()
+
+for _, row in df.iterrows():
+    row['path'].split("/")[2]
+
+
 # Split into train and test
 msk = np.random.rand(len(df)) < 0.8
 df_train = df.iloc[msk]
