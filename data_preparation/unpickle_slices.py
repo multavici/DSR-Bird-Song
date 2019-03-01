@@ -8,8 +8,8 @@ list_recs = []
 for dirpath, dirname, filenames in os.walk('storage/slices'):
     for name in filenames:
         path = os.path.join(dirpath, name)
-        with open(path, 'rb') as f:
-            audio_slice, label = pickle.load(f)
+        print(dirpath.split("/")[2])
+        
 
 
 '''
