@@ -14,33 +14,23 @@ from sklearn.metrics import accuracy_score, log_loss
 from torch.utils.data import DataLoader
 from Datasets.static_dataset import SpectralDataset
 from models.bulbul import Bulbul
-import os
 
 ##########################################################################
 # Get df of paths for pickled slices
-def get_df(): 
-    conn = sqlite3.connect('storage/db.sqlite')
-    c = conn.cursor()
-    def lookup(id):
-        c.execute("""SELECT r.taxonomy_id FROM recordings
-            WHERE r.id = ?""", (id,))
-        tax_id = c.fetchone()[0]
-        return tax_id
-    list_recs = []
-    for dirpath, dirname, filenames in os.walk('storage/slices'):
-        for name in filenames:
-            path = os.path.join(dirpath, name)
-            id = dirpath.split("/")[2]
-            species = lookup(id)
-            list_recs.append((str(path), species))   
-    df = pd.DataFrame(list_recs, columns=['path', 'label'])
-    return df
+df = pd.read_csv('slices_and_labels.csv')
 
-df = get_df()
+def label_encoder(label_col):
+    codes = {}
+    i = 0
+    for label in label_col.drop_duplicates():
+        codes['label'] = i
+        label_col[label_col == label] = i
+        i += 1
+    return label_col
+df.label = label_encoder(df.label)
 
-for _, row in df.iterrows():
-    row['path'].split("/")[2]
-
+sample_size = df.groupby('label').count().min().values[0]
+df = df.reset_index(drop = True).groupby('label').apply(lambda x: x.sample(sample_size)).reset_index(drop = True)
 
 # Split into train and test
 msk = np.random.rand(len(df)) < 0.8
@@ -64,7 +54,7 @@ print('{"chart": "test accuracy", "axis": "epochs"}')
 
 BATCHSIZE = 32
 OPTIMIZER = 'Adam'
-EPOCHS = 10
+EPOCHS = 50
 CLASSES = 10
 
 
@@ -88,7 +78,7 @@ net = Bulbul(time_axis=time_axis, freq_axis=freq_axis, no_classes=CLASSES)
 
 criterion = nn.CrossEntropyLoss()
 #optimizer = optim.SGD(Bulbul.parameters(), lr=0.0001, momentum=0.9)
-optimizer = optim.Adam(net.parameters(), lr = 0.0001)
+optimizer = optim.Adam(net.parameters(), lr = 0.001)
 
 
 def evaluate_model(model, test_loader, print_info=False):
@@ -98,6 +88,8 @@ def evaluate_model(model, test_loader, print_info=False):
         collect_target = []
         for batch in test_loader:
             X, y = batch
+            X = X.float()
+
             X = X.to(DEVICE)
             y = y.to(DEVICE).detach().cpu().numpy()
             pred = net(X)
@@ -130,12 +122,9 @@ for epoch in range(EPOCHS):  # loop over the dataset multiple times
 
     running_loss = 0.0
     for batch in dl_train:
-        print("batch")
         # get the inputs
         X, y = batch
-        print("X", X.shape)
-        print("y", y.shape)
-        
+
         X = X.float()
         
         X = X.to(DEVICE)
@@ -149,7 +138,6 @@ for epoch in range(EPOCHS):  # loop over the dataset multiple times
         loss = criterion(y_pred, y)
         loss.backward()
         optimizer.step()
-        print("batch finished")
     
     lltest, acctest = evaluate_model(net, dl_test)
     lltrain, acctrain = evaluate_model(net, dl_train)
@@ -158,12 +146,12 @@ for epoch in range(EPOCHS):  # loop over the dataset multiple times
     print(f"----------EPOCH: {epoch} ----------")
     print("test: loss: {}  acc: {}".format(lltest, acctest))
     print("train: loss: {}  acc: {}".format(lltrain, acctrain))
-    print('{"chart": "train accuracy", "x": {}, "y": {}}'.format(epoch, acctrain))
-    print('{"chart": "test accuracy", "x": {}, "y": {}}'.format(epoch, acctest))
+    #print('{"chart": "train accuracy", "x": {}, "y": {}}'.format(epoch, acctrain))
+    #print('{"chart": "test accuracy", "x": {}, "y": {}}'.format(epoch, acctest))
 
 print('Finished Training')
 total_time = time.time() - start_time
-
+"""
 log = {
     'date': time.strftime('%d/%m/%Y'),
     'no_classes': CLASSES,
@@ -179,4 +167,10 @@ log = {
 
 }
 json.dump(log, open('/storage/runlog.txt', 'w+'))
+"""
+
+
+
+
+
 
