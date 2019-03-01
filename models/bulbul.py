@@ -17,7 +17,7 @@ class Bulbul(nn.Module):
            
     def __init__(self, freq_axis=80, time_axis=10000,  no_classes=10):
 
-        super(BulBul, self).__init__()
+        super(Bulbul, self).__init__()
 
         self.time_axis = time_axis
         self.freq_axis = freq_axis
@@ -70,7 +70,7 @@ class Bulbul(nn.Module):
 
 def model_Bulbul():
     image = torch.randn(1, 1, 80, 1000)
-    cnn = BulBul(80, 1000, 10)
+    cnn = Bulbul(80, 1000, 10)
     output = cnn(image)
     print("input shape:")
     print(image.shape)

@@ -12,9 +12,9 @@ from sklearn.metrics import accuracy_score, log_loss
 
 from Spectrogram.spectrograms import mel_s, stft_s
 from torch.utils.data import DataLoader
-from Datasets.static_dataset import SoundDataset
-from get_chunks import get_records_from_classes
-from models.bulbul import BulBul
+from Datasets.dynamic_dataset import SoundDataset
+from models.bulbul import Bulbul
+from data_preparation.get_chunks import get_records_from_classes
 
 
 ##########################################################################
@@ -23,14 +23,18 @@ start_time = time.time()
 DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 # Initiate graph for paperspace
-print('{"chart": "accuracy", "axis": "time"}')
+print('{"chart": "train accuracy", "axis": "epochs"}')
+print('{"chart": "test accuracy", "axis": "epochs"}')
 
 
 ##########################################################################
 
-BATCHSIZE = 64
+BATCHSIZE = 32
 OPTIMIZER = 'Adam'
 EPOCHS = 10
+
+class_ids = [6088, 3912, 4397, 7091] #, 4876, 4873, 5477, 6265, 4837, 4506] # all have at least 29604 s of signal, originally 5096, 4996, 4993, 4990, 4980
+seconds_per_class = 500
 
 # Parameters for sample loading
 params = {'batchsize' : BATCHSIZE, 
@@ -43,8 +47,6 @@ params = {'batchsize' : BATCHSIZE,
 ##########################################################################
 
 # Get metadata of samples
-class_ids = [6088, 3912, 4397, 7091] #, 4876, 4873, 5477, 6265, 4837, 4506] # all have at least 29604 s of signal, originally 5096, 4996, 4993, 4990, 4980
-seconds_per_class = 500
 df = get_records_from_classes(
     class_ids=class_ids, 
     seconds_per_class=seconds_per_class, 
@@ -79,14 +81,15 @@ dl_test = DataLoader(ds_test, BATCHSIZE)
 
 ds_train = SoundDataset(df_train, **params)
 dl_train = DataLoader(ds_train, BATCHSIZE)
+print('dataloaders initialized')
 
 
 ##########################################################################
 
-time_axis = ds_test[0][0].shape[2]
-freq_axis = ds_test[0][0].shape[1]
+time_axis = ds_test.shape[1]
+freq_axis = ds_test.shape[0]
 
-net = BulBul(time_axis=freq_axis, freq_axis=time_axis, no_classes=len(class_ids))
+net = Bulbul(time_axis=time_axis, freq_axis=freq_axis, no_classes=len(class_ids))
 
 
 criterion = nn.CrossEntropyLoss()
@@ -129,12 +132,16 @@ collect_metrics = []
 collect_loss = []
 
 for epoch in range(EPOCHS):  # loop over the dataset multiple times
+    print("epoch", epoch)
 
     running_loss = 0.0
     for batch in dl_train:
+        print("batch")
         # get the inputs
         X, y = batch
-            
+        print("X", X.shape)
+        print("y", y.shape)
+
         X = X.to(DEVICE)
         y = y.to(DEVICE)
 
@@ -155,7 +162,8 @@ for epoch in range(EPOCHS):  # loop over the dataset multiple times
     print(f"----------EPOCH: {epoch} ----------")
     print("test: loss: {}  acc: {}".format(lltest, acctest))
     print("train: loss: {}  acc: {}".format(lltrain, acctrain))
-    print('{"chart": "accuracy", "y": {}}'.format(acctrain))
+    print('{"chart": "train accuracy", "x": {}, "y": {}}'.format(epoch, acctrain))
+    print('{"chart": "test accuracy", "x": {}, "y": {}}'.format(epoch, acctest))
 
 print('Finished Training')
 total_time = time.time() - start_time
@@ -170,12 +178,15 @@ log = {
     'window': params['window'],
     'stride': params['stride'],
     'spectrogram_func': params['spectrogram_func'],
+    'spectrogram_params': 'defaults',
     'augmentation_func': params['augmentation_func'],
+    'model': net.__name__,
     'final_accuracy_test': acctest,
     'final_accuracy_train': acctrain,
     'final_loss_test': lltest,
     'final_loss_train': lltrain,
-    'total_time': total_time
+    'total_time': total_time,
+
 }
-json.dump(log, open('/storage/runlog.txt', 'a+'))
+json.dump(log, open('/storage/runlog.txt', 'w+'))
 
