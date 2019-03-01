@@ -10,11 +10,31 @@ import torch.nn.functional as F
 import torch.optim as optim
 from sklearn.metrics import accuracy_score, log_loss
 
-from Spectrogram.spectrograms import mel_s, stft_s
 from torch.utils.data import DataLoader
-from Datasets.dynamic_dataset import SoundDataset
+from Datasets.static_dataset import SpectralDataset
 from models.bulbul import Bulbul
-from data_preparation.get_chunks import get_records_from_classes
+import os
+
+##########################################################################
+# Get df of paths for pickled slices
+def get_df():    
+    list_recs = []
+    for dirpath, dirname, filenames in os.walk('storage/slices'):
+        for name in filenames:
+            path = os.path.join(dirpath, name)
+            list_recs.append(str(path))
+            
+    df = pd.DataFrame(list_recs).rename(columns={0:'path'})
+
+    return df
+
+df = get_df()
+# Split into train and test
+msk = np.random.rand(len(df)) < 0.8
+df_train = df.iloc[msk]
+df_test = df.iloc[~msk]
+print('train and test dataframes created')
+
 
 
 ##########################################################################
@@ -32,64 +52,25 @@ print('{"chart": "test accuracy", "axis": "epochs"}')
 BATCHSIZE = 32
 OPTIMIZER = 'Adam'
 EPOCHS = 10
-
-class_ids = [6088, 3912, 4397, 7091] #, 4876, 4873, 5477, 6265, 4837, 4506] # all have at least 29604 s of signal, originally 5096, 4996, 4993, 4990, 4980
-seconds_per_class = 500
-
-# Parameters for sample loading
-params = {'batchsize' : BATCHSIZE, 
-          'window' : 5000, 
-          'stride' : 1000, 
-          'spectrogram_func' : stft_s, 
-          'augmentation_func' : None}
+CLASSES = 10
 
 
 ##########################################################################
 
-# Get metadata of samples
-df = get_records_from_classes(
-    class_ids=class_ids, 
-    seconds_per_class=seconds_per_class, 
-    min_signal_per_file=params['window'])
-print('df created')
-
-def label_encoder(label_col):
-    codes = {}
-    i = 0
-    for label in label_col.drop_duplicates():
-        codes['label'] = i
-        label_col[label_col == label] = i
-        i += 1
-    return label_col
-df.label = label_encoder(df.label)
-
-# Check sample distribution:
-df.groupby('label').agg({'total_signal':'sum'})
-
-
-# Split into train and test
-msk = np.random.rand(len(df)) < 0.8
-df_train = df.iloc[msk]
-df_test = df.iloc[~msk]
-print('train and test dataframes created')
-
-
-##########################################################################
-
-ds_test = SoundDataset(df_test, **params)
+ds_test = SpectralDataset(df_test)
 dl_test = DataLoader(ds_test, BATCHSIZE)
 
-ds_train = SoundDataset(df_train, **params)
+ds_train = SpectralDataset(df_train)
 dl_train = DataLoader(ds_train, BATCHSIZE)
 print('dataloaders initialized')
 
 
 ##########################################################################
 
-time_axis = ds_test.shape[1]
-freq_axis = ds_test.shape[0]
+time_axis = ds_test[0][0].shape[2]
+freq_axis = ds_test[0][0].shape[1]
 
-net = Bulbul(time_axis=time_axis, freq_axis=freq_axis, no_classes=len(class_ids))
+net = Bulbul(time_axis=time_axis, freq_axis=freq_axis, no_classes=CLASSES)
 
 
 criterion = nn.CrossEntropyLoss()
@@ -141,7 +122,9 @@ for epoch in range(EPOCHS):  # loop over the dataset multiple times
         X, y = batch
         print("X", X.shape)
         print("y", y.shape)
-
+        
+        X = X.float()
+        
         X = X.to(DEVICE)
         y = y.to(DEVICE)
 
@@ -170,16 +153,10 @@ total_time = time.time() - start_time
 
 log = {
     'date': time.strftime('%d/%m/%Y'),
-    'no_classes': len(class_ids),
-    'seconds_per_class': seconds_per_class,
+    'no_classes': CLASSES,
     'batchsize': BATCHSIZE,
     'optimizer': OPTIMIZER,
     'epochs': EPOCHS,
-    'window': params['window'],
-    'stride': params['stride'],
-    'spectrogram_func': params['spectrogram_func'],
-    'spectrogram_params': 'defaults',
-    'augmentation_func': params['augmentation_func'],
     'model': net.__name__,
     'final_accuracy_test': acctest,
     'final_accuracy_train': acctrain,
