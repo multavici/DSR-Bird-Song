@@ -9,11 +9,11 @@ from Signal_Extraction import signal_timestamps
 import sqlite3
 
 
-downloaded_files = os.listdir("/storage/german_birds")
+downloaded_files = os.listdir("storage/top10_german_birds")
 print('list with downloaded files made')
 print(len(downloaded_files))
 downloaded_ids = [int(x[:-4]) for x in downloaded_files]
-conn = sqlite3.connect("/storage/db.sqlite")
+conn = sqlite3.connect("storage/db.sqlite")
 print('database loaded')
 c = conn.cursor()
 c.execute("""select id from recordings where downloaded = 1.0""")
@@ -31,10 +31,10 @@ for i, rec_id in enumerate(to_process):
     print(rec_id)
     try:
         duration, sum_signal, timestamps = signal_timestamps(
-            "/storage/german_birds/" + rec)
+            "storage/top10_german_birds/" + rec)
         batch.append((duration, sum_signal, timestamps, rec_id))
         if len(batch) % 10 == 0:
-            print("batch full")
+            print(f"batch {i} full")
             c.executemany("""UPDATE recordings SET downloaded = 1.0, duration = ?, sum_signal = ?, timestamps = ? 
                 WHERE id = ?""", batch)
             conn.commit()
