@@ -29,6 +29,9 @@ def label_encoder(label_col):
     return label_col
 df.label = label_encoder(df.label)
 
+sample_size = df.groupby('label').count().min().values[0]
+df = df.reset_index(drop = True).groupby('label').apply(lambda x: x.sample(sample_size)).reset_index(drop = True)
+
 # Split into train and test
 msk = np.random.rand(len(df)) < 0.8
 df_train = df.iloc[msk]
@@ -166,61 +169,7 @@ log = {
 json.dump(log, open('/storage/runlog.txt', 'w+'))
 """
 
-from sklearn.metrics import confusion_matrix
-import matplotlib.pyplot as plt
-import itertools
 
-y_test = []
-y_pred = []
-for i in range(len(ds_test)):
-    x, y_true = ds_test[i]
-    x = torch.Tensor(x).float().unsqueeze(dim = 0)
-    y_p = net(x)
-    y_test.append(y_true)
-    y_pred.append(np.argmax(y_p.detach().numpy()))
-
-cnf_matrix = confusion_matrix(y_test, y_pred)
-np.set_printoptions(precision=2)
-
-def plot_confusion_matrix(cm, classes,
-                          normalize=False,
-                          title='Confusion matrix',
-                          cmap=plt.cm.Blues):
-    """
-    This function prints and plots the confusion matrix.
-    Normalization can be applied by setting `normalize=True`.
-    """
-    if normalize:
-        cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
-        print("Normalized confusion matrix")
-    else:
-        print('Confusion matrix, without normalization')
-
-    print(cm)
-
-    plt.imshow(cm, interpolation='nearest', cmap=cmap)
-    plt.title(title)
-    plt.colorbar()
-    tick_marks = np.arange(len(classes))
-    plt.xticks(tick_marks, classes, rotation=45)
-    plt.yticks(tick_marks, classes)
-
-    fmt = '.2f' if normalize else 'd'
-    thresh = cm.max() / 2.
-    for i, j in itertools.product(range(cm.shape[0]), range(cm.shape[1])):
-        plt.text(j, i, format(cm[i, j], fmt),
-                 horizontalalignment="center",
-                 color="white" if cm[i, j] > thresh else "black")
-
-    plt.ylabel('True label')
-    plt.xlabel('Predicted label')
-    plt.tight_layout()
-
-plt.figure()
-plot_confusion_matrix(cnf_matrix, classes=list(range(CLASSES)), normalize=True,
-                      title='Normalized confusion matrix')
-
-plt.show()
 
 
 
