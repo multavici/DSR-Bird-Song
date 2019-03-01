@@ -57,7 +57,7 @@ for _, row in df.iterrows():
         os.makedirs(rec_dir)
     for index, audio_slice in enumerate(slices):
         output = open(rec_dir + '/' + str(index) + '.pkl', 'wb')
-        pickle.dump(audio_slice, output)
+        pickle.dump((audio_slice, row['label']), output)
         print("slice pickled")
     print(f"pickled all slices of {row['id']}")
 

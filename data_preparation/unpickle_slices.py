@@ -1,5 +1,23 @@
 import pickle
 import sqlite3
 import os
+import pandas as pd
 
-print(os.listdir('storage/slices'))
+sliced_recordings = os.listdir('storage/slices')
+list_recs = []
+for dirpath, dirname, filenames in os.walk('storage/slices'):
+    for name in filenames:
+        path = os.path.join(dirpath, name)
+        with open(path, 'rb') as f:
+            print(pickle.load(f))
+            break
+
+
+'''
+df = pd.DataFrame(list_recs, columns=['id', 'path'])
+print(df)
+
+ids = df['id'].unique()
+print(ids)
+#df = pd.read_sql('select id from recordings where')
+'''
