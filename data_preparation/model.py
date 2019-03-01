@@ -52,7 +52,7 @@ def geni_df():
 
 
 def german_species_df():
-    query = '''SELECT t.bird_order, t.family, t.genus, t.species, t.german,
+    query = '''SELECT t.id, t.bird_order, t.family, t.genus, t.species, t.german,
             COUNT(r.id), MIN(r.id), MAX(r.id)
         FROM taxonomy AS t
         JOIN recordings AS r ON t.id = r.taxonomy_id
@@ -74,7 +74,7 @@ def all_recordings_df():
 
 
 def german_recordings_df():
-    query = '''SELECT t.bird_order, t.family, t.genus, t.species, r.id
+    query = '''SELECT t.bird_order, t.family, t.genus, t.species, r.id, r.xeno_canto_id
         FROM taxonomy AS t
         JOIN recordings AS r ON t.id = r.taxonomy_id
         WHERE t.german = 1.0 AND r.downloaded IS NULL

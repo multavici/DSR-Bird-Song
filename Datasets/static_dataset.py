@@ -23,8 +23,8 @@ The dataset class is supposed to dynamically:
 """
 
 from torch.utils.data import Dataset
-from .Preprocessing.pre_preprocessing import load_audio, get_signal
-from multiprocessing.pool import ThreadPool
+from .Preprocessing.utils import load_audio, get_signal
+import pickle
 import numpy as np
 
 
@@ -68,6 +68,8 @@ class SoundDataset(Dataset):
 
         X = self.spectrogram_func(X)
         X = np.expand_dims(X, 0)
+        X -= X.min()
+        X /= X.max()
         #TODO: Process to check for which files to augment:
         """
         if self.augmentation_func not None:
@@ -138,3 +140,33 @@ class SoundDataset(Dataset):
         sum_total_signal = sum(self.df.total_signal) * 22050
         max_samples = ((sum_total_signal - self.window) // self.stride) + 1
         return int(max_samples)
+
+
+
+
+
+class SpectralDataset(Dataset):
+    """ For fast testing of models with precomputed spectrogram slices: """
+    def __init__(self, df, **kwargs):
+        """ Initialize with a dataframe containing:
+        path for a pickled precomputed spectrogram slice"""
+        self.df = df
+        for k,v in kwargs.items():
+            setattr(self, k, v)
+
+    def __len__(self):
+        return len(self.df)
+
+    def __getitem__(self, i):
+        path = self.df.path.iloc[i]
+        y = self.df.label.iloc[i]
+        X, l = self.unpickle(path)
+        X -= X.min()
+        X /= X.max()
+        X = np.expand_dims(X, 0)
+        return X, y
+    
+    def unpickle(self, path):
+        with open(path, 'rb') as f:
+            slice_ = pickle.load(f)
+        return slice_

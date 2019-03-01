@@ -21,4 +21,14 @@ def get_signal(audio, sr, timestamps):
     signal = audio.reshape(1, -1).repeat(mask.shape[0], axis = 0)[mask]
     return signal
 
- 
+def slice_spectrogram(spec, window, stride):
+    # Here the window and stride are expected to be already expressed in spectrogram
+    #time-axis units
+    return [spec[:, i:i+window] for i in range(0, spec.shape[1]-window, stride)]
+
+def slice_audio(audio, sr, window, stride):
+    # window, stride from nanosec to s and in samples
+    window = int(window/1000 * sr)
+    stride = int(stride / 1000 * sr)
+    return [audio[i:i+window] for i in range(0, len(audio)-window, stride)]
+

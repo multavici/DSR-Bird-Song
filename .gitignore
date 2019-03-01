@@ -6,11 +6,12 @@
 *.png
 *.h5
 *.ipynb
+*.mp3
 .directory
 .DS_store
 __pycache__/
-.vscode
 storage/
+.vscode
 .ps_project
 .dockerignore
 Dockerfile
