@@ -6,10 +6,9 @@ Created on Fri Feb 22 21:47:22 2019
 @author: ssharma
 """
 
-
+import numpy as np
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
 
 class Sparrow(nn.Module):
     '''
@@ -17,11 +16,25 @@ class Sparrow(nn.Module):
     25th European Sugnal Processing Conference
     '''
            
-    def __init__(self, time_axis=701, freq_axis=80,  no_classes=10):
+    def __init__(self, freq_axis=701, time_axis=80,  no_classes=10):
 
         super(Sparrow , self).__init__()
-
+        
+        self.time_axis = time_axis
+        self.freq_axis = freq_axis
         self.__name__='Sparrow'
+ 
+        self.freq_axis = np.floor_divide(self.freq_axis-4,3)
+        self.freq_axis = np.floor_divide(self.freq_axis-22,3)
+
+
+        self.time_axis = np.floor_divide(self.time_axis-4,3)
+        self.time_axis = np.floor_divide(self.time_axis-6,3)
+        self.time_axis = np.floor_divide(self.time_axis-8,1)
+        
+        
+        print( self.time_axis, self.freq_axis)
+
                     
         self.layer1 = nn.Sequential(
             nn.Conv2d(1,32, kernel_size=3, stride=1), #padding=1),
@@ -75,7 +88,9 @@ class Sparrow(nn.Module):
             nn.ReLU(),
             nn.Dropout(0.5),
            )
-
+        
+        self.fc1 = nn.Linear(in_features=1 * self.time_axis * self.freq_axis, out_features=no_classes)   
+        
 
     def forward(self, x):
         out = self.layer1(x)
@@ -86,7 +101,9 @@ class Sparrow(nn.Module):
         out = self.layer6(out)
         out = self.layer7(out)
         out = self.layer8(out)
-        out = F.max_pool2d(out, kernel_size=out.size()[2:])
+        
+        out = out.reshape(out.size(0), -1)
+        out = self.fc1(out)
 
         return out
 
