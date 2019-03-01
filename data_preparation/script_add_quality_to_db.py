@@ -1,13 +1,26 @@
+'''
+This script fills the quality column in the database with the value from the xeno-canto api
+'''
+
 import requests
 import json
 import sqlite3
+import os
+
+if 'HOSTNAME' in os.environ:
+    # script runs on server
+    DATABASE_DIR = '/storage/db.sqlite'
+else:
+    # script runs locally
+    DATABASE_DIR = 'storage/db.sqlite'
+QUERY_URL = 'https://www.xeno-canto.org/api/2/recordings?query='
 
 # create connection to database
-conn = sqlite3.connect("/storage/db.sqlite")
+conn = sqlite3.connect(DATABASE_DIR)
 c = conn.cursor()
 
 def get_recordings_json(family):
-    url = "https://www.xeno-canto.org/api/2/recordings?query="+family
+    url = QUERY_URL + family
     page = requests.get(url)
     data = page.json()
     if data['numPages'] > 1:
