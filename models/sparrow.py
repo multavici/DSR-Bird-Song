@@ -32,9 +32,6 @@ class Sparrow(nn.Module):
         self.time_axis = np.floor_divide(self.time_axis-6,3)
         self.time_axis = np.floor_divide(self.time_axis-8,1)
         
-        
-        print( self.time_axis, self.freq_axis)
-
                     
         self.layer1 = nn.Sequential(
             nn.Conv2d(1,32, kernel_size=3, stride=1), #padding=1),
