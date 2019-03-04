@@ -13,30 +13,20 @@ Those correspond to a soundfile with birdsong, the foreground species, the total
 length of the file, the total length of segments identified as containing bird 
 vocalizations, and timestamps of where those vocalizations occur.
 
-
-    - load an audio file
-    - slice and concatenate bird vocalization segments
-    - compute a spectrogram of desired type and parameters for these segments
-    - slice segments into specified lengths
-    - potentially augment slices
-    - collate a random selection of slices into a batch
-
-Remaining questions are:
-    - How to best handle the one-to-many relationship of audio file to spectrogram slices
-    - How to ensure equal class representation while making use of all data
-    - How to design loading computationally efficient so that it can be performed
-    parallel during training
-
+The Dataset is combined with a Preloader process which runs in the background
+and prepares a new batch of data during each training period.
 """
 
 from torch.utils.data import Dataset
 import numpy as np
 from .Preprocessing.pre_preprocessing import load_audio, get_signal
-from multiprocessing import Process, Queue, Event, active_children
+from multiprocessing import Process, Queue, Event
 from multiprocessing.pool import ThreadPool
-import time
+
 
 class Preloader(Process):
+    """ A subprocess running in the background
+    """
     def __init__(self, event, queue, task_queue):
         super(Preloader, self).__init__()
 
@@ -59,11 +49,11 @@ class Preloader(Process):
 
     def preload_batch(self):
         pool = ThreadPool(min(8, len(self.bucket_list)))
-        output = pool.map(self._preload, list(range(len(self.bucket_list))))
+        output = pool.map(self._preload, self.bucket_list)
         self.q.put(output)
 
-    def _preload(self, i):
-        p, l, t, a = self.bucket_list[i]
+    def _preload(self, b):
+        p, l, t, a = b
         audio, sr = load_audio(p)
         signal = get_signal(audio, sr, t)
         try:
@@ -137,12 +127,7 @@ class SoundDataset(Dataset):
         # Get actual sample and compute spectrogram:
         audio = self.retrieve_sample(y)
         X = self.spectrogram_func(audio)                                           
-        
-        try:
-            X.shape == self.shape
-        except:
-            import pdb; pdb.set_trace()
-        
+       
         # Normlize:
         X -= X.min()
         X /= X.max()
