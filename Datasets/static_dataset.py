@@ -160,7 +160,7 @@ class SpectralDataset(Dataset):
     def __getitem__(self, i):
         path = self.df.path.iloc[i]
         y = self.df.label.iloc[i]
-        X, l = self.unpickle(path)
+        X = self.unpickle(path)
         X -= X.min()
         X /= X.max()
         X = np.expand_dims(X, 0)

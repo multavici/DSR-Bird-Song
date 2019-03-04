@@ -14,10 +14,11 @@ from sklearn.metrics import accuracy_score, log_loss
 from torch.utils.data import DataLoader
 from Datasets.static_dataset import SpectralDataset
 from models.bulbul import Bulbul
+from models.sparrow import Sparrow
 
 ##########################################################################
 # Get df of paths for pickled slices
-df = pd.read_csv('slices_and_labels.csv')
+df = pd.read_csv('slices_and_labels3.csv')
 
 def label_encoder(label_col):
     codes = {}
@@ -29,8 +30,10 @@ def label_encoder(label_col):
     return label_col
 df.label = label_encoder(df.label)
 
-sample_size = df.groupby('label').count().min().values[0]
-df = df.reset_index(drop = True).groupby('label').apply(lambda x: x.sample(sample_size)).reset_index(drop = True)
+df = df.groupby('label').head(1000)
+
+#sample_size = df.groupby('label').count().min().values[0]
+#df = df.reset_index(drop = True).groupby('label').apply(lambda x: x.sample(sample_size)).reset_index(drop = True)
 
 # Split into train and test
 msk = np.random.rand(len(df)) < 0.8
@@ -73,8 +76,8 @@ print('dataloaders initialized')
 time_axis = ds_test[0][0].shape[2]
 freq_axis = ds_test[0][0].shape[1]
 
-net = Bulbul(time_axis=time_axis, freq_axis=freq_axis, no_classes=CLASSES)
-
+#net = Bulbul(time_axis=time_axis, freq_axis=freq_axis, no_classes=CLASSES)
+net = Sparrow(time_axis=time_axis, freq_axis=freq_axis, no_classes=CLASSES)
 
 criterion = nn.CrossEntropyLoss()
 #optimizer = optim.SGD(Bulbul.parameters(), lr=0.0001, momentum=0.9)
@@ -144,6 +147,7 @@ for epoch in range(EPOCHS):  # loop over the dataset multiple times
 
     collect_metrics.append((lltest, lltrain, acctest, acctrain))
     print(f"----------EPOCH: {epoch} ----------")
+    print("time: ", time.time() - start_time)
     print("test: loss: {}  acc: {}".format(lltest, acctest))
     print("train: loss: {}  acc: {}".format(lltrain, acctrain))
     #print('{"chart": "train accuracy", "x": {}, "y": {}}'.format(epoch, acctrain))

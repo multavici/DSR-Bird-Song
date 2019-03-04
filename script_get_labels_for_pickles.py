@@ -1,4 +1,4 @@
-import pandas as pd 
+import pandas as pd
 import os
 import sqlite3
 
@@ -20,4 +20,4 @@ for dirname, dirs, files in os.walk('storage/slices'):
 
 df = pd.DataFrame(l, columns=['rec_id', 'path', 'label'])
 print(df)
-df.to_csv('slices_and_labels2.csv')
+df.to_csv('slices_and_labels3.csv')
