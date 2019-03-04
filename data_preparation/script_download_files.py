@@ -1,5 +1,6 @@
 import sqlite3
 import urllib.request
+import os
 
 if 'HOSTNAME' in os.environ:
     # script runs on server
