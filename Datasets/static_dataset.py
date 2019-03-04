@@ -23,8 +23,8 @@ The dataset class is supposed to dynamically:
 """
 
 from torch.utils.data import Dataset
-from .Preprocessing.pre_preprocessing import load_audio, get_signal
-from multiprocessing.pool import ThreadPool
+from .Preprocessing.utils import load_audio, get_signal
+import pickle
 import numpy as np
 
 
@@ -33,14 +33,14 @@ class SoundDataset(Dataset):
         """ Initialize with a dataframe containing:
         (path, label, duration, total_signal, timestamps)
         kwargs: batchsize = 10, window = 1500, stride = 500, spectrogram_func = None, augmentation_func = None"""
-        
+
         self.df = df
         #self.df.loc[:, 'loaded'] = 0
         self.sr = 22050
-        
+
         for k,v in kwargs.items():
             setattr(self, k, v)
-        
+
         # Window and stride in samples:
         self.window = int(self.window/1000*self.sr)
         self.stride = int(self.stride/1000*self.sr)
@@ -49,34 +49,36 @@ class SoundDataset(Dataset):
         # Stack - a list of continuous audio signal for each class
         self.stack = {label:[] for label in set(self.df.label)}
         self.classes = len(set(self.df.label))
-        
+
         self.length = self.compute_length()
 
     def __len__(self):
-        """ The length of the dataset is the (expected) maximum number of bird 
-        vocalization slices that could be extracted from the sum total of 
+        """ The length of the dataset is the (expected) maximum number of bird
+        vocalization slices that could be extracted from the sum total of
         vocalization parts given a slicing window and stride."""
         return self.length    #TODO: Give an actual safe estimate here.
 
     def __getitem__(self, i):
-        """ Indices become meaningless here, they only ensure that subsequent 
+        """ Indices become meaningless here, they only ensure that subsequent
         samples are of different classes. """
         self.check_stack()
-        y = i % self.classes # loop through classes 
+        y = i % self.classes # loop through classes
         X = self.stack[y][:self.window]     #Extract audio corresponding to window length
         self.stack[y] = np.delete(self.stack[y], np.s_[:self.stride])     #Delete according to stride length
-        
+
         X = self.spectrogram_func(X)
         X = np.expand_dims(X, 0)
+        X -= X.min()
+        X /= X.max()
         #TODO: Process to check for which files to augment:
-        """ 
+        """
         if self.augmentation_func not None:
             X = self.augmentation_func(X)
         """
         return X, y
 
     def check_stack(self):
-        """ Check for classes in the stack that do not have enough audio left 
+        """ Check for classes in the stack that do not have enough audio left
         on storage to serve at least two more times. If such exist, store a
         request for them in the bucket list. Since the preloader only becomes
         active when at least 4 such files exist, also raise an alarm if one class
@@ -96,7 +98,7 @@ class SoundDataset(Dataset):
             # Start loading
             new_samples = self.preload(bucket_list)
             self.receive_request(new_samples)
-            
+
     def preload(self, bucket_list):
         """ Initiates a number of threads (max 8, otherwise nr. of files in
         bucket_list)
@@ -105,6 +107,7 @@ class SoundDataset(Dataset):
             p, l, t = bucket_list[i]
             audio, sr = load_audio(p)
             signal = get_signal(audio, sr, t)
+            #TODO: Normalize signal
             return (l, signal)
         """
         nr_threads = min([8, len(bucket_list)])
@@ -114,17 +117,17 @@ class SoundDataset(Dataset):
         output = []
         for i in range(len(bucket_list)):
             output.append(_preload(i))
-        return output 
-            
+        return output
+
     def make_request(self, k):
         """ pick a random file from a class that is running low in the stack and
         return path, label, and timestamps for that file. """
-        sample = self.df[self.df.label == k].sample(n=1) 
+        sample = self.df[self.df.label == k].sample(n=1)
         path = sample.path.values[0]
         label = sample.label.values[0]
         timestamps = sample.timestamps.values[0]
         return (path, label, timestamps)
-    
+
     def receive_request(self, new_samples):
         """ Takes a newly loaded of label, audio tuples and sorts them into the
         stack. """
@@ -132,9 +135,38 @@ class SoundDataset(Dataset):
         for sample in new_samples:
             label = sample[0]
             self.stack[label] = np.append(self.stack[label], (sample[1]))
-        
+
     def compute_length(self):
         sum_total_signal = sum(self.df.total_signal) * 22050
         max_samples = ((sum_total_signal - self.window) // self.stride) + 1
         return int(max_samples)
-        
+
+
+
+
+
+class SpectralDataset(Dataset):
+    """ For fast testing of models with precomputed spectrogram slices: """
+    def __init__(self, df, **kwargs):
+        """ Initialize with a dataframe containing:
+        path for a pickled precomputed spectrogram slice"""
+        self.df = df
+        for k,v in kwargs.items():
+            setattr(self, k, v)
+
+    def __len__(self):
+        return len(self.df)
+
+    def __getitem__(self, i):
+        path = self.df.path.iloc[i]
+        y = self.df.label.iloc[i]
+        X, l = self.unpickle(path)
+        X -= X.min()
+        X /= X.max()
+        X = np.expand_dims(X, 0)
+        return X, y
+    
+    def unpickle(self, path):
+        with open(path, 'rb') as f:
+            slice_ = pickle.load(f)
+        return slice_

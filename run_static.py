@@ -1,6 +1,6 @@
 
 # Test Run
-import sqlite3
+import os
 import pandas as pd
 import numpy as np
 import time
@@ -11,33 +11,11 @@ import torch.nn.functional as F
 import torch.optim as optim
 from sklearn.metrics import accuracy_score, log_loss
 
+from Spectrogram.spectrograms import mel_s, stft_s
 from torch.utils.data import DataLoader
-from Datasets.static_dataset import SpectralDataset
+from Datasets.static_dataset import SoundDataset
 from models.bulbul import Bulbul
-
-##########################################################################
-# Get df of paths for pickled slices
-df = pd.read_csv('slices_and_labels.csv')
-
-def label_encoder(label_col):
-    codes = {}
-    i = 0
-    for label in label_col.drop_duplicates():
-        codes['label'] = i
-        label_col[label_col == label] = i
-        i += 1
-    return label_col
-df.label = label_encoder(df.label)
-
-sample_size = df.groupby('label').count().min().values[0]
-df = df.reset_index(drop = True).groupby('label').apply(lambda x: x.sample(sample_size)).reset_index(drop = True)
-
-# Split into train and test
-msk = np.random.rand(len(df)) < 0.8
-df_train = df.iloc[msk]
-df_test = df.iloc[~msk]
-print('train and test dataframes created')
-
+from data_preparation.get_chunks import get_records_from_classes
 
 
 ##########################################################################
@@ -54,16 +32,58 @@ print('{"chart": "test accuracy", "axis": "epochs"}')
 
 BATCHSIZE = 32
 OPTIMIZER = 'Adam'
-EPOCHS = 50
-CLASSES = 10
+EPOCHS = 10
+
+class_ids = [6088, 3912, 4397] #, 7091] #, 4876, 4873, 5477, 6265, 4837, 4506] # all have at least 29604 s of signal, originally 5096, 4996, 4993, 4990, 4980
+seconds_per_class = 100
+
+# Parameters for sample loading
+params = {'batchsize' : BATCHSIZE, 
+          'window' : 5000, 
+          'stride' : 1000, 
+          'spectrogram_func' : stft_s, 
+          'augmentation_func' : None}
 
 
 ##########################################################################
 
-ds_test = SpectralDataset(df_test)
+# Get metadata of samples
+df = get_records_from_classes(
+    class_ids=class_ids, 
+    seconds_per_class=seconds_per_class, 
+    min_signal_per_file=params['window'])
+print('df created')
+
+def label_encoder(label_col):
+    for i, label in enumerate(label_col.drop_duplicates()):
+        label_col.loc[label_col == label] = i
+    return label_col
+df.label = label_encoder(df.label)
+print(df)
+
+# If working locally, download the specific files
+if not 'HOSTNAME' in os.environ:
+    from data_preparation.download_recording_by_id import download_recordings
+    download_recordings(df['id'].tolist())
+
+# Check sample distribution:
+df.groupby('label').agg({'total_signal':'sum'})
+
+
+# Split into train and test
+np.random.seed(123)
+msk = np.random.rand(len(df)) < 0.8
+df_train = df.iloc[msk]
+df_test = df.iloc[~msk]
+print('train and test dataframes created')
+
+
+##########################################################################
+
+ds_test = SoundDataset(df_test, **params)
 dl_test = DataLoader(ds_test, BATCHSIZE)
 
-ds_train = SpectralDataset(df_train)
+ds_train = SoundDataset(df_train, **params)
 dl_train = DataLoader(ds_train, BATCHSIZE)
 print('dataloaders initialized')
 
@@ -73,12 +93,12 @@ print('dataloaders initialized')
 time_axis = ds_test[0][0].shape[2]
 freq_axis = ds_test[0][0].shape[1]
 
-net = Bulbul(time_axis=time_axis, freq_axis=freq_axis, no_classes=CLASSES)
+net = Bulbul(time_axis=time_axis, freq_axis=freq_axis, no_classes=len(class_ids))
 
 
 criterion = nn.CrossEntropyLoss()
 #optimizer = optim.SGD(Bulbul.parameters(), lr=0.0001, momentum=0.9)
-optimizer = optim.Adam(net.parameters(), lr = 0.001)
+optimizer = optim.Adam(net.parameters(), lr = 0.0001)
 
 
 def evaluate_model(model, test_loader, print_info=False):
@@ -88,13 +108,11 @@ def evaluate_model(model, test_loader, print_info=False):
         collect_target = []
         for batch in test_loader:
             X, y = batch
-            X = X.float()
-
             X = X.to(DEVICE)
             y = y.to(DEVICE).detach().cpu().numpy()
             pred = net(X)
 
-            collect_results.append(F.softmax(pred, dim=-1).detach().cpu().numpy())
+            collect_results.append(F.softmax(pred).detach().cpu().numpy())
             collect_target.append(y) 
     
         preds_proba = np.concatenate(collect_results)
@@ -122,11 +140,12 @@ for epoch in range(EPOCHS):  # loop over the dataset multiple times
 
     running_loss = 0.0
     for batch in dl_train:
+        print("batch")
         # get the inputs
         X, y = batch
+        print("X", X.shape)
+        print("y", y.shape)
 
-        X = X.float()
-        
         X = X.to(DEVICE)
         y = y.to(DEVICE)
 
@@ -138,6 +157,7 @@ for epoch in range(EPOCHS):  # loop over the dataset multiple times
         loss = criterion(y_pred, y)
         loss.backward()
         optimizer.step()
+        print("batch finished")
     
     lltest, acctest = evaluate_model(net, dl_test)
     lltrain, acctrain = evaluate_model(net, dl_train)
@@ -146,18 +166,24 @@ for epoch in range(EPOCHS):  # loop over the dataset multiple times
     print(f"----------EPOCH: {epoch} ----------")
     print("test: loss: {}  acc: {}".format(lltest, acctest))
     print("train: loss: {}  acc: {}".format(lltrain, acctrain))
-    #print('{"chart": "train accuracy", "x": {}, "y": {}}'.format(epoch, acctrain))
-    #print('{"chart": "test accuracy", "x": {}, "y": {}}'.format(epoch, acctest))
+    print('{"chart": "train accuracy", "x": {}, "y": {}}'.format(epoch, acctrain))
+    print('{"chart": "test accuracy", "x": {}, "y": {}}'.format(epoch, acctest))
 
 print('Finished Training')
 total_time = time.time() - start_time
-"""
+
 log = {
     'date': time.strftime('%d/%m/%Y'),
-    'no_classes': CLASSES,
+    'no_classes': len(class_ids),
+    'seconds_per_class': seconds_per_class,
     'batchsize': BATCHSIZE,
     'optimizer': OPTIMIZER,
     'epochs': EPOCHS,
+    'window': params['window'],
+    'stride': params['stride'],
+    'spectrogram_func': params['spectrogram_func'],
+    'spectrogram_params': 'defaults',
+    'augmentation_func': params['augmentation_func'],
     'model': net.__name__,
     'final_accuracy_test': acctest,
     'final_accuracy_train': acctrain,
@@ -167,10 +193,4 @@ log = {
 
 }
 json.dump(log, open('/storage/runlog.txt', 'w+'))
-"""
-
-
-
-
-
 
