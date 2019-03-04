@@ -31,7 +31,7 @@ Remaining questions are:
 
 from torch.utils.data import Dataset
 import numpy as np
-from .Preprocessing.utils import load_audio, get_signal
+from .Preprocessing.pre_preprocessing import load_audio, get_signal
 from multiprocessing import Process, Queue, Event, active_children
 from multiprocessing.pool import ThreadPool
 import time
@@ -70,7 +70,7 @@ class Preloader(Process):
             assert len(signal) >= a
         except AssertionError:
             print(f'Issue with file {p}, supposed to be at least {a} long, but only {len(signal)}')
-        return (l, list(signal))
+        return (l, signal.tolist())
 
 class SoundDataset(Dataset):
     def __init__(self, df, **kwargs):
@@ -179,18 +179,18 @@ class SoundDataset(Dataset):
             required_audio = self.check_stack(k, s)
             if required_audio > 0:
                 requests = self.make_request(k, required_audio)
-                print(f'Need {required_audio} for class {k}, loading {len(requests)} file(s)')
+                #print(f'Need {required_audio} for class {k}, loading {len(requests)} file(s)')
                 for request in requests:
                     bucket_list.append(request)
                 
         if len(bucket_list) > 0:
-            print('Making request')
+            #print('Making request')
             self.t.put(bucket_list)   #update the bucket list
             self.Preloader.e.set()
             self.made_request = True
-        else:
-            print(f'Still enough samples:')
-            self.inventory()
+        #else:
+            #print(f'Still enough samples:')
+            #self.inventory()
     
     def compute_need(self, y):
         next_batch = range(y, y + self.batchsize)
@@ -217,10 +217,8 @@ class SoundDataset(Dataset):
         """ Check if Preloader has already filled the Queue and if so, sort data
         into stack."""
         if self.made_request:
-            while self.q.empty():
-                time.sleep(0.5)
-            print('Queue ready - updating stack.')
             new_samples = self.q.get()
+            #print('Queue ready - updating stack.')
             for sample in new_samples:
                 label = sample[0]
                 self.stack[label] = np.append(self.stack[label], (sample[1]))
