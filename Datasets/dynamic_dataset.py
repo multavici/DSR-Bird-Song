@@ -121,11 +121,6 @@ class SoundDataset(Dataset):
         # Subsequent indices loop through the classes:
         y = i % self.classes
 
-        # If were at the end of one batch, request next:
-        if (i + 1) % self.batchsize == 0:
-            self.log['inventory'].append(self.inventory(i))
-            self.request_batch(y+1, i)
-
         # If were at the beginning of one batch, update stack with Preloader's work
         if i % self.batchsize == 0:
             self.log['inventory'].append(self.inventory(i))
@@ -145,6 +140,12 @@ class SoundDataset(Dataset):
         if self.augmentation_func not None:
             X = self.augmentation_func(X)
         """
+        
+        # If were at the end of one batch, request next:
+        if (i + 1) % self.batchsize == 0 or i == self.length-1:
+            self.log['inventory'].append(self.inventory(i))
+            self.request_batch(y+1, i)
+            
         return X, y
 
     def retrieve_sample(self, k):
