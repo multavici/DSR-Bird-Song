@@ -142,9 +142,14 @@ class SoundDataset(Dataset):
         """
         
         # If were at the end of one batch, request next:
-        if (i + 1) % self.batchsize == 0 or i == self.length-1:
+        if (i + 1) % self.batchsize == 0:
             self.log['inventory'].append(self.inventory(i))
             self.request_batch(y+1, i)
+        
+        # If were at the end of the last batch request starting with class 0
+        if i == self.length-1:
+            self.log['inventory'].append(self.inventory(i))
+            self.request_batch(0, i)
             
         return X, y
 
