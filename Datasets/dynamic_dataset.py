@@ -8,9 +8,9 @@ Created on Mon Feb  4 14:07:07 2019
 
 """
 This is a PyTorch compatible Dataset class that is initiated from a Dataframe
-containing 5 columns: path, label, duration, total signal duration, signal timestamps. 
-Those correspond to a soundfile with birdsong, the foreground species, the total 
-length of the file, the total length of segments identified as containing bird 
+containing 5 columns: path, label, duration, total signal duration, signal timestamps.
+Those correspond to a soundfile with birdsong, the foreground species, the total
+length of the file, the total length of segments identified as containing bird
 vocalizations, and timestamps of where those vocalizations occur.
 
 The Dataset is combined with a Preloader process which runs in the background
@@ -22,6 +22,7 @@ import numpy as np
 from .Preprocessing.utils import load_audio, get_signal
 from multiprocessing import Process, Queue, Event
 from multiprocessing.pool import ThreadPool
+
 
 
 class Preloader(Process):
@@ -89,17 +90,21 @@ class SoundDataset(Dataset):
         self.t = Queue()
         self.Preloader = Preloader(e, self.q, self.t)
         self.Preloader.start()
-        
+
         # Compute total of available slices
         self.length = self.compute_length()
-        
+
         # Compute output size
         self.shape = self.compute_shape()
-        
-        # Prepare the first batch: 
-        print('Preloading first batch... this might take a moment.')
-        self.request_batch(0)
 
+
+        self.log = {'sent' : [],
+                   'received' : [],
+                   'inventory' : []}
+
+        # Prepare the first batch:
+        print('Preloading first batch... this might take a moment.')
+        self.request_batch(0, -1)
 
     def __len__(self):
         """ The length of the dataset is the (expected) maximum number of bird vocalization slices that could be
@@ -111,51 +116,72 @@ class SoundDataset(Dataset):
         """ Indices loop over available classes to return heterogeneous batches
         of uniformly random sampled audio. Preloading is triggered and the end
         of each batch and supposed to run during training time. At the beginning
-        of a new batch, the preloaded audio is received from a queue - if it is 
+        of a new batch, the preloaded audio is received from a queue - if it is
         not ready yet the main process will wait. """
         # Subsequent indices loop through the classes:
-        y = i % self.classes                                                   
-        
+        y = i % self.classes
+
         # If were at the end of one batch, request next:
         if (i + 1) % self.batchsize == 0:
-            self.request_batch(y+1)
-        
+            self.log['inventory'].append(self.inventory(i))
+            self.request_batch(y+1, i)
+
         # If were at the beginning of one batch, update stack with Preloader's work
         if i % self.batchsize == 0:
-            self.receive_request()
-        
+            self.log['inventory'].append(self.inventory(i))
+            self.receive_request(i)
+
         # Get actual sample and compute spectrogram:
         audio = self.retrieve_sample(y)
-        X = self.spectrogram_func(audio)                                           
-       
+        X = self.spectrogram_func(audio)
+
         # Normlize:
         X -= X.min()
         X /= X.max()
         X = np.expand_dims(X, 0)
-        
+
         #TODO: Process to check for which files to augment:
         """
         if self.augmentation_func not None:
             X = self.augmentation_func(X)
         """
         return X, y
-    
+
     def retrieve_sample(self, k):
         """ For class k extract audio corresponding to window length from stack
         and delete audio corresponding to stride length"""
         X = self.stack[k][:self.window]
-        try: 
+        try:
             assert len(X) == self.window
         except AssertionError:
-            import pdb; pdb.set_trace()                                   
-        
-        self.stack[k] = np.delete(self.stack[k], np.s_[:self.stride])          
+            import pdb; pdb.set_trace()
+
+        self.stack[k] = np.delete(self.stack[k], np.s_[:self.stride])
         return X
-    
-    def request_batch(self, y):
+
+    def receive_request(self, i):
+        """ Check if Preloader has already filled the Queue and if so, sort data
+        into stack."""
+        new_samples = []                                                            #LOG
+        if self.made_request:
+            new_samples = self.q.get()
+            #print('Queue ready - updating stack.')
+
+            for sample in new_samples:
+                label = sample[0]
+                self.stack[label] = np.append(self.stack[label], (sample[1]))
+            self.made_request = False
+
+        r = {'R':i}
+        req = {k: 0 for  k in set([s[0] for s in new_samples])  }                                                           #LOG
+        for s in new_samples:
+            req[s[0]] += len(s[1])
+        self.log['received'].append({**r, **req})
+
+    def request_batch(self, y, i):
         """ At a given y in classes, look ahead how many times each class k will
         have to be served for the next batch. Request a new file for each where
-        only one serving remains. 
+        only one serving remains.
         If requests are necessary, send them to Preloader.
         """
         samples_needed = self.compute_need(y)
@@ -167,16 +193,25 @@ class SoundDataset(Dataset):
                 #print(f'Need {required_audio} for class {k}, loading {len(requests)} file(s)')
                 for request in requests:
                     bucket_list.append(request)
-                
+
         if len(bucket_list) > 0:
             #print('Making request')
-            self.t.put(bucket_list)   #update the bucket list
+            self.t.put(bucket_list)
             self.Preloader.e.set()
             self.made_request = True
-        #else:
-            #print(f'Still enough samples:')
-            #self.inventory()
-    
+
+        r = {'R':i}
+        req = {'path':[],                                                           #LOG
+               'label':[],
+               'timestamps':[],
+               'expected': []}
+        for b in bucket_list:
+            req['path'].append(b[0])
+            req['label'].append(b[1])
+            req['timestamps'].append(b[2])
+            req['expected'].append(b[3])
+        self.log['sent'].append({**r, **req})
+
     def compute_need(self, y):
         next_batch = range(y, y + self.batchsize)
         samples_needed = {}
@@ -186,10 +221,10 @@ class SoundDataset(Dataset):
                 samples_needed[k] += 1
             else:
                 samples_needed[k] = 1
-        return samples_needed            
+        return samples_needed
 
     def check_stack(self, k, s):
-        """ Return true if the audio on stack for class k does only suffice for 
+        """ Return true if the audio on stack for class k does only suffice for
         a more serves, false if otherwise """
         required_audio = self.window + ((s-1) * self.stride) + 20000            # Safety buffer #TODO: find out why this helps
         remaining_audio = len(self.stack[k])
@@ -198,17 +233,6 @@ class SoundDataset(Dataset):
         else:
             return 0
 
-    def receive_request(self):
-        """ Check if Preloader has already filled the Queue and if so, sort data
-        into stack."""
-        if self.made_request:
-            new_samples = self.q.get()
-            #print('Queue ready - updating stack.')
-            for sample in new_samples:
-                label = sample[0]
-                self.stack[label] = np.append(self.stack[label], (sample[1]))
-            self.made_request = False
-        
     def make_request(self, k, a):
         """ For class k sample a random corresponding sound file and return a
         tuple of path, label, timestamps required by the preloader. """
@@ -219,22 +243,24 @@ class SoundDataset(Dataset):
             path = sample.path.values[0]
             label = sample.label.values[0]
             timestamps = sample.timestamps.values[0]
-            audio_samples = sample.total_signal.values[0] * self.sr * 0.9 
+            audio_samples = int(sample.total_signal.values[0] * self.sr * 0.9)
             request.append((path, label, timestamps, audio_samples))
             audio_to_preload += audio_samples
         return request
-    
-    def inventory(self):
-        for k,v in self.stack.items():
-            print(f'Class {k}: {len(v)} audio left')
+
+    def inventory(self, i):
+        r = {'R':i}
+        inv = {k: len(v) for k,v in self.stack.items()}
+        return {**r, **inv}
+
 
     def compute_length(self):
-        """ Provide an estimate of how many iterations of random, uniformly 
+        """ Provide an estimate of how many iterations of random, uniformly
         sampled audio are needed to have seen each file approximately once. """
         sum_total_signal = sum(self.df.total_signal) * 22050
         max_samples = ((sum_total_signal - self.window) // self.stride) + 1
         return int(max_samples)
-    
+
     def compute_shape(self):
         dummy = np.random.randn(self.window)
         spec = self.spectrogram_func(dummy)
