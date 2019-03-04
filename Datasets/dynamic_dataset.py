@@ -19,7 +19,7 @@ and prepares a new batch of data during each training period.
 
 from torch.utils.data import Dataset
 import numpy as np
-from .Preprocessing.pre_preprocessing import load_audio, get_signal
+from .Preprocessing.utils import load_audio, get_signal
 from multiprocessing import Process, Queue, Event
 from multiprocessing.pool import ThreadPool
 
