@@ -7,9 +7,7 @@ Created on Fri Feb 15 16:20:34 2019
 """
 import numpy as np
 import librosa
-#the main code is in chirplet.py at https://github.com/DYNI-TOULON/fastchirplet
-#import chirplet as ch
-
+from .Chirplet import FCT
 
 ### 1. A SIMPLE STFT
 def stft_s(audio):
@@ -21,14 +19,7 @@ def mel_s(audio):
     return librosa.feature.melspectrogram(audio, sr=sr, n_fft=2048, hop_length=512, n_mels=128, fmax=8000)
 
 ##### 3. chirp
-"""   
 def chirp_s(audio):
-    return ch.FCT().compute(audio)
-"""
+    return FCT().compute(audio)
 
 
-
-"""
-chirps = ch.FCT()
-fct_S = chirps.compute(audio[0:10000])
-"""
