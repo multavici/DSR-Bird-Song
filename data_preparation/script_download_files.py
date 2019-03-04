@@ -1,9 +1,16 @@
 import sqlite3
 import urllib.request
 
-files_dir = 'storage/top10_german_birds'
+if 'HOSTNAME' in os.environ:
+    # script runs on server
+    STORAGE_DIR = '/storage/top10_german_birds/'
+    DATABASE_DIR = '/storage/db.sqlite'
+else:
+    # script runs locally
+    STORAGE_DIR = 'storage/top10_german_birds/'
+    DATABASE_DIR = 'storage/db.sqlite'
 
-conn = sqlite3.connect('storage/db.sqlite')
+conn = sqlite3.connect(DATABASE_DIR)
 c = conn.cursor()
 
 top10_german_species = [4397, 7091, 6088, 4876, 6265, 4873, 5477, 7232, 6106, 7310]
@@ -25,7 +32,7 @@ for species_id in recordings:
         print(f"start downloading {file_path}")
         try:
             resp = urllib.request.urlretrieve("http:" + file_path,
-                'storage/top10_german_birds/' + str(rec_id) + ".mp3")
+                STORAGE_DIR + str(rec_id) + ".mp3")
             assert resp[1]['Content-Type'] == 'audio/mpeg', f'file {rec_id} not available'
             print(f'file {rec_id} downloaded')
         except urllib.error.HTTPError:
