@@ -29,7 +29,7 @@ from torch.utils.data import DataLoader
 from Datasets.static_dataset import SpectralDataset
 from models.sparrow import Sparrow
 from utils import printProgressBar
-
+import local_config
 
 df_train = pd.read_csv('storage/df_train_local.csv')
 df_test = pd.read_csv('storage/df_test_local.csv')
@@ -43,13 +43,12 @@ DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
 #print('{"chart": "test accuracy", "axis": "epochs"}')
 
 def main():
-    MODEL = Sparrow
-    BATCHSIZE = 32
-    OPTIMIZER = 'Adam'
-    EPOCHS = 50
-    CLASSES = 10
-    LR = 0.001
-    
+    MODEL = local_config.inputs['MODEL']
+    BATCHSIZE = local_config.inputs['BATCHSIZE']
+    OPTIMIZER = local_config.inputs['OPTIMIZER']
+    EPOCHS = local_config.inputs['EPOCHS']
+    CLASSES = local_config.inputs['CLASSES']
+    LR = local_config.inputs['LR']    
     
     ##########################################################################
     
