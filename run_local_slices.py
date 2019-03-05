@@ -29,7 +29,8 @@ from torch.utils.data import DataLoader
 from Datasets.static_dataset import SpectralDataset
 from models.sparrow import Sparrow
 from utils import printProgressBar
-import local_config
+import os
+import sys
 
 df_train = pd.read_csv('storage/df_train_local.csv')
 df_test = pd.read_csv('storage/df_test_local.csv')
@@ -167,4 +168,15 @@ def main():
 
 
 if __name__ == "__main__":
+
+    if len(sys.argv) == 1:
+        print('usage: %s config_file' % os.path.basename(sys.argv[0]))
+        sys.exit(2)
+
+    config_file = os.path.basename(sys.argv[1])
+    if config_file[-3:] == ".py":
+        config_file = config_file[:-3]
+
+    local_config = __import__(config_file, globals(), locals(), [])
+
     main()
