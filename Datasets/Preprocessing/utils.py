@@ -31,4 +31,3 @@ def slice_audio(audio, sr, window, stride):
     window = int(window/1000 * sr)
     stride = int(stride / 1000 * sr)
     return [audio[i:i+window] for i in range(0, len(audio)-window, stride)]
-

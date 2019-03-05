@@ -24,12 +24,11 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 from sklearn.metrics import accuracy_score, log_loss
-import sys
 
 from torch.utils.data import DataLoader
 from Datasets.static_dataset import SpectralDataset
 from models.sparrow import Sparrow
-
+from utils import printProgressBar
 
 
 df_train = pd.read_csv('storage/df_train_local.csv')
@@ -40,9 +39,8 @@ label_codes = pd.read_csv('storage/label_codes.csv')
 DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 # Initiate graph for paperspace
-print('{"chart": "train accuracy", "axis": "epochs"}')
-print('{"chart": "test accuracy", "axis": "epochs"}')
-
+#print('{"chart": "train accuracy", "axis": "epochs"}')
+#print('{"chart": "test accuracy", "axis": "epochs"}')
 
 def main():
     MODEL = Sparrow
@@ -113,9 +111,10 @@ def main():
     
     start_time = time.time()
     for epoch in range(EPOCHS):  # loop over the dataset multiple times
-        print("epoch", epoch)
-    
+        
         running_loss = 0.0
+        l = len(dl_train)
+        printProgressBar(0, l, prefix = f'Epoch: {epoch}', suffix = 'Loss: 0', length = 50)
         for i, batch in enumerate(dl_train):
             # get the inputs
             X, y = batch
@@ -132,7 +131,8 @@ def main():
             loss = criterion(y_pred, y)
             loss.backward()
             optimizer.step()
-            print(f'Batch {i+1}, Loss: {loss}')
+            
+            printProgressBar(i + 1, l, prefix = f'Epoch: {epoch}', suffix = f'Loss: {loss}', length = 50)
     
         
         lltest, acctest = evaluate_model(net, dl_test)
