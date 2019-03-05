@@ -23,7 +23,7 @@ To train the model the recordings first need to be converted in spectrograms. Th
 * Mel spectrogram: mel_s
 * Chirp spectrogram: chirp_s
 
-Because our server space is limited, we choose to only make spectrograms from the parts in the recordings where a bird is actually present. [This script](data_preparation/Signal_Extraction.py) localizes the parts where the volume is 
+Because our server space is limited, we choose to only make spectrograms from the parts in the recordings where a bird is actually present. Following the methodology described in [Sprengel et al. 1016](http://ceur-ws.org/Vol-1609/16090547.pdf), [this script](data_preparation/Signal_Extraction.py) localizes spectrogram sections with amplitudes above 3 times frequency- and time-axis medians, allowing us to extract audio sections most likely containing foreground bird vocalizations.
 
 ## Model
 
