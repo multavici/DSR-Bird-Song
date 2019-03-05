@@ -29,7 +29,8 @@ from torch.utils.data import DataLoader
 from Datasets.static_dataset import SpectralDataset
 from models.sparrow import Sparrow
 from utils import printProgressBar
-
+import os
+import sys
 
 df_train = pd.read_csv('storage/df_train_local.csv')
 df_test = pd.read_csv('storage/df_test_local.csv')
@@ -43,13 +44,12 @@ DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
 #print('{"chart": "test accuracy", "axis": "epochs"}')
 
 def main():
-    MODEL = Sparrow
-    BATCHSIZE = 32
-    OPTIMIZER = 'Adam'
-    EPOCHS = 50
-    CLASSES = 10
-    LR = 0.001
-    
+    MODEL = local_config.inputs['MODEL']
+    BATCHSIZE = local_config.inputs['BATCHSIZE']
+    OPTIMIZER = local_config.inputs['OPTIMIZER']
+    EPOCHS = local_config.inputs['EPOCHS']
+    CLASSES = local_config.inputs['CLASSES']
+    LR = local_config.inputs['LR']    
     
     ##########################################################################
     
@@ -168,4 +168,15 @@ def main():
 
 
 if __name__ == "__main__":
+
+    if len(sys.argv) == 1:
+        print('usage: %s config_file' % os.path.basename(sys.argv[0]))
+        sys.exit(2)
+
+    config_file = os.path.basename(sys.argv[1])
+    if config_file[-3:] == ".py":
+        config_file = config_file[:-3]
+
+    local_config = __import__(config_file, globals(), locals(), [])
+
     main()
