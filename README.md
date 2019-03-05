@@ -2,7 +2,8 @@
 
 ## What is it?
 
-This is the repo for our Portfolio project for [DSR](https://datascienceretreat.com/). Goal is to classify birds from their songs.
+This is the repo for our Portfolio project for [DSR](https://datascienceretreat.com/). The goal is to train a model that can reliably classify bird species from their songs and make it available as a webservice/app. 
+Our motivation is twofold: we want to contribute to the development of tools for automated biodiversity monitoring and provide bird enthusiasts with a handy tool.
 
 Contributors: 
 * [Tim Bauer](https://github.com/bimtauer)
