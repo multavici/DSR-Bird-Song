@@ -28,9 +28,9 @@ Because our server space is limited, we choose to only make spectrograms from th
 ## Model
 
 A convolutional neural network is used on the spectrograms to classify. We use the following Neural Networks:
-* Bulbul
-* Sparrow
-* ..
+* Bulbul [(Grill & Schlüter, 2017)](https://www.eurasip.org/Proceedings/Eusipco/Eusipco2017/papers/1570347092.pdf)
+* Sparrow [(Grill & Schlüter, 2017)](https://www.eurasip.org/Proceedings/Eusipco/Eusipco2017/papers/1570347092.pdf)
+* SparrowExp [(Schlüter, 2018)](http://www.ofai.at/~jan.schlueter/pubs/2018_birdclef.pdf)
 
 We propose two alternatives:
 * 
