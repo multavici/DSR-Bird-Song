@@ -18,8 +18,7 @@ c = conn.cursor()
 query = '''SELECT r.id, r.file
     FROM taxonomy AS t
     JOIN recordings AS r ON t.id = r.taxonomy_id
-    WHERE t.german = 1.0
-    LIMIT 100'''
+    WHERE t.german = 1.0'''
 
 recordings = c.execute(query).fetchall()
 
