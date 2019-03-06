@@ -27,10 +27,11 @@ from sklearn.metrics import accuracy_score, log_loss
 
 from torch.utils.data import DataLoader
 from Datasets.static_dataset import SpectralDataset
-from models.sparrow import Sparrow
 from utils import printProgressBar
+
 import os
 import sys
+import importlib
 
 df_train = pd.read_csv('storage/df_train_local.csv')
 df_test = pd.read_csv('storage/df_test_local.csv')
@@ -43,13 +44,17 @@ DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
 #print('{"chart": "train accuracy", "axis": "epochs"}')
 #print('{"chart": "test accuracy", "axis": "epochs"}')
 
-def main():
+def main(config_file):
+ 
+    local_config = __import__(config_file) 
     MODEL = local_config.inputs['MODEL']
+    model = getattr(__import__('models.'+ MODEL, fromlist=[MODEL]), MODEL)
+    
     BATCHSIZE = local_config.inputs['BATCHSIZE']
     OPTIMIZER = local_config.inputs['OPTIMIZER']
     EPOCHS = local_config.inputs['EPOCHS']
     CLASSES = local_config.inputs['CLASSES']
-    LR = local_config.inputs['LR']    
+    LR = local_config.inputs['LR']
     
     ##########################################################################
     
@@ -63,10 +68,11 @@ def main():
     
     ##########################################################################
     
-    time_axis = ds_test.shape[1]
-    freq_axis = ds_test.shape[0]
+    time_axis = 1000 #ds_test.shape[1]
+    freq_axis = 80 #ds_test.shape[0]
     
-    net = MODEL(time_axis=time_axis, freq_axis=freq_axis, no_classes=CLASSES)
+    net = model(time_axis=time_axis, freq_axis=freq_axis, no_classes=CLASSES)
+    print('dataloaders initialized')
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(net.parameters(), lr = LR)
     
@@ -177,6 +183,4 @@ if __name__ == "__main__":
     if config_file[-3:] == ".py":
         config_file = config_file[:-3]
 
-    local_config = __import__(config_file, globals(), locals(), [])
-
-    main()
+    main(config_file)
