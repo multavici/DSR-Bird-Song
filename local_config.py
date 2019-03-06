@@ -13,5 +13,5 @@ inputs = {'MODEL' : 'Bulbul',
               'OPTIMIZER' : 'Adam',
               'EPOCHS' : 50,
               'CLASSES' : 10,
-              'LR' : 0.005,
+              'LR' : 0.0001,
               }
