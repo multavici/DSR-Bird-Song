@@ -27,7 +27,6 @@ from sklearn.metrics import accuracy_score, log_loss
 
 from torch.utils.data import DataLoader
 from Datasets.static_dataset import SpectralDataset
-#from models.sparrow import Sparrow
 from utils import printProgressBar
 
 import os
@@ -56,7 +55,6 @@ def main(config_file):
     EPOCHS = local_config.inputs['EPOCHS']
     CLASSES = local_config.inputs['CLASSES']
     LR = local_config.inputs['LR']
-    print(BATCHSIZE)    
     
     ##########################################################################
     
