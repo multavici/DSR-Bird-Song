@@ -18,7 +18,7 @@ c = conn.cursor()
 query = '''SELECT r.id, r.file
     FROM taxonomy AS t
     JOIN recordings AS r ON t.id = r.taxonomy_id
-    WHERE t.german = 1.0'''
+    WHERE t.german = 1.0 AND downloaded IS NULL'''
 
 recordings = c.execute(query).fetchall()
 
