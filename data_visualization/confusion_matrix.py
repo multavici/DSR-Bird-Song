@@ -1,8 +1,10 @@
 from sklearn.metrics import confusion_matrix
 import matplotlib.pyplot as plt
 import itertools
+import torch
+import numpy as np
 
-def plot_confusion_matrix(Dataset, model, CLASSES)
+def plot_confusion_matrix(Dataset, model, CLASSES):
     y_test = []
     y_pred = []
     for i in range(len(Dataset)):

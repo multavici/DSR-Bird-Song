@@ -53,7 +53,7 @@ class Zilpzalp(nn.Module):
             nn.BatchNorm2d(64),
             nn.ReLU(),
             nn.MaxPool2d(kernel_size=2, stride =2),
-            
+                        
             nn.Conv2d(64,no_classes, kernel_size=1, stride=1),
             )
     
