@@ -5,7 +5,6 @@
 *.wav
 *.png
 *.h5
-*.ipynb
 *.mp3
 .directory
 .DS_store
