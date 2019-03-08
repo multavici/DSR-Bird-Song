@@ -36,12 +36,10 @@ This script gets the metadata that we found useful: duration, sample rate, bitra
 
 ## Converting the audio
 
-The recordings from Xeno-Canto are all mp3 files but come in a myriad of different bitrates, sample rates and channels. To make the pre-processing step while training the model as fast as possible we chose to convert all the recordings with these parameters:
+The recordings from Xeno-Canto are all mp3 files but come in a myriad of different bitrates, sample rates and channels. To make the pre-processing step while training the model as fast as possible we chose to convert all the recordings to a same set of output paramaters:
 
 * sample rate: 22050 /s
 * bitrate: 128 kb/s
 * channels: 1 (mono)
 
-
-
-
+We used [ffmpeg](http://ffmpeg.org/) on the paperspace server in [this](https://hub.docker.com/r/lansmash/docker-ffmpeg) docker container.
