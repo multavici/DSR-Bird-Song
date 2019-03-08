@@ -39,9 +39,7 @@ This script gets the metadata that we found useful: duration, sample rate, bitra
 The recordings from Xeno-Canto are all mp3 files but come in a myriad of different bitrates, sample rates and channels. To make the pre-processing step while training the model as fast as possible we chose to convert all the recordings with these parameters:
 
 sample rate| 22050 /s
- :---:     | :---:
 bitrate:   | 128 kb/s
- :---:     | :---:
 channels:  |        1
 
 
