@@ -32,5 +32,16 @@ Once downloaded, we flagged all the downloaded recordings in the database.
 ## Getting extra metadata
 
 Some of the metadate of the recordings (mostly technical audio data) is not included in the info that we get through the Xeno-Canto api but is available on the [webpage](https://www.xeno-canto.org/12345) of each recording. 
-This script gets the metadata that we found useful: duration, sample frequency, bitrate and amount of channels (1 for mono, 2 for stereo)
+This script gets the metadata that we found useful: duration, sample rate, bitrate and amount of channels (1 for mono, 2 for stereo)
+
+## Converting the audio
+
+The recordings from Xeno-Canto are all mp3 files but come in a myriad of different bitrates, sample rates and channels. To make the pre-processing step while training the model as fast as possible we chose to convert all the recordings with these parameters:
+
+sample rate| 22050 /s
+ :---:     | :---:
+bitrate:   | 128 kb/s
+ :---:     | :---:
+channels:  |        1
+
 
