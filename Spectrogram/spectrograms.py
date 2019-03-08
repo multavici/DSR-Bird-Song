@@ -11,15 +11,15 @@ from .Chirplet import FCT
 
 ### 1. A SIMPLE STFT
 def stft_s(audio):
+    """Short-Time Fourier Transformation"""
     return np.abs(librosa.stft(audio, center=False))
 
 ##### 2. Mel  spectorgram
 def mel_s(audio):
-    sr = 22050
-    return librosa.feature.melspectrogram(audio, sr=sr, n_fft=2048, hop_length=512, n_mels=128, fmax=8000)
+    """Mel spectrogram"""
+    return librosa.feature.melspectrogram(audio, sr=22050, n_fft=2048, hop_length=512, n_mels=128, fmax=8000)
 
 ##### 3. chirp
 def chirp_s(audio):
+    """Chirplet Spectrogram"""
     return FCT().compute(audio)
-
-

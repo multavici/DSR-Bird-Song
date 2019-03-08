@@ -15,54 +15,51 @@ class Sparrow(nn.Module):
     Model based on the sparrow SUBMISSION by Gril et.al 2017
     25th European Sugnal Processing Conference
     '''
-           
-    def __init__(self, freq_axis=701, time_axis=80,  no_classes=10):
+    def __init__(self, freq_axis=701, time_axis=80, no_classes=10):
 
-        super(Sparrow , self).__init__()
-        
+        super(Sparrow, self).__init__()
+
         self.time_axis = time_axis
         self.freq_axis = freq_axis
-        self.__name__='Sparrow'
- 
+        self.__name__ = 'Sparrow'
+
         self.freq_axis = np.floor_divide(self.freq_axis-4,3)
         self.freq_axis = np.floor_divide(self.freq_axis-22,3)
-
 
         self.time_axis = np.floor_divide(self.time_axis-4,3)
         self.time_axis = np.floor_divide(self.time_axis-6,3)
         self.time_axis = np.floor_divide(self.time_axis-8,1)
-        
-                    
+
         self.layer1 = nn.Sequential(
             nn.Conv2d(1,32, kernel_size=3, stride=1), #padding=1),
             nn.BatchNorm2d(32),
-            nn.ReLU(),
-           )
+            nn.ReLU()
+            )
 
         self.layer2 = nn.Sequential(
-            nn.Conv2d(32,32, kernel_size=3, stride=1), #padding=1), 
+            nn.Conv2d(32,32, kernel_size=3, stride=1), #padding=1),
             nn.BatchNorm2d(32),
             nn.ReLU(),
-            nn.MaxPool2d(kernel_size=3, stride =3)
-           )
+            nn.MaxPool2d(kernel_size=3, stride=3)
+            )
 
         self.layer3 = nn.Sequential(
-            nn.Conv2d(32,32, kernel_size=3, stride=1), # padding=1), 
+            nn.Conv2d(32,32, kernel_size=3, stride=1), # padding=1),
             nn.BatchNorm2d(32),
             nn.ReLU(),
-           )
+            )
         
         self.layer4 = nn.Sequential(
-            nn.Conv2d(32,32, kernel_size=3, stride=1), # padding=1), 
+            nn.Conv2d(32,32, kernel_size=3, stride=1), # padding=1),
             nn.BatchNorm2d(32),
             nn.ReLU(),
            )
 
         self.layer5 = nn.Sequential(
-            nn.Conv2d(32,64, kernel_size=(19,3), stride=1), # padding=1), 
+            nn.Conv2d(32,64, kernel_size=(19,3), stride=1), # padding=1),
             nn.BatchNorm2d(64),
             nn.ReLU(),
-            nn.MaxPool2d(kernel_size=3, stride =3)
+            nn.MaxPool2d(kernel_size=3, stride=3)
            )
 
         self.layer6 = nn.Sequential(
@@ -106,7 +103,7 @@ class Sparrow(nn.Module):
 
 def main():
     image = torch.randn(1, 1, 80, 701)
-    cnn = Sparrow (80, 701, 10)
+    cnn = Sparrow(80, 701, 10)
     output = cnn(image)
     print("input shape:")
     print(image.shape)

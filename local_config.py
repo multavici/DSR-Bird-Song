@@ -11,7 +11,7 @@ Created on Tue Mar  5 12:29:19 2019
 inputs = {'MODEL' : 'Zilpzalp',
               'BATCHSIZE' : 32,
               'OPTIMIZER' : 'Adam',
-              'EPOCHS' : 50,
+              'EPOCHS' : 70,
               'CLASSES' : 10,
-              'LR' : 0.0001,
+              'LR' : 0.0005,
               }
