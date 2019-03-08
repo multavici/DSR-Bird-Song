@@ -99,8 +99,8 @@ class SoundDataset(Dataset):
 
 
         self.log = {'sent' : [],
-                   'received' : [],
-                   'inventory' : []}
+                    'received' : [],
+                    'inventory' : []}
 
         # Prepare the first batch:
         print('Preloading first batch... this might take a moment.')
