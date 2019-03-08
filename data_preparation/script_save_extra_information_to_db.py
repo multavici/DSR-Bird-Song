@@ -1,3 +1,9 @@
+'''
+This script uses as input text files with json strings that contain the scraped
+info from the Xeno-Canto webpages for each recording. It cleans the data and 
+saves the useful data in the sqlite database
+'''
+
 import os
 import json
 import pandas as pd
@@ -32,13 +38,36 @@ for file_string in files:
 
 
 df = pd.DataFrame(d_list)
+
+# we are only interested in sample rate, duration, channels and bitrate
+df.drop(['background_species', 'length', 'no_notes', 'pitch', 'speed', 'type', 
+         'variable', 'volume', 'xeno_canto_id'], axis=1, inplace=True)
+
 df.drop(df.index[df.channels == '0'], inplace=True)
 df.drop(df.index[df['sr'].isnull()], inplace=True)
 
 df['sr'] = df['sr'].apply(lambda x: int(x.split(" ")[0]))
-df['duration'] = df['duration'].apply(lambda x: int(x.split(" ")[0]))
+df['duration'] = df['duration'].apply(lambda x: float(x.split(" ")[0]))
 df['channels'] = df['channels'].apply(lambda x: int(x.split(" ")[0]))
-df['channels'] = df['bitrate'].apply(lambda x: int(x.split(" ")[0]))
+df['bitrate'] = df['bitrate'].apply(lambda x: int(x.split(" ")[0]))
+
+
+query = '''UPDATE recordings
+    SET scraped_bitrate = ?, scraped_channels = ?, scraped_duration = ?, 
+        scraped_sr = ?
+    WHERE id = ?'''
+
+cols = ['bitrate', 'channels', 'duration', 'sr', 'id']
+df = df[cols]
+
+c.executemany(query, df.itertuples(index=False))
+conn.commit()
+
+
+'''
+This was an attempt to scrape the background species field and get the id's of 
+the mentioned species. These fields are input manually. At this moment it's
+too much work to get usable information from this.
 
 taxonomy_table = pd.read_sql('select * from taxonomy', conn)
 
@@ -55,3 +84,4 @@ def get_taxonomy_ids(s):
     return l
 
 df['background_species'] = df['background_species'].apply(get_taxonomy_ids)
+'''
