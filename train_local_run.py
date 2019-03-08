@@ -55,7 +55,7 @@ def main(config_file):
     dl_test = DataLoader(ds_test, BATCHSIZE)
 
     ds_train = SpectralDataset(df_train)
-    dl_train = DataLoader(ds_train, BATCHSIZE)
+    dl_train = DataLoader(ds_train, BATCHSIZE, shuffle = True)
     print('dataloaders initialized')
 
     ##########################################################################
@@ -84,6 +84,7 @@ def main(config_file):
             for batch in test_loader:
                 X, y = batch
                 X = X.float()
+                X = X ** 0.17
 
                 X = X.to(DEVICE)
                 y = y.to(DEVICE).detach().cpu().numpy()
@@ -107,36 +108,47 @@ def main(config_file):
             return ll, acc
 
     start_epoch = 0
-    collect_loss = []
     best_acc = 0
     start_time = time.time()
     fname='checkpoint.'+str(uuid.uuid4())+'.tar'
 
     for epoch in range(EPOCHS):
+        n_correct, n_total = 0, 0
+        running_loss = 0.0
         l = len(dl_train)
-        printProgressBar(0, l, prefix = f'Epoch: {epoch}', suffix = 'Loss: 0', length = 50)
+        printProgressBar(0, l, prefix = f'Epoch: {epoch+1}', suffix = 'Loss: 0, Acc: 0', length = 50)
         for i, batch in enumerate(dl_train):
             X, y = batch
             X = X.float()
-
+            X = X ** 0.17
             X = X.to(DEVICE)
             y = y.to(DEVICE)
 
             optimizer.zero_grad()
-
             y_pred = net(X)
-
             loss = criterion(y_pred, y)
             loss.backward()
             optimizer.step()
-            printProgressBar(i + 1, l, prefix = f'Epoch: {epoch}', suffix = f'Loss: {loss}', length = 50)
+            
+            running_loss += loss.item()
+            # calculate accuracy of predictions in the current batch
+            n_correct += np.sum(np.argmax(F.softmax(y_pred, dim=-1).detach().numpy(), axis = 1) == y.detach().numpy())
+            n_total += len(y)
+            
+            current_loss = running_loss/(i+1)
+            current_acc = n_correct/n_total
+            
+            printProgressBar(i + 1, l, prefix = f'Epoch: {epoch+1}', suffix = f'Loss: {current_loss}, Acc: {current_acc}', length = 50)
 
-            #collect_loss.append(float(loss.detach().cpu().numpy()))
-
+        lltrain, acctrain = evaluate_model(net, dl_train)
         lltest, acctest = evaluate_model(net, dl_test)
+        
+
 
         # collect_metrics.append((lltest, lltrain, acctest, acctrain))
+        print("train: loss: {}  acc: {}".format(lltrain, acctrain))
         print("test: loss: {}  acc: {}".format(lltest, acctest))
+        
         is_best = acctest > best_acc
         best_acc = max(acctest, best_acc)
         print(best_acc)
