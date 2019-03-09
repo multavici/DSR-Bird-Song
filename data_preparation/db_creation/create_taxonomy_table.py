@@ -7,8 +7,15 @@ import sqlite3
 import json
 import pandas as pd
 
+if 'HOSTNAME' in os.environ:
+    # script runs on server
+    DATABASE_DIR = '/storage/db.sqlite'
+else:
+    # script runs locally
+    DATABASE_DIR = 'storage/db.sqlite'
+
 # Create connection to database
-conn = sqlite3.connect("db.sqlite")
+conn = sqlite3.connect(DATABASE_DIR)
 c = conn.cursor()
 
 
