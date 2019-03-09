@@ -26,6 +26,7 @@ class Zilpzalp(nn.Module):
             nn.Conv2d(64,128, kernel_size=(9, 3), stride=1),
             nn.BatchNorm2d(128),
             nn.ReLU(),
+            nn.Dropout(0.3),
             nn.MaxPool2d(kernel_size=3, stride =3),
             )
 
@@ -44,6 +45,7 @@ class Zilpzalp(nn.Module):
             nn.Conv2d(64,128, kernel_size=(3, 9), stride=1),
             nn.BatchNorm2d(128),
             nn.ReLU(),
+            nn.Dropout(0.3),
             nn.MaxPool2d(kernel_size=3, stride =3),
             )
 
@@ -52,6 +54,7 @@ class Zilpzalp(nn.Module):
             nn.Conv2d(128,64, kernel_size=3, stride=1),
             nn.BatchNorm2d(64),
             nn.ReLU(),
+            nn.Dropout(0.3),
             nn.MaxPool2d(kernel_size=2, stride =2),
 
             nn.Conv2d(64,no_classes, kernel_size=1, stride=1),

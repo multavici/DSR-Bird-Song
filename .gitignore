@@ -1,6 +1,7 @@
 .ipynb_checkpoints/
 *.wav
 *.png
+*.tar
 *.h5
 *.wav
 *.png
