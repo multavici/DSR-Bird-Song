@@ -60,7 +60,7 @@ class Zilpzalp(nn.Module):
     def forward(self, x):
         batch_size = x.shape[0]
         freq = self.frequency(x).view(batch_size, 128, -1, 1)
-        time = self.time(x).view(bs, 128, 1, -1)
+        time = self.time(x).view(batch_size, 128, 1, -1)
 
         comb = torch.matmul(freq, time)
 
