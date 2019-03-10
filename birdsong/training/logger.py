@@ -32,7 +32,7 @@ def write_summary(writer, epoch, train_stats, test_stats, img):
     writer.add_scalar('Train/acc', train_stats[1], epoch)
     writer.add_scalar('test/loss', test_stats[0], epoch)
     writer.add_scalar('test/acc', test_stats[1], epoch)
-    writer.export_scalars_to_json("./all_scalars.json")
+    #writer.export_scalars_to_json("./all_scalars.json")
 
 
 def save_checkpoint(state, is_best, filename='./checkpoint.pth.tar'):

@@ -7,7 +7,7 @@ Created on Fri Mar  8 21:33:11 2019
 """
 
 from torch.autograd import Variable
-from utils import printProgressBar
+from .utils import printProgressBar
 
 
 def train(model, data_loader, epoch, optimizer, criterion, DEVICE):

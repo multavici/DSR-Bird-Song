@@ -13,19 +13,15 @@ from torch import nn
 from torch.utils.data import Dataset, DataLoader
 import torchvision.transforms as transforms
 import torch.optim as optim
+import pandas as pd
 from tensorboardX import SummaryWriter
 
-
-DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
-
-
-import pandas as pd
-from birdsong.training import train, evaluate, conf_mat, logger
-
-
 sys.path.append("../birdsong")
+from training import *
+
 from  FMnist_dataset import FashionMnist
     
+DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 def main(config_file):
      #read from config   
@@ -40,10 +36,11 @@ def main(config_file):
     
    
    #logging
-    date = time.strftime('%d/%m/%Y')
-    log_path = './run_log' + 'MODEL_' + date
+    start_time = time.time()
+    date = time.strftime('%d-%m-%Y-%H-%M-%S', time.localtime())
+    log_path = '../birdsong/run_log/' + MODEL+ '_' + date
     state_fname, log_fname, summ_tensor_board = logger.create_log(log_path)
-    writer = SummaryWriter(summ_tensor_board)
+    writer = SummaryWriter(str(summ_tensor_board))
 
     #ds_test = SpectralDataset(df_test)
     #ds_train = SpectralDataset(df_train)
@@ -58,8 +55,8 @@ def main(config_file):
     time_axis = 28 #goaway
     freq_axis = 28 #goaway
 
-    dftrain = pd.read_csv('fashion-mnist_train.csv').sample(frac=0.1) #goaway
-    dftest = pd.read_csv('fashion-mnist_test.csv').sample(frac=0.1) #goaway
+    dftrain = pd.read_csv('../fashion-mnist_train.csv').sample(frac=0.1) #goaway
+    dftest = pd.read_csv('../fashion-mnist_test.csv').sample(frac=0.1) #goaway
     RESIZE = 28  #goaway
     transform_train = transforms.Compose([transforms.Resize(RESIZE), transforms.ToTensor()]) #goaway
     transform_test = transforms.Compose([transforms.Resize(RESIZE), transforms.ToTensor()]) #goaway
@@ -73,24 +70,21 @@ def main(config_file):
     test_loader  = DataLoader(fmnist_test, batch_size=batch_size) #goaway
 
 
-    
-    
     net = model(time_axis=time_axis, freq_axis=freq_axis, num_classes=num_classes)
     optimizer = optim.Adam(net.parameters(), lr = lr)
 
     #local vars
-    start_time = time.time()
     best_acc = 0
     for epoch in range(num_epochs):
         
-        train(net, train_loader, epoch, optimizer, criterion, DEVICE)
+        train.train(net, train_loader, epoch, optimizer, criterion, DEVICE)
         
-        train_stats, train_conf_matrix = evaluate(train_loader, num_classes)
-        test_stats, test_conf_matrix = evaluate(test_loader, num_classes)
-        
+        train_stats, train_conf_matrix = evaluate.evaluate(net, train_loader, criterion, num_classes, DEVICE)
+        test_stats, test_conf_matrix = evaluate.evaluate(net, train_loader, criterion, num_classes, DEVICE)
+
         is_best = test_stats[1] > best_acc
         best_acc = max(test_stats[1], best_acc)
-        print(best_acc)
+        print('Best Accuracy: {:.4f}'.format(best_acc))
         logger.save_checkpoint({
             'epoch': epoch + 1,
             'state_dict': net.state_dict(),

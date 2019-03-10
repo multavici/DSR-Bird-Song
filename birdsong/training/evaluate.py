@@ -9,7 +9,7 @@ Created on Fri Mar  8 21:10:53 2019
 import torch
 from torch.autograd import Variable
 #from sklearn import metrics
-from conf_mat import calc_conf_mat
+from .conf_mat import calc_conf_mat
 
 
 def evaluate(model, data_loader, criterion, num_classes, DEVICE):
@@ -52,6 +52,5 @@ def evaluate(model, data_loader, criterion, num_classes, DEVICE):
         
     print('Average loss: {:.4f}, Accuracy: {}/{} ({:.3f}%)'.format(
         loss, correct, len(data_loader.dataset), acc))
-    
 
-    return (loss, acc), conf_matrix
+    return (loss.item(), acc), conf_matrix
