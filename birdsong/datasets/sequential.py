@@ -153,7 +153,7 @@ class SpectralDataset(Dataset):
         self.df = df
         for k,v in kwargs.items():
             setattr(self, k, v)
-        
+
         self.shape = (self[0][0].shape[1], self[0][0].shape[2])
 
     def __len__(self):
@@ -167,10 +167,8 @@ class SpectralDataset(Dataset):
         X /= X.max()
         X = np.expand_dims(X, 0)
         return X, y
-    
+
     def unpickle(self, path):
         with open(path, 'rb') as f:
             slice_ = pickle.load(f)
         return slice_
-    
-    
