@@ -13,11 +13,13 @@ if 'HOSTNAME' in os.environ:
 else:
     # script runs locally
     DATABASE_DIR = 'storage/db.sqlite'
+
 QUERY_URL = 'https://www.xeno-canto.org/api/2/recordings?query='
 
 # create connection to database
 conn = sqlite3.connect(DATABASE_DIR)
 c = conn.cursor()
+
 
 def get_recordings_json(family):
     url = QUERY_URL + family
@@ -29,6 +31,7 @@ def get_recordings_json(family):
             data['recordings'] += page.json()['recordings']
     return data
 
+
 # get all families in db
 c.execute('''SELECT DISTINCT family FROM taxonomy''')
 families = []
@@ -36,12 +39,14 @@ families = []
 for resp in c.fetchall():
     families.append(resp[0])
 
-# update q column
+# update quality column
 for family in families:
     data = get_recordings_json(family)
     print(family, len(data['recordings']))
 
     for recording in data['recordings']:
-        c.execute('UPDATE recordings SET q = ? WHERE id = ?',
-            (recording['q'], recording['id']))
+        c.execute('UPDATE recordings SET quality = ? WHERE id = ?',
+                  (recording['q'], recording['id']))
     conn.commit()
+
+conn.close()
