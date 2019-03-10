@@ -44,10 +44,14 @@ We propose two alternatives:
 
 For model training we work with [Paperspace](https://www.paperspace.com/)
 
-Running a job: 
-
+Running a job locally: 
+- adjust parameters in scripts/config.py
 ```
-paperspace jobs create --command "python import_test.py" --container "multavici/bird-song:latest" --apiKey <api-Key> --workspace "https://github.com/multavici/DSR-Bird-Song" --machineType "G1"
+sh run.sh
+```
+Running a job on Paperspace: 
+```
+paperspace jobs create --command "sh run.sh" --container "multavici/bird-song:latest" --apiKey <api-Key> --workspace "https://github.com/multavici/DSR-Bird-Song" --machineType "G1"
 ```
 
 Enter bash in docker container with current PWD mounted:
