@@ -40,7 +40,7 @@ for file_string in files:
 df = pd.DataFrame(d_list)
 
 # we are only interested in sample rate, duration, channels and bitrate
-df.drop(['background_species', 'length', 'no_notes', 'pitch', 'speed', 'type', 
+df.drop(['background_species', 'length', 'no_notes', 'pitch', 'speed', 'type',
          'variable', 'volume', 'xeno_canto_id'], axis=1, inplace=True)
 
 df.drop(df.index[df.channels == '0'], inplace=True)
