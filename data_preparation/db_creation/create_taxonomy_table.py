@@ -6,6 +6,7 @@ up with the scraped data in taxonomy.txt
 import sqlite3
 import json
 import pandas as pd
+import os
 
 if 'HOSTNAME' in os.environ:
     # script runs on server
