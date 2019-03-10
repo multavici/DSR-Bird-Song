@@ -25,3 +25,4 @@ Test Birdsounds/
 testing.py
 *.prof
 import_test_local.py
+run_log/
