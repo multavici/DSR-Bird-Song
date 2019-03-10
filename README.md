@@ -41,11 +41,11 @@ We propose two alternatives:
 * 
 
 ## Model training
+Configure your run in scripts/config.py
 
 For model training we work with [Paperspace](https://www.paperspace.com/)
 
 Running a job locally: 
-- adjust parameters in scripts/config.py
 ```
 sh run.sh
 ```
