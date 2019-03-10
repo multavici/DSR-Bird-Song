@@ -55,7 +55,7 @@ for family in families:
             break
         # add to recordings table
         c.execute('''INSERT INTO recordings (xeno_canto_id, db, taxonomy_id, 
-            lat, long, country, file, time, date)
+            lat, long, country, file, time, date, quality)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)''',
                   (recording['id'],
                    'xeno_canto',
@@ -65,7 +65,8 @@ for family in families:
                    recording['cnt'].lower(),
                    recording['file'],
                    recording['time'],
-                   recording['date']))
+                   recording['date'],
+                   recording['q']))
         assert c.rowcount == 1, f'{recording["id"]}insertion failed'
     conn.commit()
 
