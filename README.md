@@ -43,13 +43,12 @@ We propose two alternatives:
 ## Model training
 Configure your run in scripts/config.py
 
-For model training we work with [Paperspace](https://www.paperspace.com/)
 
 Running a job locally: 
 ```
 sh run.sh
 ```
-Running a job on Paperspace: 
+Running a job on [Paperspace](https://www.paperspace.com/): 
 ```
 paperspace jobs create --command "sh run.sh" --container "multavici/bird-song:latest" --apiKey <api-Key> --workspace "https://github.com/multavici/DSR-Bird-Song" --machineType "G1"
 ```
