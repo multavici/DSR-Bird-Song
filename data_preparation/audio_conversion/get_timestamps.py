@@ -5,7 +5,7 @@ database.
 """
 
 import os
-from Signal_Extraction import signal_timestamps
+from .signal_extraction import signal_timestamps
 import sqlite3
 
 if 'HOSTNAME' in os.environ:
