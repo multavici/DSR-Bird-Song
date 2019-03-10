@@ -160,7 +160,7 @@ class SpectralDataset(Dataset):
         return len(self.df)
 
     def __getitem__(self, i):
-        path = '../' + self.df.path.iloc[i] #TODO Remove
+        path = self.df.path.iloc[i]
         y = self.df.label.iloc[i]
         X = self.unpickle(path)
         X -= X.min()

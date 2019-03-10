@@ -8,7 +8,7 @@ Created on Fri Mar  8 22:06:04 2019
 import time
 import os
 import sys
-sys.path.append("../birdsong")
+sys.path.append("./birdsong")
 import torch
 from torch import nn
 from torch.utils.data import DataLoader
@@ -23,9 +23,9 @@ from datasets.sequential import SpectralDataset
 
 DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
 
-TRAIN = pd.read_csv('../storage/df_train_local.csv')
-TEST = pd.read_csv('../storage/df_test_local.csv')
-LABELS = pd.read_csv('../storage/label_codes.csv')
+TRAIN = pd.read_csv('./storage/df_train_local.csv')
+TEST = pd.read_csv('./storage/df_test_local.csv')
+LABELS = pd.read_csv('./storage/label_codes.csv')
 
 def main(config_file):
     #read from config
@@ -41,7 +41,7 @@ def main(config_file):
     #logging
     start_time = time.time()
     date = time.strftime('%d-%m-%Y-%H-%M-%S', time.localtime())
-    log_path = f'../birdsong/run_log/{model_name}_{date}'
+    log_path = f'./birdsong/run_log/{model_name}_{date}'
     state_fname, log_fname, summ_tensor_board = logger.create_log(log_path)
     writer = SummaryWriter(str(summ_tensor_board))
 

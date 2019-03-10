@@ -24,6 +24,7 @@ def evaluate(model, data_loader, criterion, num_classes, DEVICE):
         for data, target in data_loader:
             
             data, target = Variable(data), Variable(target)
+            data = data.float()
             data = data.to(DEVICE)
             target = target.to(DEVICE)
 
