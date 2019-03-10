@@ -48,12 +48,12 @@ def dump_log_txt(date, start_time, local_config, train_stats, test_stats, best_a
     total_time = time.time() - start_time
     log = {
         'date': date,
-        'no_classes': local_config.inputs['CLASSES'],
-        'batchsize': local_config.inputs['BATCHSIZE'],
-        'optimizer': local_config.inputs['OPTIMIZER'],
-        'epochs': local_config.inputs['EPOCHS'],
-        'learning_rate': local_config.inputs['LR'],
-        'model': local_config.inputs['MODEL'],
+        'no_classes': local_config.INPUTS['CLASSES'],
+        'batchsize': local_config.INPUTS['BATCHSIZE'],
+        'optimizer': local_config.INPUTS['OPTIMIZER'],
+        'epochs': local_config.INPUTS['EPOCHS'],
+        'learning_rate': local_config.INPUTS['LR'],
+        'model': local_config.INPUTS['MODEL'],
         'final_accuracy_test': test_stats[1],
         'final_loss_test': test_stats[0],
         'total_time': total_time,

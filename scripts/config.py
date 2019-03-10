@@ -8,10 +8,10 @@ Created on Tue Mar  5 12:29:19 2019
 
 #!/usr/bin/env python
 
-inputs = {'MODEL' : 'Bulbul',
-              'BATCHSIZE' : 32,
-              'OPTIMIZER' : 'Adam',
-              'EPOCHS' : 50,
-              'CLASSES' : 10,
-              'LR' : 0.001,
-              }
+INPUTS = {'MODEL' : 'Bulbul',
+          'BATCHSIZE' : 32,
+          'OPTIMIZER' : 'Adam',
+          'EPOCHS' : 50,
+          'CLASSES' : 10,
+          'LR' : 0.001,
+          }
