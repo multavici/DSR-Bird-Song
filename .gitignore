@@ -1,4 +1,7 @@
+# Notebooks
 .ipynb_checkpoints/
+
+# Data files
 *.wav
 *.png
 *.tar
@@ -8,21 +11,39 @@
 *.h5
 *.mp3
 .directory
+
+# Apple files
 .DS_store
+
+# Python Cache
 __pycache__/
-storage/slices/
+
+# Data directory
+storage/
+
+# VS Code files
 .vscode
+
+# Paperspace files
 .ps_project
+
+# Docker files
+dockerfiles/
 .dockerignore
 Dockerfile
 docker-compose.debug.yml
 docker-compose.yml
 environment.yml
-requirements.txt
+
+# Local test files
 test.py
-env/
 Test Birdsounds/
 testing.py
+
+# Environment files
+env/
 *.prof
 import_test_local.py
-run_log/
+
+# Requirements
+requirements.txt
