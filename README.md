@@ -14,12 +14,12 @@ Contributors:
 
 The bird recordings are downloaded form the [Xeno-Canto database](https://www.xeno-canto.org/) with 
 ```
-python data_preparation/script_download_files.py
+python data_preparation/audio_acquisition/download_files_threaded.py
 ```
 
 ## Pre-processing
 
-The audio recordings vary greatly in quality and number of species present. Assuming that the foreground species is usually the loudest in a recording we follow the methodology described in [Sprengel et al., 2016](http://ceur-ws.org/Vol-1609/16090547.pdf) to extract signal sections from a noisy background. [This script](data_preparation/Signal_Extraction.py)  localizes spectrogram sections with amplitudes above 3 times frequency- and time-axis medians, allowing us to extract audio sections most likely containing foreground bird vocalizations. We run the script over all recordings in our storage and store the respective timestamps for signal sections in our database.
+The audio recordings vary greatly in quality and number of species present. Assuming that the foreground species is usually the loudest in a recording we follow the methodology described in [Sprengel et al., 2016](http://ceur-ws.org/Vol-1609/16090547.pdf) to extract signal sections from a noisy background. [This script](data_preparation/audio_conversion/signal_extraction.py)  localizes spectrogram sections with amplitudes above 3 times frequency- and time-axis medians, allowing us to extract audio sections most likely containing foreground bird vocalizations. We run the script over all recordings in our storage and store the respective timestamps for signal sections in our database.
 
 To train the model the recordings first need to be converted in spectrograms. There are different ways of doing this:
 * Fourier transformation: stft_s
