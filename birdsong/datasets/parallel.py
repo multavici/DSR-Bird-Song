@@ -22,7 +22,7 @@ import numpy as np
 from .tools.io import load_audio, get_signal
 from multiprocessing import Process, Queue, Event
 from multiprocessing.pool import ThreadPool
-
+from pandas.api.types import is_numeric_dtype
 
 
 class Preloader(Process):
@@ -67,15 +67,17 @@ class SoundDataset(Dataset):
     def __init__(self, df, **kwargs):
         """ Initialize with a dataframe containing:
         (path, label, duration, total_signal, timestamps)
-        kwargs: batchsize = 10, window = 1500, stride = 500, spectrogram_func = None, augmentation_func = None"""
-
-        self.df = df
-        #self.df['loaded'] = 0
-        self.sr = 22050
-
+        kwargs: batchsize = 10, window = 1500, stride = 500, 
+        spectrogram_func = None, augmentation_func = None"""
         for k,v in kwargs.items():
             setattr(self, k, v)
-
+        
+        # Ignore recordings with less signal than window size
+        self.df = df[df.total_signal >= self.window / 1000]
+        self.sr = 22050
+        assert is_numeric_dtype(self.df.label)
+        
+        
         # Window and stride in samples:
         self.window = int(self.window/1000*self.sr)
         self.stride = int(self.stride/1000*self.sr)
