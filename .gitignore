@@ -39,6 +39,7 @@ environment.yml
 test.py
 Test_Birdsounds/
 testing.py
+run_log/
 
 # Environment files
 env/
