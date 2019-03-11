@@ -97,7 +97,7 @@ class SoundDataset(Dataset):
         # Compute output size
         self.shape = self.compute_shape()
 
-
+        # For troubleshooting the preloader
         self.log = {'sent' : [],
                     'received' : [],
                     'inventory' : []}
@@ -219,6 +219,8 @@ class SoundDataset(Dataset):
         self.log['sent'].append({**r, **req})
 
     def compute_need(self, y):
+        """ Given a current class label, calculate based on batch size how many times
+        which classes need to be served in the next batch """
         next_batch = range(y, y + self.batchsize)
         samples_needed = {}
         for i in next_batch:
@@ -255,6 +257,8 @@ class SoundDataset(Dataset):
         return request
 
     def inventory(self, i):
+        """ Return a dictionary containing the length of audio currently in 
+        stack for each class. """
         r = {'R':i}
         inv = {k: len(v) for k,v in self.stack.items()}
         return {**r, **inv}
@@ -268,6 +272,9 @@ class SoundDataset(Dataset):
         return int(max_samples)
 
     def compute_shape(self):
+        """ Given the possibility of different window sizes and spectrogram functions,
+        models need to be initialized with the expected image size. This function
+        computes that size and makes it available as the .shape of the Dataset."""
         dummy = np.random.randn(self.window)
         spec = self.spectrogram_func(dummy)
         return spec.shape
