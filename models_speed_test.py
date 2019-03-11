@@ -30,11 +30,15 @@ test_img = torch.randn(batch_size, 1, freq, time)
 target = torch.Tensor(np.array([0] * batch_size)).long()
 
 DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
-test_img.to(DEVICE)
+print(DEVICE)
+test_img = test_img.to(DEVICE)
+target = target.to(DEVICE)
 
 criterion = nn.CrossEntropyLoss()
 
+
 for model in models:
+    model = model.to(DEVICE)
     optimizer = optim.Adam(model.parameters(), lr=0.001)
     start = pf()
     optimizer.zero_grad()
