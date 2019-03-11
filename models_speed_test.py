@@ -49,4 +49,4 @@ for model in models:
 
     loss.backward()
     optimizer.step()
-    print(f'{model.__name__}: {(pf()-start):.3f} s')
+    print(model.__name__, ': ', (pf()-start), ' s')
