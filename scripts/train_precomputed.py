@@ -23,8 +23,8 @@ from datasets.sequential import SpectralDataset
 
 DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
 
-TRAIN = pd.read_csv('./storage/df_train_local2600.csv')
-TEST = pd.read_csv('./storage/df_test_local2600.csv')
+TRAIN = pd.read_csv('./storage/df_train_local.csv')
+TEST = pd.read_csv('./storage/df_test_local.csv')
 LABELS = pd.read_csv('./storage/label_codes.csv')
 
 def main(config_file):
@@ -64,11 +64,13 @@ def main(config_file):
         train(net, dl_train, epoch, optimizer, criterion, DEVICE)
 
         train_stats, train_conf_matrix = evaluate(net, dl_train, criterion, no_classes, DEVICE)
+        print(f'Train Loss: {train_stats[0]:.5f}, Train Acc: {train_stats[1]:.5f}')
         test_stats, test_conf_matrix = evaluate(net, dl_test, criterion, no_classes, DEVICE)
-
+        print(f'Test Loss: {test_stats[0]:.5f}, Test Acc: {test_stats[1]:.5f}')
+        
         is_best = test_stats[1] > best_acc
         best_acc = max(test_stats[1], best_acc)
-        print('Best Accuracy: {:.4f}'.format(best_acc))
+        print('Best Accuracy: {:.5f}'.format(best_acc))
 
         logger.save_checkpoint({
             'epoch': epoch + 1,
