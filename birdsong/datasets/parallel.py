@@ -19,7 +19,7 @@ and prepares a new batch of data during each training period.
 
 from torch.utils.data import Dataset
 import numpy as np
-from .Preprocessing.utils import load_audio, get_signal
+from .tools.io import load_audio, get_signal
 from multiprocessing import Process, Queue, Event
 from multiprocessing.pool import ThreadPool
 
@@ -168,7 +168,7 @@ class SoundDataset(Dataset):
     def receive_request(self, i):
         """ Check if Preloader has already filled the Queue and if so, sort data
         into stack."""
-        new_samples = []                                                            #LOG
+        new_samples = []                                                            
         if self.made_request:
             new_samples = self.q.get()
             #print('Queue ready - updating stack.')
@@ -177,9 +177,10 @@ class SoundDataset(Dataset):
                 label = sample[0]
                 self.stack[label] = np.append(self.stack[label], (sample[1]))
             self.made_request = False
-
+            
+        #LOG
         r = {'R':i}
-        req = {k: 0 for  k in set([s[0] for s in new_samples])  }                                                           #LOG
+        req = {k: 0 for  k in set([s[0] for s in new_samples])  }
         for s in new_samples:
             req[s[0]] += len(s[1])
         self.log['received'].append({**r, **req})
@@ -205,9 +206,10 @@ class SoundDataset(Dataset):
             self.t.put(bucket_list)
             self.Preloader.e.set()
             self.made_request = True
-
+        
+        #LOG
         r = {'R':i}
-        req = {'path':[],                                                           #LOG
+        req = {'path':[],                                                           
                'label':[],
                'timestamps':[],
                'expected': []}
@@ -234,7 +236,8 @@ class SoundDataset(Dataset):
     def check_stack(self, k, s):
         """ Return true if the audio on stack for class k does only suffice for
         a more serves, false if otherwise """
-        required_audio = self.window + ((s-1) * self.stride) + 20000            # Safety buffer #TODO: find out why this helps
+        # Safety buffer added #TODO: find out why this helps
+        required_audio = self.window + ((s-1) * self.stride) + 20000            
         remaining_audio = len(self.stack[k])
         if remaining_audio < required_audio:
             return required_audio - remaining_audio
