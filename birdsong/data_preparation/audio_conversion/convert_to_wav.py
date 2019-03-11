@@ -23,7 +23,7 @@ mp3_files = os.listdir(INPUT_DIR)
 def convert(mp3_file):
     y, sr = librosa.core.load(INPUT_DIR + mp3_file)
     librosa.output.write_wav(OUTPUT_DIR + mp3_file[:-4] + '.wav', y, sr)
-    print(f'file {mp3_file} coverted')
+    print(f'file {mp3_file} converted')
 
 
 pool = ThreadPool(24)
