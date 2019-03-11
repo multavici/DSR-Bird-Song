@@ -11,7 +11,7 @@ Created on Mon Mar  4 12:24:26 2019
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from models.custom_layers.exp_function import ExpFunctionLayer
+from .custom_layers.exp_function import ExpFunctionLayer
 
 class SparrowExpA(nn.Module):
     '''

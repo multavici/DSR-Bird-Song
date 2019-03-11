@@ -20,6 +20,7 @@ and prepares a new batch of data during each training period.
 from torch.utils.data import Dataset
 import numpy as np
 from .tools.io import load_audio, get_signal
+from .tools.encoding import LabelEncoder
 from multiprocessing import Process, Queue, Event
 from multiprocessing.pool import ThreadPool
 from pandas.api.types import is_numeric_dtype
@@ -71,13 +72,19 @@ class SoundDataset(Dataset):
         spectrogram_func = None, augmentation_func = None"""
         for k,v in kwargs.items():
             setattr(self, k, v)
-        
+
         # Ignore recordings with less signal than window size
         self.df = df[df.total_signal >= self.window / 1000]
         self.sr = 22050
-        assert is_numeric_dtype(self.df.label)
         
-        
+        # Check if labels already encoded and do so if not
+        if not is_numeric_dtype(self.df.label):
+            self.encoder = LabelEncoder(self.df.label)
+            self.df.label = self.encoder.encode()
+        else:
+            print('Labels look like they have been encoded already, \
+            you have to take care of decoding yourself.')
+
         # Window and stride in samples:
         self.window = int(self.window/1000*self.sr)
         self.stride = int(self.stride/1000*self.sr)
@@ -272,7 +279,7 @@ class SoundDataset(Dataset):
     def compute_length(self):
         """ Provide an estimate of how many iterations of random, uniformly
         sampled audio are needed to have seen each file approximately once. """
-        sum_total_signal = sum(self.df.total_signal) * 22050
+        sum_total_signal = sum(self.df.total_signal) * self.sr
         max_samples = ((sum_total_signal - self.window) // self.stride) + 1
         return int(max_samples)
 
