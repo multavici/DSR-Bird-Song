@@ -15,6 +15,7 @@ from .conf_mat import calc_conf_mat
 def evaluate(model, data_loader, criterion, num_classes, DEVICE):
 
     model.eval()
+    model = model.to(DEVICE)
     loss = 0
     correct = 0
 #    conf = np.ndarray((num_classes, num_classes))
