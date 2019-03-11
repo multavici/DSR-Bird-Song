@@ -31,6 +31,8 @@ target = torch.Tensor(np.array([0] * batch_size)).long()
 
 DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
 print(DEVICE)
+
+
 test_img = test_img.to(DEVICE)
 target = target.to(DEVICE)
 
