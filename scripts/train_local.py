@@ -23,8 +23,8 @@ from datasets.sequential import SpectralDataset
 
 DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
 
-TRAIN = pd.read_csv('./storage/df_train_local.csv')
-TEST = pd.read_csv('./storage/df_test_local.csv')
+TRAIN = pd.read_csv('./storage/df_train_local2600.csv')
+TEST = pd.read_csv('./storage/df_test_local2600.csv')
 LABELS = pd.read_csv('./storage/label_codes.csv')
 
 def main(config_file):

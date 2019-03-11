@@ -11,8 +11,11 @@ Created on Mon Mar  4 12:24:26 2019
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from .custom_layers.exp_function import ExpFunctionLayer
-
+try:
+    from models.custom_layers.exp_function import ExpFunctionLayer
+except:
+    from .custom_layers.exp_function import ExpFunctionLayer
+    
 class SparrowExpA(nn.Module):
     '''
     Model based on the sparrow varian A by Jan Schlüter et.al 2018
