@@ -4,7 +4,7 @@ import json
 
 def load_audio(path):
     """ Audio i/o """
-    audio, sr = librosa.load(path)
+    audio, sr = librosa.load(path, sr=22050)
     #assert sr == self.sr
     return audio, sr
 

@@ -19,10 +19,11 @@ and prepares a new batch of data during each training period.
 
 from torch.utils.data import Dataset
 import numpy as np
-from .Preprocessing.utils import load_audio, get_signal
+from .tools.io import load_audio, get_signal
+from .tools.encoding import LabelEncoder
 from multiprocessing import Process, Queue, Event
 from multiprocessing.pool import ThreadPool
-
+from pandas.api.types import is_numeric_dtype
 
 
 class Preloader(Process):
@@ -67,14 +68,22 @@ class SoundDataset(Dataset):
     def __init__(self, df, **kwargs):
         """ Initialize with a dataframe containing:
         (path, label, duration, total_signal, timestamps)
-        kwargs: batchsize = 10, window = 1500, stride = 500, spectrogram_func = None, augmentation_func = None"""
-
-        self.df = df
-        #self.df['loaded'] = 0
-        self.sr = 22050
-
+        kwargs: batchsize = 10, window = 1500, stride = 500, 
+        spectrogram_func = None, augmentation_func = None"""
         for k,v in kwargs.items():
             setattr(self, k, v)
+
+        # Ignore recordings with less signal than window size
+        self.df = df[df.total_signal >= self.window / 1000]
+        self.sr = 22050
+        
+        # Check if labels already encoded and do so if not
+        if not is_numeric_dtype(self.df.label):
+            self.encoder = LabelEncoder(self.df.label)
+            self.df.label = self.encoder.encode()
+        else:
+            print('Labels look like they have been encoded already, \
+            you have to take care of decoding yourself.')
 
         # Window and stride in samples:
         self.window = int(self.window/1000*self.sr)
@@ -97,7 +106,7 @@ class SoundDataset(Dataset):
         # Compute output size
         self.shape = self.compute_shape()
 
-
+        # For troubleshooting the preloader
         self.log = {'sent' : [],
                     'received' : [],
                     'inventory' : []}
@@ -168,7 +177,7 @@ class SoundDataset(Dataset):
     def receive_request(self, i):
         """ Check if Preloader has already filled the Queue and if so, sort data
         into stack."""
-        new_samples = []                                                            #LOG
+        new_samples = []                                                            
         if self.made_request:
             new_samples = self.q.get()
             #print('Queue ready - updating stack.')
@@ -177,9 +186,10 @@ class SoundDataset(Dataset):
                 label = sample[0]
                 self.stack[label] = np.append(self.stack[label], (sample[1]))
             self.made_request = False
-
+            
+        #LOG
         r = {'R':i}
-        req = {k: 0 for  k in set([s[0] for s in new_samples])  }                                                           #LOG
+        req = {k: 0 for  k in set([s[0] for s in new_samples])  }
         for s in new_samples:
             req[s[0]] += len(s[1])
         self.log['received'].append({**r, **req})
@@ -205,9 +215,10 @@ class SoundDataset(Dataset):
             self.t.put(bucket_list)
             self.Preloader.e.set()
             self.made_request = True
-
+        
+        #LOG
         r = {'R':i}
-        req = {'path':[],                                                           #LOG
+        req = {'path':[],                                                           
                'label':[],
                'timestamps':[],
                'expected': []}
@@ -219,6 +230,8 @@ class SoundDataset(Dataset):
         self.log['sent'].append({**r, **req})
 
     def compute_need(self, y):
+        """ Given a current class label, calculate based on batch size how many times
+        which classes need to be served in the next batch """
         next_batch = range(y, y + self.batchsize)
         samples_needed = {}
         for i in next_batch:
@@ -232,7 +245,8 @@ class SoundDataset(Dataset):
     def check_stack(self, k, s):
         """ Return true if the audio on stack for class k does only suffice for
         a more serves, false if otherwise """
-        required_audio = self.window + ((s-1) * self.stride) + 20000            # Safety buffer #TODO: find out why this helps
+        # Safety buffer added #TODO: find out why this helps
+        required_audio = self.window + ((s-1) * self.stride) + 20000            
         remaining_audio = len(self.stack[k])
         if remaining_audio < required_audio:
             return required_audio - remaining_audio
@@ -255,6 +269,8 @@ class SoundDataset(Dataset):
         return request
 
     def inventory(self, i):
+        """ Return a dictionary containing the length of audio currently in 
+        stack for each class. """
         r = {'R':i}
         inv = {k: len(v) for k,v in self.stack.items()}
         return {**r, **inv}
@@ -263,11 +279,14 @@ class SoundDataset(Dataset):
     def compute_length(self):
         """ Provide an estimate of how many iterations of random, uniformly
         sampled audio are needed to have seen each file approximately once. """
-        sum_total_signal = sum(self.df.total_signal) * 22050
+        sum_total_signal = sum(self.df.total_signal) * self.sr
         max_samples = ((sum_total_signal - self.window) // self.stride) + 1
         return int(max_samples)
 
     def compute_shape(self):
+        """ Given the possibility of different window sizes and spectrogram functions,
+        models need to be initialized with the expected image size. This function
+        computes that size and makes it available as the .shape of the Dataset."""
         dummy = np.random.randn(self.window)
         spec = self.spectrogram_func(dummy)
         return spec.shape
