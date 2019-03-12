@@ -45,7 +45,7 @@ JOIN taxonomy t
 WHERE step1 = 1 AND duration IS NOT NULL
 '''
 
-df = pd.read_sql()
+df = pd.read_sql(q, conn)
 df['label'] = df['genus'] + " " + df['species']
 df['path'] = INPUT_DIR + df['id'] + '.wav'
 
