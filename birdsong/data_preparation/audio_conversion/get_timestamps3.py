@@ -5,8 +5,9 @@ database.
 """
 
 import os
-from birdsong.data_preparation.audio_conversion.signal_extraction import signal_timestamps
 import sqlite3
+
+from birdsong.data_preparation.audio_conversion.signal_extraction import signal_timestamps
 
 if 'HOSTNAME' in os.environ:
     # script runs on server
@@ -50,7 +51,7 @@ SET duration = ?, sum_signal = ?, timestamps = ?
 WHERE id = ?
 '''
 batch = []
-for i, rec_id in enumerate(to_process):
+for i, rec_id in enumerate(to_process[-5000:]):
     rec = str(rec_id) + '.wav'
     print(rec)
     try:

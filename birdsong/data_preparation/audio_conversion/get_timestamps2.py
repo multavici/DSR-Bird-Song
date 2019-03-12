@@ -50,7 +50,7 @@ SET duration = ?, sum_signal = ?, timestamps = ?
 WHERE id = ?
 '''
 batch = []
-for i, rec_id in enumerate(to_process):
+for i, rec_id in enumerate(to_process[-5000:]):
     rec = str(rec_id) + '.wav'
     print(rec)
     try:
