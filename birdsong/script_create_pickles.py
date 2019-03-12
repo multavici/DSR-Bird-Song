@@ -74,15 +74,19 @@ for _, row in df.iterrows():
     print('check ', row['id'], 'with label ', row['label'])
     print('timestamps: ' + row['timestamps'])
 
-    slices = prepare_slices(row['path'], row['timestamps'], WINDOW, STRIDE)
-    print('slices made')
+    try:
+        slices = prepare_slices(row['path'], row['timestamps'], WINDOW, STRIDE)
+        print('slices made')
 
-    for index, audio_slice in enumerate(slices):
-        slice_name = row['id'] + '_' + str(index) + '.pkl'
-        with open(OUTPUT_DIR + slice_name, 'wb') as output:
-            pickle.dump(audio_slice, output)
-        print(f"slice {index} pickled")
+        for index, audio_slice in enumerate(slices):
+            slice_name = row['id'] + '_' + str(index) + '.pkl'
+            with open(OUTPUT_DIR + slice_name, 'wb') as output:
+                pickle.dump(audio_slice, output)
+            print(f"slice {index} pickled")
 
-    print(f"pickled all slices of {row['id']}")
+        print(f"pickled all slices of {row['id']}")
+    except:
+        print('recording could not be sliced')
+        pass
 
 print(f'end time: {time.time() - start}')
