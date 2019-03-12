@@ -26,9 +26,12 @@ wav_ids = [x[:-4] for x in wav_files]
 
 
 def convert(mp3_file):
-    y, sr = librosa.core.load(INPUT_DIR + mp3_file)
-    librosa.output.write_wav(OUTPUT_DIR + mp3_file[:-4] + '.wav', y, sr)
-    print(f'file {mp3_file} converted')
+    try:
+        y, sr = librosa.core.load(INPUT_DIR + mp3_file)
+        librosa.output.write_wav(OUTPUT_DIR + mp3_file[:-4] + '.wav', y, sr)
+        print(f'file {mp3_file} converted')
+    except:
+        print(f'problem with file {mp3_file}: not converted')
 
 
 to_convert = [x for x in mp3_ids if x not in wav_ids]
