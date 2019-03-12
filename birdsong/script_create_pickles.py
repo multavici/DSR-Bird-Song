@@ -5,8 +5,7 @@ the specified species and the timestamps of the signal parts in the recording.
 The script then chops up the signal part of the recordings to slices with length
 window size and stride stride. 
 
-For each recording a new folder is made and within that folder all slices are
-saved as pickle files.
+For each recording all slices are saved as pickle files.
 """
 
 import pandas as pd
