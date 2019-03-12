@@ -54,6 +54,10 @@ df['path'] = INPUT_DIR + df['id'] + '.wav'
 
 df.drop(columns=['genus', 'species'], inplace=True)
 
+previously_done = [x.split('_')[0] for x in os.listdir(OUTPUT_DIR)]
+
+df = df.query('id not in @previously_done')
+
 
 def prepare_slices(path, timestamps, window, stride):
     audio, sr = load_audio(path)
