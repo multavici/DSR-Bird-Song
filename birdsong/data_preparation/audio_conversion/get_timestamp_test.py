@@ -7,7 +7,7 @@ This is a test script for 100 timestamps to see how long it takes.
 """
 
 import os
-from .signal_extraction import signal_timestamps
+from signal_extraction import signal_timestamps
 import sqlite3
 import time
 
