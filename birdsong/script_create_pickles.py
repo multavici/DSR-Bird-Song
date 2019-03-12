@@ -21,7 +21,7 @@ from birdsong.datasets.tools.spectrograms import mel_s
 # Check if script is run locally or on server
 if 'HOSTNAME' in os.environ:
     # script runs on server
-    INPUT_DIR = '/storage/step1_wav/'
+    INPUT_DIR = '/storage/step1/'
     OUTPUT_DIR = '/storage/step1_slices/'
     DATABASE_DIR = '/storage/db.sqlite'
     TABLE_DIR = '/storage/label_tables/'
@@ -50,7 +50,7 @@ conn.close()
 
 df['id'] = df['id'].apply(str)
 df['label'] = df['genus'] + " " + df['species']
-df['path'] = INPUT_DIR + df['id'] + '.wav'
+df['path'] = INPUT_DIR + df['id'] + '.mp3'
 
 df.drop(columns=['genus', 'species'], inplace=True)
 
