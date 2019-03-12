@@ -17,7 +17,7 @@ import torch.optim as optim
 import pandas as pd
 from tensorboardX import SummaryWriter
 from training import train, evaluate, logger, plot_conf_mat
-from datasets.sequential import SpectralDataset
+from datasets.sequential import RandomSpectralDataset, SpectralDataset
 
 if 'HOSTNAME' in os.environ:
     # script runs on server
@@ -31,7 +31,6 @@ DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 TRAIN = pd.read_csv('./storage/df_train_local.csv')
 TEST = pd.read_csv('./storage/df_test_local.csv')
-LABELS = pd.read_csv('./storage/label_codes.csv')
 
 def main(config_file):
     #read from config
@@ -51,10 +50,10 @@ def main(config_file):
     state_fname, log_fname, summ_tensor_board = logger.create_log(log_path)
     writer = SummaryWriter(str(summ_tensor_board))
 
-    ds_test = SpectralDataset(TEST)
+    ds_test = RandomSpectralDataset(TEST, examples_per_batch=3)
     ds_train = SpectralDataset(TRAIN)
     dl_test = DataLoader(ds_test, batch_size)
-    dl_train = DataLoader(ds_train, batch_size, shuffle=True)   #TODO: Deactivate when using parallel dataset
+    dl_train = DataLoader(ds_train, batch_size)   #TODO: Deactivate when using parallel dataset
     print('dataloaders initialized')
 
     time_axis = ds_test.shape[1]

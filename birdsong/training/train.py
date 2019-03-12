@@ -19,6 +19,7 @@ def train(model, data_loader, epoch, optimizer, criterion, DEVICE):
     model = model.to(DEVICE)
     for batch_idx, (data, target) in enumerate(data_loader):
         data, target = Variable(data), Variable(target)
+        print(target.sort())
         data = data.float()
         data = data.to(DEVICE)
         target = target.to(DEVICE)

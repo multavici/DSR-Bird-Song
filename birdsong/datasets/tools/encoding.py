@@ -9,7 +9,7 @@ class LabelEncoder:
         plus a dictionary of codes """
         self.codes = {}
         encoded_col = self.original_series.copy()
-        for i, label in enumerate(self.original_series.drop_duplicates()):
+        for i, label in enumerate(sorted(self.original_series.drop_duplicates())):
             encoded_col.loc[encoded_col == label] = i
             self.codes[i] = label
         return encoded_col
