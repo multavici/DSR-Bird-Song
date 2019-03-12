@@ -24,7 +24,7 @@ from .tools.encoding import LabelEncoder
 from multiprocessing import Process, Queue, Event
 from multiprocessing.pool import ThreadPool
 from pandas.api.types import is_numeric_dtype
-
+import os
 
 class Preloader(Process):
     """ A subprocess running in the background
@@ -68,7 +68,7 @@ class SoundDataset(Dataset):
     def __init__(self, df, **kwargs):
         """ Initialize with a dataframe containing:
         (path, label, duration, total_signal, timestamps)
-        kwargs: batchsize = 10, window = 1500, stride = 500, 
+        kwargs: input_dir = path, batchsize = 10, window = 1500, stride = 500, 
         spectrogram_func = None, augmentation_func = None"""
         for k,v in kwargs.items():
             setattr(self, k, v)
@@ -260,7 +260,7 @@ class SoundDataset(Dataset):
         audio_to_preload = 0
         while audio_to_preload < a:
             sample = self.df[self.df.label == k].sample(n=1)
-            path = sample.path.values[0]
+            path = os.path.join(self.input_dir, sample.path.values[0])
             label = sample.label.values[0]
             timestamps = sample.timestamps.values[0]
             audio_samples = int(sample.total_signal.values[0] * self.sr * 0.9)

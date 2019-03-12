@@ -20,12 +20,19 @@ from training import train, evaluate, logger, plot_conf_mat
 from datasets.parallel import SoundDataset
 from datasets.tools.spectrograms import *
 
+if 'HOSTNAME' in os.environ:
+    # script runs on server
+    INPUT_DIR = '/storage/step1_wav/'
+else:
+    # script runs locally
+    INPUT_DIR = 'storage/top10ger_wav/'
+
 
 DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 #TODO: New dfs here
-TRAIN = pd.read_csv('')
-TEST = pd.read_csv('')
+TRAIN = pd.read_csv('storage/top10ger_train.csv')
+TEST = pd.read_csv('storage/top10ger_test.csv')
 
 def main(config_file):
     #read from config
@@ -45,7 +52,8 @@ def main(config_file):
     state_fname, log_fname, summ_tensor_board = logger.create_log(log_path)
     writer = SummaryWriter(str(summ_tensor_board))
 
-    params = {'batchsize' : batch_size,
+    params = {'input_dir' : INPUT_DIR,
+              'batchsize' : batch_size,
               'window' : 5000,
               'stride' : 2000,
               'spectrogram_func' : mel_s,

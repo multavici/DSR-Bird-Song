@@ -19,6 +19,12 @@ from tensorboardX import SummaryWriter
 from training import train, evaluate, logger, plot_conf_mat
 from datasets.sequential import SpectralDataset
 
+if 'HOSTNAME' in os.environ:
+    # script runs on server
+    INPUT_DIR = '/storage/step1_wav/'
+else:
+    # script runs locally
+    INPUT_DIR = 'storage/top10ger_wav/'
 
 
 DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'

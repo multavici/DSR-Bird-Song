@@ -1,2 +1,2 @@
 #!/bin/bash
-python scripts/train_precomputed.py config.py
+python scripts/train_raw_sound.py config.py
