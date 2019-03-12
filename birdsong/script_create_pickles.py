@@ -38,7 +38,7 @@ STRIDE = 2500
 conn = sqlite3.connect(DATABASE_DIR)
 
 q = '''
-SELECT r.id, t.genus, t.species, r.duration, r.sum_signal, r.timestamps
+SELECT r.id, t.genus, t.species, r.timestamps
 FROM recordings r
 JOIN taxonomy t
     ON r.taxonomy_id = t.id
@@ -46,8 +46,10 @@ WHERE step1 = 1 AND duration IS NOT NULL
 '''
 
 df = pd.read_sql(q, conn)
+conn.close()
+
 df['label'] = df['genus'] + " " + df['species']
-df['path'] = INPUT_DIR + df['id'] + '.wav'
+df['path'] = INPUT_DIR + df['id'].apply(str) + '.wav'
 
 df.drop(columns=['genus', 'species'], inplace=True)
 
@@ -65,20 +67,18 @@ start = time.time()
 # Apply the slice function to the samples and save them in the storage folder
 for _, row in df.iterrows():
     print('check ', row['id'], 'with label ', row['label'])
-    sample_dir = OUTPUT_DIR + str(row['id']) + '/'
-    if not os.path.exists(sample_dir):
-        slices = prepare_slices(row['path'], row['timestamps'], WINDOW, STRIDE)
-        print('slices made')
-        os.makedirs(sample_dir)
-        for index, audio_slice in enumerate(slices):
-            with open(sample_dir + str(index) + '.pkl', 'wb') as output:
-                pickle.dump(audio_slice, output)
-            label_table.write(sample_dir + str(index) +
-                              '.pkl' + "," + row['id'] + "," + row['label'])
-            print(f"slice {index} pickled")
-        print(f"pickled all slices of {row['id']}")
-    else:
-        print('already pickled previously')
+
+    slices = prepare_slices(row['path'], row['timestamps'], WINDOW, STRIDE)
+    print('slices made')
+
+    for index, audio_slice in enumerate(slices):
+        slice_name = row['id'] + '_' + str(index) + '.pkl'
+        with open(OUTPUT_DIR + slice_name, 'w+') as output:
+            pickle.dump(audio_slice, output)
+        label_table.write(slice_name + "," + row['id'] + "," + row['label'])
+        print(f"slice {index} pickled")
+
+    print(f"pickled all slices of {row['id']}")
 
 print(f'end time: {time.time() - start}')
 
