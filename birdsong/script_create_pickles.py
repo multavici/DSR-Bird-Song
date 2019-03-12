@@ -42,7 +42,7 @@ SELECT r.id, t.genus, t.species, r.timestamps
 FROM recordings r
 JOIN taxonomy t
     ON r.taxonomy_id = t.id
-WHERE step1 = 1 AND duration IS NOT NULL
+WHERE step1 = 1 AND duration > 5
 '''
 
 df = pd.read_sql(q, conn)
