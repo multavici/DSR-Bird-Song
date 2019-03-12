@@ -74,7 +74,7 @@ for _, row in df.iterrows():
             with open(sample_dir + str(index) + '.pkl', 'wb') as output:
                 pickle.dump(audio_slice, output)
             label_table.write(sample_dir + str(index) +
-                              '.pkl' + "," + row['id'] + ";" + row['label'])
+                              '.pkl' + "," + row['id'] + "," + row['label'])
             print(f"slice {index} pickled")
         print(f"pickled all slices of {row['id']}")
     else:
