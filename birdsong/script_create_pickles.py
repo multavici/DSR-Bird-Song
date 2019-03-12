@@ -56,7 +56,7 @@ def prepare_slices(path, timestamps, window, stride):
     audio, sr = load_audio(path)
     signal = get_signal(audio, sr, timestamps)
     audio_slices = slice_audio(signal, sr, window, stride)
-    return [mel_s(s) for s in audio_slices]
+    return [mel_s(s, n_mels=256, fmax=12000) for s in audio_slices]
 
 
 label_table = open(TABLE_DIR + 'label_table.csv', 'wb')
