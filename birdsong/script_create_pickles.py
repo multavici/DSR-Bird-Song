@@ -62,7 +62,7 @@ def prepare_slices(path, timestamps, window, stride):
     return [mel_s(s, n_mels=256, fmax=12000) for s in audio_slices]
 
 
-label_table = open(TABLE_DIR + 'label_table.csv', 'wb')
+label_table = open(TABLE_DIR + 'label_table.csv', 'w+')
 
 start = time.time()
 # Apply the slice function to the samples and save them in the storage folder
@@ -74,7 +74,7 @@ for _, row in df.iterrows():
 
     for index, audio_slice in enumerate(slices):
         slice_name = row['id'] + '_' + str(index) + '.pkl'
-        with open(OUTPUT_DIR + slice_name, 'w+') as output:
+        with open(OUTPUT_DIR + slice_name, 'wb') as output:
             pickle.dump(audio_slice, output)
         label_table.write(slice_name + "," + row['id'] + "," + row['label'])
         print(f"slice {index} pickled")
