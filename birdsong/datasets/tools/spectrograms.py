@@ -15,16 +15,22 @@ def stft_s(audio):
     return np.abs(librosa.stft(audio, center=False))
 
 ##### 2. Mel  spectorgram
-def mel_s(audio):
+def mel_s(audio, n_mels = 128, fmin=0, fmax=12000):
     """Mel spectrogram"""
-    return librosa.feature.melspectrogram(audio, sr=22050, n_fft=2048, hop_length=512, n_mels=128, fmax=20000)
+    return librosa.feature.melspectrogram(audio, sr=22050, n_fft=2048, hop_length=512, n_mels=n_mels, fmin=fmin, fmax=fmax)
 
 ##### 3. chirp
-def chirp_s(audio):
+def chirp_s(audio, 
+            duration_longest_chirplet=1,
+            num_octaves=8,
+            num_chirps_by_octave=20,
+            polynome_degree=1,
+            end_smoothing=0.001,
+            sample_rate=22050):
     """Chirplet Spectrogram"""
-    return FCT(duration_longest_chirplet=1,
-               num_octaves=5,
-               num_chirps_by_octave=10,
-               polynome_degree=0,
-               end_smoothing=0.001,
-               sample_rate=22050).compute(audio)
+    return FCT(duration_longest_chirplet,
+               num_octaves,
+               num_chirps_by_octave,
+               polynome_degree,
+               end_smoothing,
+               sample_rate).compute(audio)
