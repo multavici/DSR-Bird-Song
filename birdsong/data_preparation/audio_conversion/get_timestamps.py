@@ -5,16 +5,16 @@ database.
 """
 
 import os
-from .signal_extraction import signal_timestamps
+from signal_extraction import signal_timestamps
 import sqlite3
 
 if 'HOSTNAME' in os.environ:
     # script runs on server
-    STORAGE_DIR = '/storage/all_german_birds/'
+    STORAGE_DIR = '/storage/step1_wav/'
     DATABASE_DIR = '/storage/db.sqlite'
 else:
     # script runs locally
-    STORAGE_DIR = 'storage/all_german_birds/'
+    STORAGE_DIR = 'storage/step1_wav/'
     DATABASE_DIR = 'storage/db.sqlite'
 
 # Get a list of files that are downloaded
@@ -29,7 +29,11 @@ downloaded_ids = [int(x[:-4]) for x in downloaded_files]
 conn = sqlite3.connect(DATABASE_DIR)
 print('database loaded')
 c = conn.cursor()
-c.execute("""select id from recordings where duration IS NOT NULL""")
+q = '''
+SELECT id FROM recordings
+WHERE step1 = 1 AND duration IS NOT NULL
+'''
+c.execute(q)
 processed_ids = [i[0] for i in c.fetchall()]
 print('list of already processed recordings')
 print(len(processed_ids))
@@ -40,21 +44,27 @@ print('list of files to process')
 print(len(to_process))
 
 # Processing
+q = '''
+UPDATE recordings
+SET duration = ?, sum_signal = ?, timestamps = ? 
+WHERE id = ?
+'''
 batch = []
 for i, rec_id in enumerate(to_process):
-    rec = str(rec_id) + '.mp3'
-    print(rec_id)
+    rec = str(rec_id) + '.wav'
+    print(rec)
     try:
         duration, sum_signal, timestamps = signal_timestamps(
             STORAGE_DIR + rec)
         batch.append((duration, sum_signal, timestamps, rec_id))
-        if len(batch) % 10 == 0:
+        if len(batch) % 50 == 0:
             print(f"batch {i} full")
-            c.executemany("""UPDATE recordings SET duration = ?, sum_signal = ?, timestamps = ? 
-                WHERE id = ?""", batch)
+            c.executemany(q, batch)
             conn.commit()
             batch = []
     except:
+        print(f'could not get info of recording {rec}')
         pass
-
+c.executemany(q, batch)
+conn.commit()
 conn.close()
