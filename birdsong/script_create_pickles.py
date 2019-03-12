@@ -57,8 +57,11 @@ df.drop(columns=['genus', 'species'], inplace=True)
 
 def prepare_slices(path, timestamps, window, stride):
     audio, sr = load_audio(path)
+    print('audio loaded')
     signal = get_signal(audio, sr, timestamps)
+    print('signal extracted')
     audio_slices = slice_audio(signal, sr, window, stride)
+    print('signal sliced')
     return [mel_s(s, n_mels=256, fmax=12000) for s in audio_slices]
 
 
