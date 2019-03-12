@@ -21,10 +21,10 @@ from datasets.sequential import SpectralDataset
 
 if 'HOSTNAME' in os.environ:
     # script runs on server
-    INPUT_DIR = '/storage/step1_wav/'
+    INPUT_DIR = '/storage/slices/'
 else:
     # script runs locally
-    INPUT_DIR = 'storage/top10ger_wav/'
+    INPUT_DIR = 'storage/slices/'
 
 
 DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
