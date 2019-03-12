@@ -48,8 +48,9 @@ WHERE step1 = 1 AND duration IS NOT NULL
 df = pd.read_sql(q, conn)
 conn.close()
 
+df['id'] = df['id'].apply(str)
 df['label'] = df['genus'] + " " + df['species']
-df['path'] = INPUT_DIR + df['id'].apply(str) + '.wav'
+df['path'] = INPUT_DIR + df['id'] + '.wav'
 
 df.drop(columns=['genus', 'species'], inplace=True)
 
