@@ -5,8 +5,9 @@ database.
 """
 
 import os
-from birdsong.data_preparation.audio_conversion.signal_extraction import signal_timestamps
 import sqlite3
+
+from birdsong.data_preparation.audio_conversion.signal_extraction import signal_timestamps
 
 if 'HOSTNAME' in os.environ:
     # script runs on server
