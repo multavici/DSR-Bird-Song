@@ -7,7 +7,6 @@ amount of channels to wav files with a fixed sample rate of 22050 and 1 channel
 import os
 import sqlite3
 import librosa
-from multiprocessing.pool import ThreadPool
 
 if 'HOSTNAME' in os.environ:
     # script runs on server
@@ -38,5 +37,5 @@ to_convert = [x for x in mp3_ids if x not in wav_ids]
 
 to_convert_mp3 = [x + '.mp3' for x in to_convert]
 
-pool = ThreadPool(24)
-pool.map(convert, to_convert_mp3)
+for f in to_convert_mp3:
+    convert(f)
