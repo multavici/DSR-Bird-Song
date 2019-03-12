@@ -20,7 +20,7 @@ from birdsong.datasets.tools.spectrograms import mel_s
 # Check if script is run locally or on server
 if 'HOSTNAME' in os.environ:
     # script runs on server
-    INPUT_DIR = '/storage/step1/'
+    INPUT_DIR = '/storage/step1_wav/'
     OUTPUT_DIR = '/storage/step1_slices/'
     DATABASE_DIR = '/storage/db.sqlite'
     TABLE_DIR = '/storage/label_tables/'
@@ -41,7 +41,7 @@ SELECT r.id, t.genus, t.species, r.timestamps
 FROM recordings r
 JOIN taxonomy t
     ON r.taxonomy_id = t.id
-WHERE downloaded = 1.0 AND step1 = 1 AND duration > 5
+WHERE r.downloaded = 1.0 AND r.step1 = 1 AND r.sum_signal > 5
 '''
 
 df = pd.read_sql(q, conn)
@@ -49,7 +49,7 @@ conn.close()
 
 df['id'] = df['id'].apply(str)
 df['label'] = df['genus'] + " " + df['species']
-df['path'] = INPUT_DIR + df['id'] + '.mp3'
+df['path'] = INPUT_DIR + df['id'] + '.wav'
 
 df.drop(columns=['genus', 'species'], inplace=True)
 
@@ -68,31 +68,21 @@ def prepare_slices(path, timestamps, window, stride):
     return [mel_s(s, n_mels=256, fmax=12000) for s in audio_slices]
 
 
-label_table = open(TABLE_DIR + 'label_table.csv', 'w+')
-
 start = time.time()
 # Apply the slice function to the samples and save them in the storage folder
 for _, row in df.iterrows():
     print('check ', row['id'], 'with label ', row['label'])
     print('timestamps: ' + row['timestamps'])
-    try:
-        slices = prepare_slices(row['path'], row['timestamps'], WINDOW, STRIDE)
-        print('slices made')
 
-        for index, audio_slice in enumerate(slices):
-            slice_name = row['id'] + '_' + str(index) + '.pkl'
-            with open(OUTPUT_DIR + slice_name, 'wb') as output:
-                pickle.dump(audio_slice, output)
-            label_table.write(slice_name + "," +
-                              row['id'] + "," + row['label'] + '\n')
-            print(f"slice {index} pickled")
+    slices = prepare_slices(row['path'], row['timestamps'], WINDOW, STRIDE)
+    print('slices made')
 
-        print(f"pickled all slices of {row['id']}")
+    for index, audio_slice in enumerate(slices):
+        slice_name = row['id'] + '_' + str(index) + '.pkl'
+        with open(OUTPUT_DIR + slice_name, 'wb') as output:
+            pickle.dump(audio_slice, output)
+        print(f"slice {index} pickled")
 
-    except:
-        print('Error while making slices')
-        pass
+    print(f"pickled all slices of {row['id']}")
 
 print(f'end time: {time.time() - start}')
-
-label_table.close()
