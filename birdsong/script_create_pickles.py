@@ -68,6 +68,7 @@ start = time.time()
 # Apply the slice function to the samples and save them in the storage folder
 for _, row in df.iterrows():
     print('check ', row['id'], 'with label ', row['label'])
+    print('timestamps: ' + row['timestamps'])
 
     slices = prepare_slices(row['path'], row['timestamps'], WINDOW, STRIDE)
     print('slices made')
