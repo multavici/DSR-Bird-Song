@@ -53,7 +53,7 @@ def main(config_file):
     ds_test = RandomSpectralDataset(TEST, examples_per_batch=3)
     ds_train = SpectralDataset(TRAIN)
     dl_test = DataLoader(ds_test, batch_size)
-    dl_train = DataLoader(ds_train, batch_size)   #TODO: Deactivate when using parallel dataset
+    dl_train = DataLoader(ds_train, batch_size)
     print('dataloaders initialized')
 
     time_axis = ds_test.shape[1]
