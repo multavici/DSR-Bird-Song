@@ -51,7 +51,7 @@ class SpectralDataset(Dataset):
             X = self.augmentation_func(X)
 
         if not self.enhancement_func is None:
-            X = self.augmentation_func(X)
+            X = self.enhancement_func(X)
 
         return (X, y)
 
@@ -118,7 +118,7 @@ class RandomSpectralDataset(Dataset):
             X = self.augmentation_func(X)
 
         if not self.enhancement_func is None:
-            X = self.augmentation_func(X)
+            X = self.enhancement_func(X)
 
         return (X, y)
 
