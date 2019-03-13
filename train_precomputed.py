@@ -15,7 +15,7 @@ from torch.utils.data import DataLoader
 import torchvision.transforms as transforms
 import torch.optim as optim
 import pandas as pd
-from tensorboardX import SummaryWriter
+#from tensorboardX import SummaryWriter
 from training import train, evaluate, logger, plot_conf_mat
 from datasets.sequential import RandomSpectralDataset, SpectralDataset
 from datasets.tools.enhancement import exponent
@@ -49,7 +49,7 @@ def main(config_file):
     date = time.strftime('%d-%m-%Y-%H-%M-%S', time.localtime())
     log_path = f'./birdsong/run_log/{model_name}_{date}'
     state_fname, log_fname, summ_tensor_board = logger.create_log(log_path)
-    writer = SummaryWriter(str(summ_tensor_board))
+    #writer = SummaryWriter(str(summ_tensor_board))
     
     ds_test = RandomSpectralDataset(TEST, INPUT_DIR, slices_per_class= 400, examples_per_batch=3, enhancement_func=exponent)
     ds_train = SpectralDataset(TRAIN, INPUT_DIR, enhancement_func=exponent)
@@ -85,10 +85,10 @@ def main(config_file):
         }, is_best, filename=state_fname)
 
         img = plot_conf_mat(test_conf_matrix) #TODO: Pass train_conf_matrix as well
-        logger.write_summary(writer, epoch, train_stats, test_stats, img)
+        #logger.write_summary(writer, epoch, train_stats, test_stats, img)
         logger.dump_log_txt(date, start_time, local_config, train_stats, test_stats, best_acc, log_fname)
 
-    writer.close()
+    #writer.close()
     print('Finished Training')
 
 
