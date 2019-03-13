@@ -18,19 +18,20 @@ import pandas as pd
 from tensorboardX import SummaryWriter
 from training import train, evaluate, logger, plot_conf_mat
 from datasets.sequential import RandomSpectralDataset, SpectralDataset
+from datasets.tools.enhancement import exponent
 
 if 'HOSTNAME' in os.environ:
     # script runs on server
-    INPUT_DIR = '/storage/slices/'
+    INPUT_DIR = '/storage/step1_slices/'
 else:
     # script runs locally
     INPUT_DIR = 'storage/slices/'
 
 
 DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
-
-TRAIN = pd.read_csv('./storage/df_train_local.csv')
-TEST = pd.read_csv('./storage/df_test_local.csv')
+print(DEVICE)
+TRAIN = pd.read_csv('mel_slices_train.csv')
+TEST = pd.read_csv('mel_slices_test.csv')
 
 def main(config_file):
     #read from config
@@ -49,9 +50,9 @@ def main(config_file):
     log_path = f'./birdsong/run_log/{model_name}_{date}'
     state_fname, log_fname, summ_tensor_board = logger.create_log(log_path)
     writer = SummaryWriter(str(summ_tensor_board))
-
-    ds_test = RandomSpectralDataset(TEST, examples_per_batch=3)
-    ds_train = SpectralDataset(TRAIN)
+    
+    ds_test = RandomSpectralDataset(TEST, INPUT_DIR, slices_per_class= 400, examples_per_batch=3, enhancement_func=exponent)
+    ds_train = SpectralDataset(TRAIN, INPUT_DIR, enhancement_func=exponent)
     dl_test = DataLoader(ds_test, batch_size)
     dl_train = DataLoader(ds_train, batch_size)
     print('dataloaders initialized')
@@ -72,7 +73,7 @@ def main(config_file):
         print(f'Train Loss: {train_stats[0]:.5f}, Train Acc: {train_stats[1]:.5f}')
         test_stats, test_conf_matrix = evaluate(net, dl_test, criterion, no_classes, DEVICE)
         print(f'Test Loss: {test_stats[0]:.5f}, Test Acc: {test_stats[1]:.5f}')
-        
+
         is_best = test_stats[1] > best_acc
         best_acc = max(test_stats[1], best_acc)
         print('Best Accuracy: {:.5f}'.format(best_acc))
