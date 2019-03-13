@@ -108,7 +108,6 @@ class RandomSpectralDataset(Dataset):
         y = (min(i, (i // self.examples_per_batch))) % self.classes
         path = self.df[self.df.label == y].sample(n=1).path.values[0]
         full_path = os.path.join(self.input_dir, path)
-
         X = self.unpickle(full_path)
         X -= X.min()
         X /= X.max()
