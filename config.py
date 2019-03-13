@@ -9,9 +9,9 @@ Created on Tue Mar  5 12:29:19 2019
 #!/usr/bin/env python
 
 INPUTS = {'MODEL' : 'Bulbul',
-          'BATCHSIZE' : 30,
+          'BATCHSIZE' : 128,
           'OPTIMIZER' : 'Adam',
           'EPOCHS' : 50,
-          'CLASSES' : 10,
+          'CLASSES' : 324,
           'LR' : 0.001,
           }
