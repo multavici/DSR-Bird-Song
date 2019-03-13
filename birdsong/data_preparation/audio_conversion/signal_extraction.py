@@ -79,13 +79,9 @@ def vector_to_timestamps(vec, audio, sr):
             stops = np.append(stops, stop)
 
     ratio = audio.shape[0] / vec.shape[0]
-
-    try:
-        timestamps = np.vstack([starts, stops])
-    except:
-        # Technically impossible but I'm superstitiuous
-        print(f'Nr. of starts and stops doesnt match for file {path}')
-
+    
+    timestamps = np.vstack([starts, stops])
+    
     # Scale up to original audio length
     timestamps *= ratio
     # Divide by sample rate to get seconds
@@ -109,3 +105,15 @@ def signal_timestamps(path):
     timestamps, sum_signal = vector_to_timestamps(vec, audio, sr)
     duration = audio.shape[0] / sr
     return duration, sum_signal, timestamps
+
+def noise_timestamps(path):
+    """ Takes an audio path to a bird soundfile and returns the overall duration,
+    the total seconds containing bird vocalizations and a json with start and stop
+    markers for these bird vocalizations."""
+    audio, sr = librosa.load(path)
+    stft = normalized_stft(audio)
+    mask = median_mask(stft, 2.5, inv=True)
+    morph = morphological_filter(mask)
+    vec = indicator_vector(morph)
+    timestamps, sum_noise = vector_to_timestamps(vec, audio, sr)
+    return timestamps

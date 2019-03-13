@@ -1,6 +1,7 @@
 import librosa
 import numpy as np
 import json
+import warnings
 
 def load_audio(path):
     """ Audio i/o """
@@ -11,9 +12,17 @@ def load_audio(path):
 def get_signal(audio, sr, timestamps):
     """ Extract and concatenate bird vocalizations at timesteps from audio"""
     # Convert timestamps from seconds to sample indeces
-    timestamps = np.round(np.array(json.loads(timestamps)) * sr).astype(np.int)  #TODO: CHeck for possibility of empty ones
-    indeces = np.hstack([np.arange(t[0], t[1]+1) for t in timestamps])
-    return audio[indeces]
+    timestamps = np.round(np.array(json.loads(timestamps)) * sr).astype(np.int)
+    
+    indeces = np.hstack([np.arange(t[0], t[1]) for t in timestamps])
+    try:
+        return audio[indeces]
+    except IndexError:
+        # Assure that index out of bounds errors cannot occur:
+        indeces = indeces[indeces < len(audio)]
+        warnings.warn('Avoided index error by truncating timestamps')
+        return audio[indeces]
+    
 
 def slice_spectrogram(spec, window, stride):
     # Here the window and stride are expected to be already expressed in spectrogram
