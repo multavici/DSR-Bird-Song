@@ -5,9 +5,7 @@
 
 
 <script>
-  // var player = document.getElementById('player');
   const recordButton = document.querySelector('#record-button');
-  // const audio = document.querySelector('audio');
 
   function createAudioElement(blobUrl) {
     const downloadEl = document.createElement('a');
@@ -23,7 +21,7 @@
     audioEl.appendChild(sourceEl);
     document.body.appendChild(audioEl);
     document.body.appendChild(downloadEl);
-}
+  };
   
   recordButton.onclick = function() {
     navigator.mediaDevices.getUserMedia({ audio: true})
@@ -48,6 +46,7 @@
         
         recordButton.onclick = function() {
           recorder.stop()
+          recordButton.innerHTML = 'Try again'
         }
 
       }).catch(console.error);
