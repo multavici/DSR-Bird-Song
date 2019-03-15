@@ -11,12 +11,13 @@ from .utils import printProgressBar
 
 
 def train(model, data_loader, epoch, optimizer, criterion, DEVICE):
+    model.train()
+    model = model.to(DEVICE)
+    
     n_correct = 0
     n_total = 0
     running_loss = 0.0
 
-    model.train()
-    model = model.to(DEVICE)
     for batch_idx, (data, target) in enumerate(data_loader):
         data, target = Variable(data), Variable(target)
         data = data.float()
