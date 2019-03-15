@@ -33,10 +33,10 @@ For rapid model development we are currently using a small subsample of the data
 ## Model
 
 We build the following [models](birdsong/models):
-* [Bulbul](birdsong/models/bulbul.py) [(Grill & Schlüter, 2017)](https://www.eurasip.org/Proceedings/Eusipco/Eusipco2017/papers/1570347092.pdf)
-* [Sparrow](birdsong/models/sparrow.py) [(Grill & Schlüter, 2017)](https://www.eurasip.org/Proceedings/Eusipco/Eusipco2017/papers/1570347092.pdf)
-* [SparrowExp](birdsong/models/sparrow_exp_a.py) [(Schlüter, 2018)](http://www.ofai.at/~jan.schlueter/pubs/2018_birdclef.pdf)
-* [Zipzalp](birdsong/models/zilpzalp.py) 
+* [Bulbul](birdsong/models/bulbul.py): [(Grill & Schlüter, 2017)](https://www.eurasip.org/Proceedings/Eusipco/Eusipco2017/papers/1570347092.pdf)
+* [Sparrow](birdsong/models/sparrow.py): [(Grill & Schlüter, 2017)](https://www.eurasip.org/Proceedings/Eusipco/Eusipco2017/papers/1570347092.pdf)
+* [SparrowExp](birdsong/models/sparrow_exp_a.py): [(Schlüter, 2018)](http://www.ofai.at/~jan.schlueter/pubs/2018_birdclef.pdf)
+* [Zipzalp](birdsong/models/zilpzalp.py): own creation by Tim 
 
 
 ## Model training

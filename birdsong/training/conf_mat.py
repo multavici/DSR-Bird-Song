@@ -27,7 +27,7 @@ def calc_conf_mat(pred, target, num_classes):
     return conf_mat
 
 
-def plot_conf_mat(conf_matrix):
+def plot_conf_mat(img_path, conf_matrix):
     
     fig = plt.figure(figsize=(12,12))
     
@@ -48,10 +48,15 @@ def plot_conf_mat(conf_matrix):
    # fmt = '.2f' if normalize else 'd'
    # thresh = cm.max() / 2.
     
+    for i in np.arange(cm.shape[0]):
+        for j in np.arange(cm.shape[1]):
+            plt.text(j, i, '%0.2f' %(cm[i][j]))
+
     plt.ylabel('Actual label')
     plt.xlabel('Predicted label')
     plt.tight_layout()
-    
+    plt.savefig(img_path)
+
     buf = BytesIO()
     fig.savefig(buf)
     buf.seek(0)
