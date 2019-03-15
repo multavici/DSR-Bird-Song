@@ -22,7 +22,7 @@ from datasets.tools.enhancement import exponent
 
 if 'HOSTNAME' in os.environ:
     # script runs on server
-    INPUT_DIR = '/storage/step1_slices/'
+    INPUT_DIR = 'storage/step1_slices/'
     TRAIN = pd.read_csv('mel_slices_train.csv')
     TEST = pd.read_csv('mel_slices_test.csv')
 else:
