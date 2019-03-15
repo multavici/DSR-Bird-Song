@@ -13,13 +13,14 @@ from .conf_mat import calc_conf_mat
 
 
 def evaluate(model, data_loader, criterion, num_classes, DEVICE):
-
     model.eval()
     model = model.to(DEVICE)
-    loss = 0
+    
+
     n_correct = 0
     n_total = 0
-
+    loss = 0
+    
     with torch.no_grad():
         for batch_idx, (data, target) in enumerate(data_loader):
             data, target = Variable(data), Variable(target)
