@@ -88,8 +88,12 @@ def main(config_file):
             'best_accuracy': best_acc
         }, is_best, filename=state_fname)
 
-        img = plot_conf_mat(train_conf_matrix) 
-        img = plot_conf_mat(test_conf_matrix)  #TODO: Pass train_conf_matrix as well
+        img_path = log_path + '/train' + '_' + str(epoch) + '.png'
+        img = plot_conf_mat(img_path, train_conf_matrix) 
+
+        img_path = log_path + '/test' + '_' + str(epoch) + '.png'
+        img = plot_conf_mat(img_path, test_conf_matrix)
+
         #logger.write_summary(writer, epoch, train_stats, test_stats, img)
         logger.dump_log_txt(date, start_time, local_config, train_stats, test_stats, best_acc, log_fname)
 
