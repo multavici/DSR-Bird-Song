@@ -19,6 +19,8 @@ from tensorboardX import SummaryWriter
 from training import train, evaluate, logger, plot_conf_mat
 from datasets.sequential import SpectralDataset
 from datasets.tools.enhancement import exponent
+from datasets.tools.augmentations import GaussianNoise
+from datasets.tools.sampling import upsample_df
 
 if 'HOSTNAME' in os.environ:
     # script runs on server
@@ -55,8 +57,14 @@ def main(config_file):
     log_path = f'./birdsong/run_log/{model_name}_{date}'
     state_fname, log_fname, summ_tensor_board = logger.create_log(log_path)
     writer = SummaryWriter(str(summ_tensor_board))
-
-    ds_train = SpectralDataset(TRAIN, INPUT_DIR, enhancement_func=exponent)
+    
+    # Upsampling
+    train_df = upsample_df(TRAIN, 400)
+    
+    # Augmentation
+    noiser = GaussianNoise()
+    
+    ds_train = SpectralDataset(train_df, INPUT_DIR, enhancement_func=exponent, augmentation_func=noiser)
     ds_test = SpectralDataset(TEST, INPUT_DIR, enhancement_func=exponent)
 
     dl_train = DataLoader(ds_train, batch_size, num_workers=4, pin_memory=PIN, shuffle=True)

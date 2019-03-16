@@ -23,11 +23,11 @@ class VerticalRoll(object):
         return self.__class__.__name__ + f' Amount={self.amount}'
 
 class GaussianNoise(object):
-    def __init__(self, scaling=0.1):
+    def __init__(self, scaling=0.05):
         self.scaling = scaling
     
     def __call__(self, img):
-        noise = np.random.normal(size=img.shape) * self.scaling
+        noise = np.random.normal(size=img.shape) * np.random.uniform(low = -self.scaling, high = self.scaling)
         return img + noise
 
     def __repr__(self):
