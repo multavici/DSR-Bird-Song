@@ -15,12 +15,11 @@ from .conf_mat import calc_conf_mat
 def evaluate(model, data_loader, criterion, num_classes, DEVICE):
     model.eval()
     model = model.to(DEVICE)
-    
 
     n_correct = 0
     n_total = 0
     loss = 0
-    
+
     with torch.no_grad():
         for batch_idx, (data, target) in enumerate(data_loader):
             data, target = Variable(data), Variable(target)
@@ -47,7 +46,7 @@ def evaluate(model, data_loader, criterion, num_classes, DEVICE):
     #from sklearn
     #conf_matrix = metrics.confusion_matrix(pred_cat.view(-1), targ_cat.view(-1))
 
-    loss /= (batch_idx + 1)
+    loss /= (len(data_loader.dataset))
     acc = n_correct / n_total
 
     return (loss, acc), conf_matrix

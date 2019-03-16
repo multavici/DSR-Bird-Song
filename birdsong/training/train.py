@@ -8,15 +8,17 @@ Created on Fri Mar  8 21:33:11 2019
 
 from torch.autograd import Variable
 from .utils import printProgressBar
+from time import perf_counter as pf
+from .utils import profileit
 
-
+@profileit('train_loop.prof')
 def train(model, data_loader, epoch, optimizer, criterion, DEVICE):
+    start = pf()
     model.train()
     model = model.to(DEVICE)
-    
-    n_correct = 0
-    n_total = 0
-    running_loss = 0.0
+
+    n_correct = []
+    losses = []
 
     for batch_idx, (data, target) in enumerate(data_loader):
         data, target = Variable(data), Variable(target)
@@ -32,14 +34,16 @@ def train(model, data_loader, epoch, optimizer, criterion, DEVICE):
         optimizer.step()
 
         pred = output.data.max(1, keepdim=True)[1]
-        n_correct += pred.eq(target.data.view_as(pred)).cpu().sum().item()
-        n_total += len(target)
-        running_loss += loss.item()
+        n_correct.append(pred.eq(target.data.view_as(pred)).cpu().sum().item())
+        running_loss.append(loss.item())
 
-        current_loss = running_loss/(batch_idx+1)
-        current_acc = n_correct/n_total
+        latest_losses = losses[-10:]
+        latest_correct = n_correct[-10:]
+
+        running_loss = sum(latest_losses) / len(latest_losses)
+        running_acc = sum(latest_correct) / (len(latest_correct) * data_loader.batch_size)
 
         printProgressBar(batch_idx + 1, len(data_loader),
-                         prefix=f'Epoch: {epoch}',
-                         suffix=f'Running Loss:{current_loss:.5f}, Running Acc:{current_acc:.5f}',
+                         prefix=f'Epoch: {epoch+1}',
+                         suffix=f'Running Loss:{running_loss:.5f}, Running Acc:{running_acc:.5f}, Time: {pf()-time:.1f}',
                          length=50)
