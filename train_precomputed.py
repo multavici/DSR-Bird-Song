@@ -57,7 +57,7 @@ def main(config_file):
     ds_train = SpectralDataset(TRAIN, INPUT_DIR, enhancement_func=exponent)
     ds_test = SpectralDataset(TEST, INPUT_DIR, enhancement_func=exponent)
 
-    dl_train = DataLoader(ds_train, batch_size)
+    dl_train = DataLoader(ds_train, batch_size, num_workers=4, shuffle=True)
     dl_test = DataLoader(ds_test, batch_size, shuffle=True)
     print('dataloaders initialized')
 

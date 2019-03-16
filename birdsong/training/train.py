@@ -35,7 +35,7 @@ def train(model, data_loader, epoch, optimizer, criterion, DEVICE):
 
         pred = output.data.max(1, keepdim=True)[1]
         n_correct.append(pred.eq(target.data.view_as(pred)).cpu().sum().item())
-        running_loss.append(loss.item())
+        losses.append(loss.item())
 
         latest_losses = losses[-10:]
         latest_correct = n_correct[-10:]
@@ -45,5 +45,5 @@ def train(model, data_loader, epoch, optimizer, criterion, DEVICE):
 
         printProgressBar(batch_idx + 1, len(data_loader),
                          prefix=f'Epoch: {epoch+1}',
-                         suffix=f'Running Loss:{running_loss:.5f}, Running Acc:{running_acc:.5f}, Time: {pf()-time:.1f}',
+                         suffix=f'Running Loss:{running_loss:.5f}, Running Acc:{running_acc:.5f}, Time: {pf()-start:.1f}',
                          length=50)
