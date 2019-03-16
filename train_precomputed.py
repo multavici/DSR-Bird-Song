@@ -1,26 +1,25 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-from datasets.tools.sampling import upsample_df
-from datasets.tools.augmentations import GaussianNoise
-from datasets.tools.enhancement import exponent
-from datasets.sequential import SpectralDataset
-from training import train, evaluate, logger, plot_conf_mat
+import torch
+import time
+import os
+import sys
 from tensorboardX import SummaryWriter
 import pandas as pd
 import torch.optim as optim
 import torchvision.transforms as transforms
 from torch.utils.data import DataLoader
 from torch import nn
-import torch
-"""
-Created on Fri Mar  8 22:06:04 2019
 
-@author: ssharma
-"""
-import time
-import os
-import sys
 sys.path.append("./birdsong")
+
+from datasets.tools.sampling import upsample_df
+from datasets.tools.augmentation import GaussianNoise
+from datasets.tools.enhancement import exponent
+from datasets.sequential import SpectralDataset
+from training import train, evaluate, logger, plot_conf_mat
+
+
 
 if 'HOSTNAME' in os.environ:
     # script runs on server
