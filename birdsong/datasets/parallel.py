@@ -301,7 +301,7 @@ class SlicePreloader(Preloader):
     unpickles the next batch of slices.
     """
     def __init__(self, event, queue, task_queue):
-        super(SlicePreloader, self).__init__()
+        super(SlicePreloader, self).__init__(event, queue, task_queue)
 
     def _preload(self, b):
         path, label = b
@@ -346,22 +346,16 @@ class RandomSpectralDataset(Dataset):
         e = Event()
         self.q = Queue()
         self.t = Queue()
-        self.Preloader = Preloader(e, self.q, self.t)
+        self.Preloader = SlicePreloader(e, self.q, self.t)
         self.Preloader.start()
 
         # Compute output size
-        self.shape = self.compute_shape()
+        self.shape = (256, 216)
         self.classes = len(set(self.df.label))
-
-
-        # For troubleshooting the preloader
-        self.log = {'sent' : [],
-                    'received' : [],
-                    'inventory' : []}
 
         # Prepare the first batch:
         print('Preloading first batch... this might take a moment.')
-        self.request_batch(0, -1)
+        self.request_batch(0, 0)
 
     def __len__(self):
         """ This dataset is capable of automatically up- or downsampling, thus
@@ -375,16 +369,15 @@ class RandomSpectralDataset(Dataset):
         of a new batch, the preloaded slices are received from a queue - if they
         are not ready yet the main process will wait. """
         # Subsequent indices loop through the classes:
+        #import pdb; pdb.set_trace()
         y = (min(i, (i // self.examples_per_batch))) % self.classes
 
         # If were at the beginning of one batch, update stack with Preloader's work
         if i % self.batchsize == 0:
-            self.log['inventory'].append(self.inventory(i))
             self.receive_request(i)
 
-        # Get actual sample and compute spectrogram:
-        audio = self.retrieve_sample(y)
-        X = self.spectrogram_func(audio)
+        # Get spectrogram slice
+        X = self.retrieve_sample(y)
 
         # Normlize:
         X -= X.min()
@@ -399,12 +392,10 @@ class RandomSpectralDataset(Dataset):
 
         # If were at the end of one batch, request next:
         if (i + 1) % self.batchsize == 0:
-            self.log['inventory'].append(self.inventory(i))
             self.request_batch(y+1, i)
 
         # If were at the end of the last batch request starting with class 0
-        if i == self.length-1:
-            self.log['inventory'].append(self.inventory(i))
+        if i == len(self)-1:
             self.request_batch(0, i)
 
         return X, y
@@ -427,14 +418,7 @@ class RandomSpectralDataset(Dataset):
                 label = sample[0]
                 self.stack[label].append(sample[1])
             self.made_request = False
-
-        #LOG
-        r = {'R':i}
-        req = {k: 0 for  k in set([s[0] for s in new_samples])  }
-        for s in new_samples:
-            req[s[0]] += len(s[1])
-        self.log['received'].append({**r, **req})
-
+            
     def request_batch(self, y, i):
         """ At a given y in classes, look ahead how many times each class k will
         have to be served for the next batch. Request a new file for each where
@@ -452,30 +436,16 @@ class RandomSpectralDataset(Dataset):
                     bucket_list.append(request)
 
         if len(bucket_list) > 0:
-            #print('Making request')
             self.t.put(bucket_list)
             self.Preloader.e.set()
             self.made_request = True
 
-        #LOG
-        r = {'R':i}
-        req = {'path':[],
-               'label':[],
-               'timestamps':[],
-               'expected': []}
-        for b in bucket_list:
-            req['path'].append(b[0])
-            req['label'].append(b[1])
-            req['timestamps'].append(b[2])
-            req['expected'].append(b[3])
-        self.log['sent'].append({**r, **req})
-
     def compute_need(self, i):
         """ Given a current class label, calculate based on batch size how many times
         which classes need to be served in the next batch """
-        next_batch_indeces = range(i, i + self.batchsize)
+        next_batch_indeces = range(i, i + self.batchsize+1)
         samples_needed = {}
-        for i in next_batch:
+        for i in next_batch_indeces:
             k = (min(i, (i // self.examples_per_batch))) % self.classes
             if k in samples_needed.keys():
                 samples_needed[k] += 1
@@ -488,7 +458,7 @@ class RandomSpectralDataset(Dataset):
         a more serves, false if otherwise """
         remaining_samples = len(self.stack[k])
         if remaining_samples < required_samples:
-            return remaining_samples - required_samples
+            return required_samples - remaining_samples
         else:
             return 0
 
