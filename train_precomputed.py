@@ -33,6 +33,8 @@ else:
 
 
 DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
+PIN = True if torch.cuda.is_available() else False
+
 print(DEVICE)
 
 
@@ -57,8 +59,8 @@ def main(config_file):
     ds_train = SpectralDataset(TRAIN, INPUT_DIR, enhancement_func=exponent)
     ds_test = SpectralDataset(TEST, INPUT_DIR, enhancement_func=exponent)
 
-    dl_train = DataLoader(ds_train, batch_size, num_workers=4, shuffle=True)
-    dl_test = DataLoader(ds_test, batch_size, shuffle=True)
+    dl_train = DataLoader(ds_train, batch_size, num_workers=4, pin_memory=PIN, shuffle=True)
+    dl_test = DataLoader(ds_test, batch_size, num_workers=4, pin_memory=PIN, shuffle=True)
     print('dataloaders initialized')
 
     time_axis = ds_test.shape[1]
