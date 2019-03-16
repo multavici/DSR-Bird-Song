@@ -60,7 +60,7 @@ class SpectralDataset(Dataset):
             slice_ = pickle.load(f)
         return slice_
 
-class RandomSpectralDataset(Dataset):
+class RandomSpectralDataset(SpectralDataset):
     """ Rather than returning a sequential list of files, this dataset can be "blown" up to any
     reasonable size with the slices_per_class parameter. The dataset will then loop through its classes
     with the help of modulo, returning heterogenous batches. The paramete examples_per_batch controls
@@ -79,27 +79,11 @@ class RandomSpectralDataset(Dataset):
     def __init__(self, df, input_dir, slices_per_class=300, examples_per_batch=1, augmentation_func=None, enhancement_func=None):
         """ Initialize with a dataframe containing:
         path for a pickled precomputed spectrogram slice"""
-
-        self.df = df
-        # Check if labels already encoded and do so if not
-        if not is_numeric_dtype(self.df.label):
-            self.encoder = LabelEncoder(self.df.label)
-            self.df.label = self.encoder.encode()
-        else:
-            print('Labels look like they have been encoded already, \
-            you have to take care of decoding yourself.')
-        self.input_dir = input_dir
+        super(RandomSpectralDataset, self).__init__()
 
         self.slices_per_class = slices_per_class
         self.examples_per_batch = examples_per_batch
-
-        self.augmentation_func = augmentation_func
-        self.enhancement_func = enhancement_func
-
-        self.class_balances = self.df.groupby('label').path.count()
         self.classes = len(set(self.df.label))
-
-        self.shape = (self[0][0].shape[1], self[0][0].shape[2])
 
     def __len__(self):
         return self.classes * self.slices_per_class

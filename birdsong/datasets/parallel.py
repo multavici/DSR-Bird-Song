@@ -25,6 +25,8 @@ from multiprocessing import Process, Queue, Event
 from multiprocessing.pool import ThreadPool
 from pandas.api.types import is_numeric_dtype
 import os
+import pickle
+import h5py
 
 class Preloader(Process):
     """ A subprocess running in the background
@@ -68,7 +70,7 @@ class SoundDataset(Dataset):
     def __init__(self, df, **kwargs):
         """ Initialize with a dataframe containing:
         (path, label, duration, total_signal, timestamps)
-        kwargs: input_dir = path, batchsize = 10, window = 1500, stride = 500, 
+        kwargs: input_dir = path, batchsize = 10, window = 1500, stride = 500,
         spectrogram_func = None, augmentation_func = None"""
         for k,v in kwargs.items():
             setattr(self, k, v)
@@ -76,7 +78,7 @@ class SoundDataset(Dataset):
         # Ignore recordings with less signal than window size
         self.df = df[df.total_signal >= self.window / 1000]
         self.sr = 22050
-        
+
         # Check if labels already encoded and do so if not
         if not is_numeric_dtype(self.df.label):
             self.encoder = LabelEncoder(self.df.label)
@@ -149,17 +151,17 @@ class SoundDataset(Dataset):
         if self.augmentation_func not None:
             X = self.augmentation_func(X)
         """
-        
+
         # If were at the end of one batch, request next:
         if (i + 1) % self.batchsize == 0:
             self.log['inventory'].append(self.inventory(i))
             self.request_batch(y+1, i)
-        
+
         # If were at the end of the last batch request starting with class 0
         if i == self.length-1:
             self.log['inventory'].append(self.inventory(i))
             self.request_batch(0, i)
-            
+
         return X, y
 
     def retrieve_sample(self, k):
@@ -177,7 +179,7 @@ class SoundDataset(Dataset):
     def receive_request(self, i):
         """ Check if Preloader has already filled the Queue and if so, sort data
         into stack."""
-        new_samples = []                                                            
+        new_samples = []
         if self.made_request:
             new_samples = self.q.get()
             #print('Queue ready - updating stack.')
@@ -186,7 +188,7 @@ class SoundDataset(Dataset):
                 label = sample[0]
                 self.stack[label] = np.append(self.stack[label], (sample[1]))
             self.made_request = False
-            
+
         #LOG
         r = {'R':i}
         req = {k: 0 for  k in set([s[0] for s in new_samples])  }
@@ -215,10 +217,10 @@ class SoundDataset(Dataset):
             self.t.put(bucket_list)
             self.Preloader.e.set()
             self.made_request = True
-        
+
         #LOG
         r = {'R':i}
-        req = {'path':[],                                                           
+        req = {'path':[],
                'label':[],
                'timestamps':[],
                'expected': []}
@@ -246,7 +248,7 @@ class SoundDataset(Dataset):
         """ Return true if the audio on stack for class k does only suffice for
         a more serves, false if otherwise """
         # Safety buffer added #TODO: find out why this helps
-        required_audio = self.window + ((s-1) * self.stride) + 20000            
+        required_audio = self.window + ((s-1) * self.stride) + 20000
         remaining_audio = len(self.stack[k])
         if remaining_audio < required_audio:
             return required_audio - remaining_audio
@@ -269,7 +271,7 @@ class SoundDataset(Dataset):
         return request
 
     def inventory(self, i):
-        """ Return a dictionary containing the length of audio currently in 
+        """ Return a dictionary containing the length of audio currently in
         stack for each class. """
         r = {'R':i}
         inv = {k: len(v) for k,v in self.stack.items()}
@@ -290,3 +292,220 @@ class SoundDataset(Dataset):
         dummy = np.random.randn(self.window)
         spec = self.spectrogram_func(dummy)
         return spec.shape
+
+
+################################################################################
+
+class SlicePreloader(Preloader):
+    """ A subprocess running in the background, child of audio preloader,
+    unpickles the next batch of slices.
+    """
+    def __init__(self, event, queue, task_queue):
+        super(SlicePreloader, self).__init__()
+
+    def _preload(self, b):
+        path, label = b
+        if path.endswith('.pkl'):
+            with open(path, 'rb') as f:
+                slice_ = pickle.load(f)
+        if path.endswith('.h5'):
+            h5f = h5py.File(path, 'r')
+            slice_ = h5f['sound'][:]
+            h5f.close()
+        return (label, slice_)
+
+class RandomSpectralDataset(Dataset):
+    """ Same concept as the above only that in this case we are preloading a batch
+    of precomputed spectrograms, either as pickles or h5. """
+    
+    def __init__(self, df, **kwargs):
+        """ Initialize with a dataframe containing:
+        (path, label)
+        kwargs: batchsize=64, input_dir='', 
+        slices_per_class=300, examples_per_batch=1, augmentation_func=None, 
+        enhancement_func=None """
+        for k,v in kwargs.items():
+            setattr(self, k, v)
+
+        # Ignore recordings with less signal than window size
+        self.df = df
+
+        # Check if labels already encoded and do so if not
+        if not is_numeric_dtype(self.df.label):
+            self.encoder = LabelEncoder(self.df.label)
+            self.df.label = self.encoder.encode()
+        else:
+            print('Labels look like they have been encoded already, \
+            you have to take care of decoding yourself.')
+
+        # Stack - a list of continuous audio signal for each class
+        self.stack = {label:[] for label in set(self.df.label)}
+        self.classes = len(set(self.df.label))
+
+        # Instantiate Preloader:
+        e = Event()
+        self.q = Queue()
+        self.t = Queue()
+        self.Preloader = Preloader(e, self.q, self.t)
+        self.Preloader.start()
+
+        # Compute output size
+        self.shape = self.compute_shape()
+        self.classes = len(set(self.df.label))
+
+
+        # For troubleshooting the preloader
+        self.log = {'sent' : [],
+                    'received' : [],
+                    'inventory' : []}
+
+        # Prepare the first batch:
+        print('Preloading first batch... this might take a moment.')
+        self.request_batch(0, -1)
+
+    def __len__(self):
+        """ This dataset is capable of automatically up- or downsampling, thus
+        the length corresponds to the following: """
+        return self.classes * self.slices_per_class
+
+    def __getitem__(self, i):
+        """ Indices loop over available classes to return heterogeneous batches
+        of uniformly random sampled audio. Preloading is triggered and the end
+        of each batch and supposed to run during training time. At the beginning
+        of a new batch, the preloaded slices are received from a queue - if they
+        are not ready yet the main process will wait. """
+        # Subsequent indices loop through the classes:
+        y = (min(i, (i // self.examples_per_batch))) % self.classes
+
+        # If were at the beginning of one batch, update stack with Preloader's work
+        if i % self.batchsize == 0:
+            self.log['inventory'].append(self.inventory(i))
+            self.receive_request(i)
+
+        # Get actual sample and compute spectrogram:
+        audio = self.retrieve_sample(y)
+        X = self.spectrogram_func(audio)
+
+        # Normlize:
+        X -= X.min()
+        X /= X.max()
+        X = np.expand_dims(X, 0)
+
+        if not self.augmentation_func is None:
+            X = self.augmentation_func(X)
+
+        if not self.enhancement_func is None:
+            X = self.enhancement_func(X)
+
+        # If were at the end of one batch, request next:
+        if (i + 1) % self.batchsize == 0:
+            self.log['inventory'].append(self.inventory(i))
+            self.request_batch(y+1, i)
+
+        # If were at the end of the last batch request starting with class 0
+        if i == self.length-1:
+            self.log['inventory'].append(self.inventory(i))
+            self.request_batch(0, i)
+
+        return X, y
+
+    def retrieve_sample(self, k):
+        """ For class k extract audio corresponding to window length from stack
+        and delete audio corresponding to stride length"""
+        X = self.stack[k].pop(0)
+        return X
+
+    def receive_request(self, i):
+        """ Check if Preloader has already filled the Queue and if so, sort data
+        into stack."""
+        new_samples = []
+        if self.made_request:
+            new_samples = self.q.get()
+            #print('Queue ready - updating stack.')
+
+            for sample in new_samples:
+                label = sample[0]
+                self.stack[label].append(sample[1])
+            self.made_request = False
+
+        #LOG
+        r = {'R':i}
+        req = {k: 0 for  k in set([s[0] for s in new_samples])  }
+        for s in new_samples:
+            req[s[0]] += len(s[1])
+        self.log['received'].append({**r, **req})
+
+    def request_batch(self, y, i):
+        """ At a given y in classes, look ahead how many times each class k will
+        have to be served for the next batch. Request a new file for each where
+        only one serving remains.
+        If requests are necessary, send them to Preloader.
+        """
+        samples_needed = self.compute_need(i)
+        bucket_list = []
+        for k, s in samples_needed.items():
+            required_samples = self.check_stack(k, s)
+            if required_samples > 0:
+                requests = self.make_request(k, required_samples)
+                #print(f'Need {required_audio} for class {k}, loading {len(requests)} file(s)')
+                for request in requests:
+                    bucket_list.append(request)
+
+        if len(bucket_list) > 0:
+            #print('Making request')
+            self.t.put(bucket_list)
+            self.Preloader.e.set()
+            self.made_request = True
+
+        #LOG
+        r = {'R':i}
+        req = {'path':[],
+               'label':[],
+               'timestamps':[],
+               'expected': []}
+        for b in bucket_list:
+            req['path'].append(b[0])
+            req['label'].append(b[1])
+            req['timestamps'].append(b[2])
+            req['expected'].append(b[3])
+        self.log['sent'].append({**r, **req})
+
+    def compute_need(self, i):
+        """ Given a current class label, calculate based on batch size how many times
+        which classes need to be served in the next batch """
+        next_batch_indeces = range(i, i + self.batchsize)
+        samples_needed = {}
+        for i in next_batch:
+            k = (min(i, (i // self.examples_per_batch))) % self.classes
+            if k in samples_needed.keys():
+                samples_needed[k] += 1
+            else:
+                samples_needed[k] = 1
+        return samples_needed
+
+    def check_stack(self, k, required_samples):
+        """ Return true if the audio on stack for class k does only suffice for
+        a more serves, false if otherwise """
+        remaining_samples = len(self.stack[k])
+        if remaining_samples < required_samples:
+            return remaining_samples - required_samples
+        else:
+            return 0
+
+    def make_request(self, k, required_samples):
+        """ For class k sample a random corresponding sound file and return a
+        tuple of path, label, timestamps required by the preloader. """
+        request = []
+        for i in range(required_samples):
+            sample = self.df[self.df.label == k].sample(n=1)
+            path = os.path.join(self.input_dir, sample.path.values[0])
+            label = sample.label.values[0]
+            request.append((path, label))
+        return request
+
+    def inventory(self, i):
+        """ Return a dictionary containing the length of audio currently in
+        stack for each class. """
+        r = {'R':i}
+        inv = {k: len(v) for k,v in self.stack.items()}
+        return {**r, **inv}
