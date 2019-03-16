@@ -54,7 +54,7 @@ def main(config_file):
     state_fname, log_fname, summ_tensor_board = logger.create_log(log_path)
     writer = SummaryWriter(str(summ_tensor_board))
 
-    ds_train = RandomSpectralDataset(TRAIN, INPUT_DIR, slices_per_class=400, examples_per_batch=1, enhancement_func=exponent)
+    ds_train = SpectralDataset(TRAIN, INPUT_DIR, enhancement_func=exponent)
     ds_test = SpectralDataset(TEST, INPUT_DIR, enhancement_func=exponent)
 
     dl_train = DataLoader(ds_train, batch_size)
