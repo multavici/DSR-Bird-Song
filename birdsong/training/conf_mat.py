@@ -9,7 +9,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from io import BytesIO
 from PIL import Image
-
+from .utils import profileit
 
 def calc_conf_mat(pred, target, num_classes):
 
@@ -26,7 +26,7 @@ def calc_conf_mat(pred, target, num_classes):
         
     return conf_mat
 
-
+@profileit('conf_matrix.prof')
 def plot_conf_mat(img_path, conf_matrix):
     
     fig = plt.figure(figsize=(12,12))

@@ -19,12 +19,7 @@ def train(model, data_loader, epoch, optimizer, criterion, DEVICE):
 
     n_correct = []
     losses = []
-    printProgressBar(0, 
-                     len(data_loader),
-                     prefix=f'Epoch: {epoch+1}',
-                     suffix=f'Running Loss: 0, Running Acc: 0, Time: {pf()-start:.1f}',
-                     length=50)
-
+    
     for batch_idx, (data, target) in enumerate(data_loader):
         data, target = Variable(data), Variable(target)
         data = data.float()
@@ -48,9 +43,8 @@ def train(model, data_loader, epoch, optimizer, criterion, DEVICE):
         running_loss = sum(latest_losses) / len(latest_losses)
         running_acc = sum(latest_correct) / (len(latest_correct) * data_loader.batch_size)
 
-        if batch_idx % 5 == 0 or batch_idx == len(data_loader):
-            printProgressBar(batch_idx + 1, 
-                             len(data_loader),
-                             prefix=f'Epoch: {epoch+1}',
-                             suffix=f'Running Loss:{running_loss:.5f}, Running Acc:{running_acc:.5f}, Time: {pf()-start:.1f}',
-                             length=50)
+        printProgressBar(batch_idx + 1, 
+                         len(data_loader),
+                         prefix=f'Epoch: {epoch+1}',
+                         suffix=f'Running Loss:{running_loss:.5f}, Running Acc:{running_acc:.5f}, Time: {pf()-start:.1f}',
+                         length=50)
