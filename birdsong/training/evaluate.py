@@ -17,7 +17,6 @@ def evaluate(model, data_loader, criterion, num_classes, DEVICE):
     model = model.to(DEVICE)
 
     n_correct = 0
-    n_total = 0
     loss = 0
 
     with torch.no_grad():
@@ -33,7 +32,6 @@ def evaluate(model, data_loader, criterion, num_classes, DEVICE):
 
             pred = output.data.max(1, keepdim=True)[1]
             n_correct += pred.eq(target.data.view_as(pred)).cpu().sum().item()
-            n_total += len(target)
 
             if batch_idx == 0:
                 pred_cat = pred
@@ -43,10 +41,8 @@ def evaluate(model, data_loader, criterion, num_classes, DEVICE):
                 targ_cat = torch.cat((targ_cat, target))
 
     conf_matrix = calc_conf_mat(pred_cat, targ_cat, num_classes)
-    #from sklearn
-    #conf_matrix = metrics.confusion_matrix(pred_cat.view(-1), targ_cat.view(-1))
 
-    loss /= (len(data_loader.dataset))
-    acc = n_correct / n_total
+    loss /= len(data_loader)
+    acc = n_correct / len(data_loader.dataset)
 
     return (loss, acc), conf_matrix

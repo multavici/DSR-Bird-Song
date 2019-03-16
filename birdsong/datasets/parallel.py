@@ -295,7 +295,6 @@ class SoundDataset(Dataset):
 
 
 ################################################################################
-
 class SlicePreloader(Preloader):
     """ A subprocess running in the background, child of audio preloader,
     unpickles the next batch of slices.

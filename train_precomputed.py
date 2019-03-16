@@ -17,7 +17,7 @@ import torch.optim as optim
 import pandas as pd
 from tensorboardX import SummaryWriter
 from training import train, evaluate, logger, plot_conf_mat
-from datasets.sequential import RandomSpectralDataset, SpectralDataset
+from datasets.sequential import SpectralDataset
 from datasets.tools.enhancement import exponent
 
 if 'HOSTNAME' in os.environ:
@@ -33,9 +33,9 @@ else:
 
 
 DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
-PIN = True if torch.cuda.is_available() else False
+PIN = torch.cuda.is_available()
 
-print(DEVICE)
+print(f'Training on {DEVICE}')
 
 
 def main(config_file):
@@ -91,15 +91,15 @@ def main(config_file):
         }, is_best, filename=state_fname)
 
         img_path = log_path + '/train' + '_' + str(epoch) + '.png'
-        img = plot_conf_mat(img_path, train_conf_matrix) 
+        img = plot_conf_mat(img_path, train_conf_matrix)
 
         img_path = log_path + '/test' + '_' + str(epoch) + '.png'
         img = plot_conf_mat(img_path, test_conf_matrix)
 
-        #logger.write_summary(writer, epoch, train_stats, test_stats, img)
+        logger.write_summary(writer, epoch, train_stats, test_stats, img)
         logger.dump_log_txt(date, start_time, local_config, train_stats, test_stats, best_acc, log_fname)
 
-    #writer.close()
+    writer.close()
     print('Finished Training')
 
 
