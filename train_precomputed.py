@@ -61,7 +61,7 @@ def main(config_file):
 
     dl_train = DataLoader(ds_train, batch_size, num_workers=4, pin_memory=PIN, shuffle=True)
     dl_test = DataLoader(ds_test, batch_size, num_workers=4, pin_memory=PIN, shuffle=True)
-    print('dataloaders initialized')
+    print('Dataloaders initialized')
 
     time_axis = ds_test.shape[1]
     freq_axis = ds_test.shape[0]
@@ -89,16 +89,20 @@ def main(config_file):
             'state_dict': net.state_dict(),
             'best_accuracy': best_acc
         }, is_best, filename=state_fname)
-
+        
+        print('Making images')
         img_path = log_path + '/train' + '_' + str(epoch) + '.png'
         img = plot_conf_mat(img_path, train_conf_matrix)
 
         img_path = log_path + '/test' + '_' + str(epoch) + '.png'
         img = plot_conf_mat(img_path, test_conf_matrix)
-
+        
+        print('Writing logs')
         logger.write_summary(writer, epoch, train_stats, test_stats, img)
         logger.dump_log_txt(date, start_time, local_config, train_stats, test_stats, best_acc, log_fname)
-
+        
+        print('Done for now')
+        
     writer.close()
     print('Finished Training')
 

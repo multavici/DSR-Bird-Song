@@ -48,7 +48,7 @@ def train(model, data_loader, epoch, optimizer, criterion, DEVICE):
         running_loss = sum(latest_losses) / len(latest_losses)
         running_acc = sum(latest_correct) / (len(latest_correct) * data_loader.batch_size)
 
-        if batch_idx % 5 == 0:
+        if batch_idx % 5 == 0 or batch_idx == len(data_loader):
             printProgressBar(batch_idx + 1, 
                              len(data_loader),
                              prefix=f'Epoch: {epoch+1}',
