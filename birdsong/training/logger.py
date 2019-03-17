@@ -12,6 +12,7 @@ import time
 import torch
 from pathlib import Path
 
+
 def create_log(log_path):
     log_dir = Path(log_path)
     log_dir.mkdir(parents=True, exist_ok=True)
@@ -23,13 +24,13 @@ def create_log(log_path):
     return state_fname, log_fname, summ_tensor_board
 
 
-def write_summary(writer, epoch, train_stats, test_stats, img):
-    writer.add_image('Test/conf_mat', img, epoch, dataformats='HWC') #new
+def write_summary(writer, epoch, train_stats, test_stats, img=None):
+    # writer.add_image('Test/conf_mat', img, epoch, dataformats='HWC') #new
     writer.add_scalar('Train/loss', train_stats[0], epoch)
     writer.add_scalar('Train/acc', train_stats[1], epoch)
     writer.add_scalar('test/loss', test_stats[0], epoch)
     writer.add_scalar('test/acc', test_stats[1], epoch)
-    #writer.export_scalars_to_json("./all_scalars.json")
+    # writer.export_scalars_to_json("./all_scalars.json")
 
 
 def save_checkpoint(state, is_best, filename='./checkpoint.pth.tar'):
@@ -39,6 +40,7 @@ def save_checkpoint(state, is_best, filename='./checkpoint.pth.tar'):
         torch.save(state, filename)  # save checkpoint
     else:
         print("=> Validation Accuracy did not improve")
+
 
 def dump_log_txt(date, start_time, local_config, train_stats, test_stats, best_acc, log_fname):
     total_time = time.time() - start_time
@@ -53,7 +55,7 @@ def dump_log_txt(date, start_time, local_config, train_stats, test_stats, best_a
         'final_accuracy_test': test_stats[1],
         'final_loss_test': test_stats[0],
         'total_time': total_time,
-        'check_point':log_fname
-        }
+        'check_point': log_fname
+    }
 
     json.dump(log, open(log_fname, 'w'))

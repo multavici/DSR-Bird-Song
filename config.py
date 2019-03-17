@@ -8,7 +8,7 @@ Created on Tue Mar  5 12:29:19 2019
 
 #!/usr/bin/env python
 
-INPUTS = {'MODEL' : 'Bulbul',
+INPUTS = {'MODEL' : 'Zilpzalp',
           'BATCHSIZE' : 64,
           'OPTIMIZER' : 'Adam',
           'EPOCHS' : 50,

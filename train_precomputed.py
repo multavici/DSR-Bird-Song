@@ -1,26 +1,25 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Created on Fri Mar  8 22:06:04 2019
-
-@author: ssharma
-"""
+import torch
 import time
 import os
 import sys
-sys.path.append("./birdsong")
-import torch
-from torch import nn
-from torch.utils.data import DataLoader
-import torchvision.transforms as transforms
-import torch.optim as optim
-import pandas as pd
 from tensorboardX import SummaryWriter
-from training import train, evaluate, logger, plot_conf_mat
-from datasets.sequential import SpectralDataset
-from datasets.tools.enhancement import exponent
-from datasets.tools.augmentations import GaussianNoise
+import pandas as pd
+import torch.optim as optim
+import torchvision.transforms as transforms
+from torch.utils.data import DataLoader
+from torch import nn
+
+sys.path.append("./birdsong")
+
 from datasets.tools.sampling import upsample_df
+from datasets.tools.augmentation import GaussianNoise
+from datasets.tools.enhancement import exponent
+from datasets.sequential import SpectralDataset
+from training import train, evaluate, logger, plot_conf_mat
+
+
 
 if 'HOSTNAME' in os.environ:
     # script runs on server
@@ -41,7 +40,7 @@ print(f'Training on {DEVICE}')
 
 
 def main(config_file):
-    #read from config
+    # read from config
     local_config = __import__(config_file)
     model_name = local_config.INPUTS['MODEL']
     model = getattr(__import__('.models', fromlist=[model_name]), model_name)
@@ -51,41 +50,48 @@ def main(config_file):
     no_classes = local_config.INPUTS['CLASSES']
     learning_rate = local_config.INPUTS['LR']
 
-    #logging
+    # logging
     start_time = time.time()
     date = time.strftime('%d-%m-%Y-%H-%M-%S', time.localtime())
     log_path = f'./birdsong/run_log/{model_name}_{date}'
     state_fname, log_fname, summ_tensor_board = logger.create_log(log_path)
     writer = SummaryWriter(str(summ_tensor_board))
-    
+
     # Upsampling
     train_df = upsample_df(TRAIN, 400)
-    
+
     # Augmentation
     noiser = GaussianNoise()
-    
-    ds_train = SpectralDataset(train_df, INPUT_DIR, enhancement_func=exponent, augmentation_func=noiser)
+
+    ds_train = SpectralDataset(
+        train_df, INPUT_DIR, enhancement_func=exponent, augmentation_func=noiser)
     ds_test = SpectralDataset(TEST, INPUT_DIR, enhancement_func=exponent)
 
-    dl_train = DataLoader(ds_train, batch_size, num_workers=4, pin_memory=PIN, shuffle=True)
-    dl_test = DataLoader(ds_test, batch_size, num_workers=4, pin_memory=PIN, shuffle=True)
+    dl_train = DataLoader(ds_train, batch_size,
+                          num_workers=4, pin_memory=PIN, shuffle=True)
+    dl_test = DataLoader(ds_test, batch_size, num_workers=4,
+                         pin_memory=PIN, shuffle=True)
     print('Dataloaders initialized')
 
     time_axis = ds_test.shape[1]
     freq_axis = ds_test.shape[0]
-    net = model(time_axis=time_axis, freq_axis=freq_axis, no_classes=no_classes)
+    net = model(time_axis=time_axis, freq_axis=freq_axis,
+                no_classes=no_classes)
 
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(net.parameters(), lr=learning_rate)
 
-    #local vars
+    # local vars
     best_acc = 0
     for epoch in range(num_epochs):
         train(net, dl_train, epoch, optimizer, criterion, DEVICE)
 
-        train_stats, train_conf_matrix = evaluate(net, dl_train, criterion, no_classes, DEVICE)
-        print(f'Train Loss: {train_stats[0]:.5f}, Train Acc: {train_stats[1]:.5f}')
-        test_stats, test_conf_matrix = evaluate(net, dl_test, criterion, no_classes, DEVICE)
+        train_stats, train_conf_matrix = evaluate(
+            net, dl_train, criterion, no_classes, DEVICE)
+        print(
+            f'Train Loss: {train_stats[0]:.5f}, Train Acc: {train_stats[1]:.5f}')
+        test_stats, test_conf_matrix = evaluate(
+            net, dl_test, criterion, no_classes, DEVICE)
         print(f'Test Loss: {test_stats[0]:.5f}, Test Acc: {test_stats[1]:.5f}')
 
         is_best = test_stats[1] > best_acc
@@ -108,8 +114,9 @@ def main(config_file):
         """
 
         print('Writing logs')
-        logger.write_summary(writer, epoch, train_stats, test_stats, img)
-        logger.dump_log_txt(date, start_time, local_config, train_stats, test_stats, best_acc, log_fname)
+        logger.write_summary(writer, epoch, train_stats, test_stats)
+        logger.dump_log_txt(date, start_time, local_config,
+                            train_stats, test_stats, best_acc, log_fname)
 
         print('Done for now')
 
