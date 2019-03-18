@@ -10,7 +10,6 @@ class SoundscapeNoise(object):
     def __repr__(self):
         return self.__class__.__name__ + 'parameters'
 
-
 class VerticalRoll(object):
     def __init__(self, amount=10):
         self.amount = amount
