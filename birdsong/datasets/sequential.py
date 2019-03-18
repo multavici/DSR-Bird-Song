@@ -45,15 +45,16 @@ class SpectralDataset(Dataset):
         y = self.df.label.iloc[i]
         X = self.unpack(full_path)
         #X = np.random.randn(256,216)
-        X -= X.min()
-        X /= X.max()
-        X = np.expand_dims(X, 0)
-
-        if not self.augmentation_func is None:
-            X = self.augmentation_func(X)
 
         if not self.enhancement_func is None:
             X = self.enhancement_func(X)
+
+        if not self.augmentation_func is None:
+            X = self.augmentation_func(X)
+        
+        X -= X.min()
+        X /= X.max()
+        X = np.expand_dims(X, 0)
 
         return (X, y)
 
