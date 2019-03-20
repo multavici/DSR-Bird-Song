@@ -3,6 +3,8 @@
     <meta charset="utf-8">
     <title>Find the bird!</title>
 
+    <link rel="icon" href="static/favicon.png"/>
+
     <link href="../static/video-js/video-js.css" rel="stylesheet">
     <link href="../static/video-js/videojs.wavesurfer.css" rel="stylesheet">
     <link href="../static/video-js/videojs.record.css" rel="stylesheet">
@@ -91,27 +93,13 @@
     player.on('finishRecord', function() {
         // the blob object contains the recorded data that
         // can be downloaded by the user, stored on server etc.
-        console.log('finished recording: ', player.recordedData);
+        console.log('finished recording: ');
         const rec = player.recordedData;
         console.log(rec);
+        console.log(rec.audio)
         createDownoadElement(URL.createObjectURL(rec));
     });
     </script>
 </body>
 
-<!--
-    <div>
-        <button id='record-button'>Record audio</button><br><br>
-    </div>
-    
-    <div id="waveform"></div>
-    
-    <script src="https://unpkg.com/wavesurfer.js"></script>
-    
-    <script src="static/recordAudio.js"></script>
-
--->
-
 </html>
-
-
