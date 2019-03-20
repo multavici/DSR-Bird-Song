@@ -34,7 +34,7 @@
     <audio id="myAudio" class="video-js vjs-default-skin"></audio>
     
     <script>
-    function createButtonElement(blobUrl) {
+    function createButtonElement(rec) {
         const buttonEl = document.createElement('button');
         buttonEl.innerHTML = 'Identify';
         console.log(buttonEl); 
@@ -43,8 +43,14 @@
         document.body.appendChild(buttonEl);
         buttonEl.onclick = function() {
             console.log('bla');
-            var request = new XMLHttpRequest();
+            var request = new XMLHttpRequest();    
             request.open('POST', '/classify', true);
+            request.setRequestHeader('X-File-Name', rec.name);
+            console.log(rec.name)
+            request.setRequestHeader('X-File-Size', rec.size);
+            console.log(rec.size)
+            request.setRequestHeader('Content-Type', rec.type);
+            console.log(rec.type)
 
             request.onload = function () {
                 var data = JSON.parse(this.response);
@@ -54,8 +60,11 @@
                 }
                 
                 console.log(data);
+                const resultEl = document.createElement('p');
+                resultEl.innerHTML = data.species;
+                document.body.appendChild(resultEl);
             };
-            request.send();
+            request.send(rec);
 
         }
     };
@@ -114,7 +123,8 @@
         const rec = player.recordedData;
         console.log(rec);
         console.log(rec.size)
-        createButtonElement(URL.createObjectURL(rec));
+        //createButtonElement(URL.createObjectURL(rec));
+        createButtonElement(rec);
     });
     </script>
 </body>
