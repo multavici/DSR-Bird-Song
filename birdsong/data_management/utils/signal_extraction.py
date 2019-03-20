@@ -16,11 +16,11 @@ import numpy as np
 from scipy.ndimage import morphology
 import json
 
-
 def normalized_stft(audio):
     """ Short-time Fourier Transform with hann window 2048 and 75% overlap (default),
     normalized into 0-1 scale. """
     stft = np.abs(librosa.stft(audio, n_fft=2048))  # 2048, win_length = 512))
+    stft -= stft.min()
     return stft / stft.max()
 
 
@@ -42,8 +42,8 @@ def median_mask(spec, threshold, inv=False):
 def morphological_filter(mask):
     """ Morphological operation to enhance signal segments. Literature reports at
     least two different methods: 
-    - Lasseck 2013: Closing followed by dilation: morphology.binary_dilation(morphology.binary_closing(mask)).astype(np.int)    
-    - Sprengler 2017: Opening: morphology.binary_closing(mask)).astype(np.int)
+    - Lasseck 2013: Closing followed by dilation 
+    - Sprengler 2017: Opening
 
     We experimentally developed our own approach: Opening followed by another dilation:
     """
@@ -54,9 +54,12 @@ def morphological_filter(mask):
     return dil
 
 
-def indicator_vector(morph):
+def indicator_vector(morph, inv=False):
     """ Takes a binary mask and computes a time scale indicator vector """
-    vec = np.max(morph, axis=0).reshape(1, -1)
+    if inv: 
+        vec = np.min(morph, axis=0).reshape(1, -1)
+    else:
+        vec = np.max(morph, axis=0).reshape(1, -1)
     vec = morphology.binary_dilation(
         vec, structure=np.ones((1, 15))).astype(np.int)
     #vec = np.repeat(vec, morph.shape[0], axis=0)
@@ -64,8 +67,7 @@ def indicator_vector(morph):
 
 
 def vector_to_timestamps(vec, audio, sr):
-    """
-    """
+    """ Turns an indicator vector into timestamps in seconds """
     # Pad with zeros to ensure that starts and stop at beginning and end are being picked up
     vec = np.pad(vec.ravel(), 1, mode='constant', constant_values=0)
     starts = np.empty(0)
@@ -79,7 +81,6 @@ def vector_to_timestamps(vec, audio, sr):
             stops = np.append(stops, stop)
 
     ratio = audio.shape[0] / vec.shape[0]
-    
     timestamps = np.vstack([starts, stops])
     
     # Scale up to original audio length
@@ -91,13 +92,28 @@ def vector_to_timestamps(vec, audio, sr):
     # Get total duration of signal
     sum_signal = np.sum(timestamps[1] - timestamps[0])
     return json.dumps([tuple(i) for i in timestamps.T]), sum_signal
+    
+def signal_noise_separation(audio):
+    """ Directly returns signal and noise components for a selected raw audio
+    vector. Used for precomputing slices when storing timestamps is unnecessary. """
+    stft = normalized_stft(audio)
+    mask = median_mask(stft, 3)
+    morph = morphological_filter(mask)
+    vec = indicator_vector(morph)
+    ratio = audio.shape[0] // vec.shape[1] #Results in miniscule time dilation of ~0.001 seconds but is safe
+    vec_stretched = np.repeat(vec, ratio).astype(bool)
 
+    signal_indeces = np.where(vec_stretched)[0]
+    noise_indeces = np.where(~vec_stretched)[0]
 
-def signal_timestamps(path):
-    """ Takes an audio path to a bird soundfile and returns the overall duration,
-    the total seconds containing bird vocalizations and a json with start and stop
+    signal = audio[signal_indeces]
+    noise = audio[noise_indeces]
+    return signal, noise
+
+def signal_timestamps(audio, sr):
+    """ Takes audio and sample rate from a bird soundfile and returns the overall 
+    duration, the total seconds containing bird vocalizations and a json with start and stop
     markers for these bird vocalizations."""
-    audio, sr = librosa.load(path)
     stft = normalized_stft(audio)
     mask = median_mask(stft, 3)
     morph = morphological_filter(mask)
@@ -105,15 +121,3 @@ def signal_timestamps(path):
     timestamps, sum_signal = vector_to_timestamps(vec, audio, sr)
     duration = audio.shape[0] / sr
     return duration, sum_signal, timestamps
-
-def noise_timestamps(path):
-    """ Takes an audio path to a bird soundfile and returns the overall duration,
-    the total seconds containing bird vocalizations and a json with start and stop
-    markers for these bird vocalizations."""
-    audio, sr = librosa.load(path)
-    stft = normalized_stft(audio)
-    mask = median_mask(stft, 2.5, inv=True)
-    morph = morphological_filter(mask)
-    vec = indicator_vector(morph)
-    timestamps, sum_noise = vector_to_timestamps(vec, audio, sr)
-    return timestamps

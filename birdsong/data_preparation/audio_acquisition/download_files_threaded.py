@@ -27,7 +27,6 @@ query = '''SELECT r.id, r.file
 
 recordings = c.execute(query).fetchall()
 
-
 def download(input_tuple):
     rec_id, path = input_tuple
     try:
