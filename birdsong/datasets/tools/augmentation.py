@@ -1,11 +1,25 @@
 import numpy as np
+import random
+import pickle
+import os
 
 class SoundscapeNoise(object):
-    def __init__(self):
-        pass
-
+    def __init__(self, noise_dir, scaling=0.2):
+        self.noise_dir = noise_dir
+        self.files = os.listdir(noise_dir)
+        self.scaling = scaling
+        
     def __call__(self, img):
-        return
+        file = random.choice(self.files)
+        noise = self._unpickle(os.path.join(self.noise_dir, file))
+        noise -= noise.min()
+        noise /= noise.max()
+        return img + self.scaling * noise
+        
+    def _unpickle(self, path):
+        with open(path, 'rb') as f:
+            slice_ = pickle.load(f)
+        return slice_
 
     def __repr__(self):
         return self.__class__.__name__ + 'parameters'

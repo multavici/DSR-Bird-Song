@@ -14,7 +14,7 @@ from torch import nn
 sys.path.append("./birdsong")
 
 from datasets.tools.sampling import upsample_df
-from datasets.tools.augmentation import GaussianNoise
+from datasets.tools.augmentation import SoundscapeNoise
 from datasets.tools.enhancement import exponent
 from datasets.sequential import SpectralDataset
 from training import train, evaluate, logger, plot_conf_mat
@@ -28,7 +28,7 @@ if 'HOSTNAME' in os.environ:
     TEST = pd.read_csv('mel_slices_test.csv')
 else:
     # script runs locally
-    INPUT_DIR = 'storage/step1_slices'
+    INPUT_DIR = 'storage/signal_slices'
     TRAIN = pd.read_csv('mel_slices_train.csv')
     TEST = pd.read_csv('mel_slices_test.csv')
 
@@ -61,7 +61,7 @@ def main(config_file):
     train_df = upsample_df(TRAIN, 400)
 
     # Augmentation
-    noiser = GaussianNoise()
+    noiser = SoundscapeNoise('storage/noise_slices', scaling = 1)
 
     ds_train = SpectralDataset(
         train_df, INPUT_DIR, enhancement_func=exponent, augmentation_func=noiser)
