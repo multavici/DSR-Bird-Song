@@ -1,4 +1,12 @@
 const recordButton = document.querySelector('#record-button');
+const vidjs = require('videojs-record')
+
+var wavesurfer = WaveSurfer.create({
+  container: '#waveform',
+  waveColor: 'violet',
+  progressColor: 'purple',
+  backend: 'MediaElement'
+});
 
 function createAudioElement(blobUrl) {
   const downloadEl = document.createElement('a');
@@ -15,6 +23,8 @@ function createAudioElement(blobUrl) {
   document.body.appendChild(downloadEl);
 };
 
+
+
 recordButton.onclick = function() {
   navigator.mediaDevices.getUserMedia({ audio: true})
     .then(stream => {
@@ -27,6 +37,10 @@ recordButton.onclick = function() {
         console.log('chunk pushed');
         console.log(e.data);
         chunks.push(e.data);
+        var tempBlob = new Blob(chunks, { type: 'audio/webm' })
+        
+        wavesurfer.load(tempBlob);
+
         if (recorder.state == 'inactive') {
           const blob = new Blob(chunks, { type: 'audio/webm' });
           createAudioElement(URL.createObjectURL(blob));
