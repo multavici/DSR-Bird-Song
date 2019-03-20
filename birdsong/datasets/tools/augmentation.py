@@ -22,8 +22,8 @@ class SoundscapeNoise(object):
         for file in self.files:
             path = os.path.join(self.noise_dir, file)
             noise_slice = self._unpickle(path)
-            if noise.max() != 0:
-                noise.append(self._unpickle(path))
+            if noise_slice.max() != 0:
+                noise.append(noise_slice)
         return noise
     
     def _unpickle(self, path):
