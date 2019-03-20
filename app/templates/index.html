@@ -34,14 +34,17 @@
     <audio id="myAudio" class="video-js vjs-default-skin"></audio>
     
     <script>
-    function createDownoadElement(blobUrl) {
-        const downloadEl = document.createElement('a');
-        downloadEl.innerHTML = 'Identify';
-        downloadEl.download = 'audio.webm';
-        downloadEl.href = blobUrl;
-        document.body.appendChild(downloadEl);
+    function createButtonElement(blobUrl) {
+        const buttonEl = document.createElement('button');
+        buttonEl.innerHTML = 'Identify';
+        console.log(buttonEl); 
+        // downloadEl.download = 'audio.webm';
+        // downloadEl.href = blobUrl;
+        document.body.appendChild(buttonEl);
+        buttonEl.onclick = function() {
+            console.log('bla')
+        }
     };
-
 
     var options = {
         controls: true,
@@ -96,8 +99,8 @@
         console.log('finished recording: ');
         const rec = player.recordedData;
         console.log(rec);
-        console.log(rec.audio)
-        createDownoadElement(URL.createObjectURL(rec));
+        console.log(rec.size)
+        createButtonElement(URL.createObjectURL(rec));
     });
     </script>
 </body>
