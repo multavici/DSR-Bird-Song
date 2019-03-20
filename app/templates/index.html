@@ -60,9 +60,14 @@
                 }
                 
                 console.log(data);
-                const resultEl = document.createElement('p');
-                resultEl.innerHTML = data.species;
-                document.body.appendChild(resultEl);
+                const speciesEl = document.createElement('p');
+                speciesEl.innerHTML = data.species;
+                document.body.appendChild(speciesEl);
+
+                const imageEl = document.createElement('img');
+                imageEl.src = data.image_url;
+                imageEl.alt = data.species;
+                document.body.appendChild(imageEl);
             };
             request.send(rec);
 

@@ -20,7 +20,10 @@ def classify():
 
 
     pred = "Plegadis falcinellus"
-    return jsonify({'species': pred})
+    return jsonify({
+        'species': pred,
+        'image_url': 'https://upload.wikimedia.org/wikipedia/commons/3/3f/Plegadis_chihi_at_Aransas.jpg',
+        })
 
 
 app.run(host='0.0.0.0', port=50000)
