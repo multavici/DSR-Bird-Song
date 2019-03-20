@@ -13,6 +13,7 @@ class SoundscapeNoise(object):
     def __call__(self, img):
         noise = random.choice(self.noise_bank)
         noise -= noise.min()
+        print(noise.max())
         noise /= noise.max()
         return img + self.scaling * noise
     
