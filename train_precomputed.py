@@ -61,7 +61,7 @@ def main(config_file):
     train_df = upsample_df(TRAIN, 400)
 
     # Augmentation
-    noiser = SoundscapeNoise('storage/noise_slices', scaling = 1)
+    noiser = SoundscapeNoise('storage/noise_slices', scaling=1)
 
     ds_train = SpectralDataset(
         train_df, INPUT_DIR, enhancement_func=exponent, augmentation_func=noiser)

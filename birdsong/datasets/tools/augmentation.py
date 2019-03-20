@@ -8,14 +8,22 @@ class SoundscapeNoise(object):
         self.noise_dir = noise_dir
         self.files = os.listdir(noise_dir)
         self.scaling = scaling
+        self.noise_bank = self._load_noise()
         
     def __call__(self, img):
-        file = random.choice(self.files)
-        noise = self._unpickle(os.path.join(self.noise_dir, file))
+        noise = random.choice(self.noise_bank)
         noise -= noise.min()
         noise /= noise.max()
         return img + self.scaling * noise
-        
+    
+    def _load_noise(self):
+        print('Loading noise bank into RAM.')
+        noise = []
+        for file in self.files:
+            path = os.path.join(self.noise_dir, file)
+            noise.append(self._unpickle(path))
+        return noise
+    
     def _unpickle(self, path):
         with open(path, 'rb') as f:
             slice_ = pickle.load(f)
