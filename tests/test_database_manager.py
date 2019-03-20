@@ -1,4 +1,4 @@
-from management import DatabaseManager
+from birdsong.data_management.management import DatabaseManager
 from birdsong.datasets.tools.io import slice_audio
 import pytest
 import os
@@ -37,8 +37,9 @@ def test_df_creation(test_dir):
     assert df.path[0] == '7_0.pkl'
     assert df.label[0] == 'rhea_americana'
 
+"""
 def test_download_below_median(test_dir):
     dbm = DatabaseManager(test_dir)
     diff = dbm.download_below_median(max_classes = 2, max_recordings = 1)
     print(diff)
-    
+"""

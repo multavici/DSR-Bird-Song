@@ -81,13 +81,12 @@ class DatabaseManager(object):
             urlcleanup()
         
         # Update DB:
-        sql_selectors.set_downloaded
-        sql_selectors.set_slices(c, rec_ids_to_download)
+        sql_selectors.set_downloaded(c, rec_ids_to_download)
         
         # Log update of slices:
         new_balances = self.slices_per_species()
         differences = new_balances - balances
-        self._plot_difference(balances, differences)
+        self._plot_slices_before_after_downloading(balances, differences)
 
     def _plot_slices_before_after_downloading(self, balances, differences):
         """ Stores a plot showing the class distribution before and after 

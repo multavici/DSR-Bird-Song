@@ -28,8 +28,10 @@ def write_summary(writer, epoch, train_stats, test_stats, img=None):
     # writer.add_image('Test/conf_mat', img, epoch, dataformats='HWC') #new
     writer.add_scalar('Train/loss', train_stats[0], epoch)
     writer.add_scalar('Train/acc', train_stats[1], epoch)
+    writer.add_scalar('Train/top_5_acc', train_stats[2], epoch)
     writer.add_scalar('test/loss', test_stats[0], epoch)
     writer.add_scalar('test/acc', test_stats[1], epoch)
+    writer.add_scalar('test/top_5_acc', test_stats[2], epoch)
     # writer.export_scalars_to_json("./all_scalars.json")
 
 
