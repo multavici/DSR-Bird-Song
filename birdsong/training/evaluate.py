@@ -21,8 +21,6 @@ def evaluate(model, data_loader, criterion, num_classes, DEVICE):
             data = data.float()
             data = data.to(DEVICE)
             target = target.to(DEVICE)
-            target = target.reshape(len(target), 1)
-            print('target', target)
 
             output = model(data)
 
@@ -30,10 +28,12 @@ def evaluate(model, data_loader, criterion, num_classes, DEVICE):
 
             _, topk = output.topk(5, dim=1)
             print('ouput.topk', topk)
-            #_, pred = output.max(1, keepdim=True)
-            #print('pred', pred)
+            _, pred = output.max(1, keepdim=True)
+            print('pred', pred)
 
-            print('torch.eq', torch.eq(topk, target))
+            print('torch.eq', torch.eq(
+                topk,
+                target.reshape(len(target), 1)))
 
             top_5_batch = top_k_accuracy(output, target, topk=(5,))
             top_5.append(top_5_batch)
