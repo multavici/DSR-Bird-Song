@@ -89,10 +89,10 @@ def main(config_file):
         train_stats, train_conf_matrix = evaluate(
             net, dl_train, criterion, no_classes, DEVICE)
         print(
-            f'Train Loss: {train_stats[0]:.5f}, Train Acc: {train_stats[1]:.5f}')
+            f'Training: Loss: {train_stats[0]:.5f}, Acc: {train_stats[1]:.5f}, Top 5: {train_stats[2]:.5f}')
         test_stats, test_conf_matrix = evaluate(
             net, dl_test, criterion, no_classes, DEVICE)
-        print(f'Test Loss: {test_stats[0]:.5f}, Test Acc: {test_stats[1]:.5f}')
+        print(f'Validation: Loss: {test_stats[0]:.5f}, Acc: {test_stats[1]:.5f}, Top 5: {test_stats[2]:.5f}')
 
         is_best = test_stats[1] > best_acc
         best_acc = max(test_stats[1], best_acc)
@@ -113,12 +113,9 @@ def main(config_file):
         img = plot_conf_mat(img_path, test_conf_matrix)
         """
 
-        print('Writing logs')
         logger.write_summary(writer, epoch, train_stats, test_stats)
         logger.dump_log_txt(date, start_time, local_config,
                             train_stats, test_stats, best_acc, log_fname)
-
-        print('Done for now')
 
     writer.close()
     print('Finished Training')
