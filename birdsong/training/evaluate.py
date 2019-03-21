@@ -23,11 +23,15 @@ def evaluate(model, data_loader, criterion, num_classes, DEVICE):
             target = target.to(DEVICE)
 
             output = model(data)
-            print('output', output)
 
             loss += criterion(output, target).item()
 
-            print('ouput.topk', output.topk(5, dim=1))
+            topk = output.topk(5, dim=1)
+            print('ouput.topk', topk)
+            pred = output.max(1, keepdim=True)
+            print('pred', pred)
+
+            print('torch.eq', torch.eq(topk, pred))
 
             top_5_batch = top_k_accuracy(output, target, topk=(5,))
             top_5.append(top_5_batch)
