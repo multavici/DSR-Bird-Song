@@ -28,15 +28,9 @@ def evaluate(model, data_loader, criterion, num_classes, DEVICE):
 
             loss += criterion(output, target).item()
 
-            _, topk = output.topk(k, dim=1)
-            #print('ouput.topk', topk)
-            #_, pred = output.max(1, keepdim=True)
-            #print('pred', pred)
-
-            #top_5_batch = top_k_accuracy(output, target, topk=(5,))
-            # top_5.append(top_5_batch)
-
+            topk = output.topk(k, dim=1)[1]
             pred = output.data.max(1, keepdim=True)[1]
+
             n_correct += pred.eq(target.data.view_as(pred)).cpu().sum().item()
             n_intopk += topk.eq(target.reshape(len(target), 1)
                                 ).cpu().sum().item()
