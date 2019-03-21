@@ -12,9 +12,8 @@ def lookup_species_by_rec_id(c, rec_id):
     fetch = c.fetchone()
     return fetch[1] + "_" + fetch[2]
 
-# Used to select german bird recordings to download
 def lookup_recordings_to_download(c, label, nr_recordings):
-    """ For a cursor and label ('genus_species'), return 10 recordings
+    """ For a cursor and label ('genus_species'), return nr_recordings
     if bird is german and recordings have not been downloaded yet """
     genus, species = label.split('_')
     c.execute("""
@@ -29,7 +28,9 @@ def lookup_recordings_to_download(c, label, nr_recordings):
     recordings = c.fetchall()
     return list(map((lambda x: (x[0],'http:' + x[1])), recordings))
 
+
 def lookup_downloaded_german_recordings(conn):
+    """ Check how many recordings of german birds have already been downloaded """
     query = """ 
         SELECT r.id, r.scraped_duration, (t.genus || '_' || t.species) AS label
         FROM taxonomy AS t
@@ -40,6 +41,7 @@ def lookup_downloaded_german_recordings(conn):
     return pd.read_sql(query, conn)
 
 def lookup_not_downloaded_german_recordings(conn):
+    """ Check how many recordings of german birds have not been downloaded yet """
     query = """ 
         SELECT r.id, r.scraped_duration, (t.genus || '_' || t.species) AS label
         FROM taxonomy AS t
@@ -49,15 +51,16 @@ def lookup_not_downloaded_german_recordings(conn):
         AND r.scraped_duration IS NOT NULL """
     return pd.read_sql(query, conn)
     
-def lookup_recordings_with_n_seconds(conn, n_seconds):
+def lookup_all_recordings(conn, n_seconds=5.0):
+    """ Return a df of all recordings that are
+    longer than the window size of the spectrogram function """                 #TODO: export global settings for this kind of stuff
     query = """ 
-        SELECT r.id, r.scraped_duration, (t.genus || '_' || t.species) AS label
+        SELECT r.id, r.file, r.scraped_duration, (t.genus || '_' || t.species) AS label
         FROM taxonomy AS t
         JOIN recordings AS r ON t.id = r.taxonomy_id
         WHERE t.german = 1.0 
-        AND r.downloaded = 1.0
         AND r.scraped_duration > ? """
-    return pd.read_sql(query, conn)
+    return pd.read_sql(query, conn, params=(n_seconds,))
     
 
 def lookup_recordings_for_noise(c, label, nr_recordings):

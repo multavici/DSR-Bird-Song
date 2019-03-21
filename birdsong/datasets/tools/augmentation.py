@@ -5,10 +5,8 @@ import os
 
 class SoundscapeNoise(object):
     def __init__(self, noise_dir, scaling=0.2):
-        self.noise_dir = noise_dir
-        self.files = os.listdir(noise_dir)
         self.scaling = scaling
-        self.noise_bank = self._load_noise()
+        self.noise_bank = self._load_noise(noise_dir)
         
     def __call__(self, img):
         noise = random.choice(self.noise_bank)
@@ -16,11 +14,11 @@ class SoundscapeNoise(object):
         noise /= noise.max()
         return img + self.scaling * noise
     
-    def _load_noise(self):
+    def _load_noise(self, noise_dir):
         print('Loading noise bank into RAM.')
         noise = []
-        for file in self.files:
-            path = os.path.join(self.noise_dir, file)
+        for file in os.listdir(noise_dir):
+            path = os.path.join(noise_dir, file)
             noise.append(self._unpickle(path))
         return noise
     
@@ -30,7 +28,7 @@ class SoundscapeNoise(object):
         return slice_
 
     def __repr__(self):
-        return self.__class__.__name__ + 'parameters'
+        return self.__class__.__name__ + f' Scaling: {self.scaling}'
 
 class VerticalRoll(object):
     def __init__(self, amount=10):
