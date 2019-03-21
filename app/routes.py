@@ -16,6 +16,7 @@ def classify():
         f.write(audio)
     y, sr = librosa.load('temp/audio.webm')
     print(y)
+    print(sr)
     # TODO: Add prediction function
 
 
@@ -26,4 +27,4 @@ def classify():
         })
 
 
-app.run(host='0.0.0.0', port=50000)
+app.run(host='0.0.0.0')
