@@ -21,6 +21,7 @@ def evaluate(model, data_loader, criterion, num_classes, DEVICE):
             data = data.float()
             data = data.to(DEVICE)
             target = target.to(DEVICE)
+            target = target.reshape(len(target), 1)
             print('target', target)
 
             output = model(data)
