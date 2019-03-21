@@ -1,16 +1,11 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Fri Mar  8 21:10:53 2019
 
-@author: ssharma
-"""
 import numpy as np
 import torch
 from torch.autograd import Variable
-#from sklearn import metrics
+
 from .conf_mat import calc_conf_mat
 from .utils import top_k_accuracy
+
 
 def evaluate(model, data_loader, criterion, num_classes, DEVICE):
     model.eval()
@@ -18,8 +13,8 @@ def evaluate(model, data_loader, criterion, num_classes, DEVICE):
 
     n_correct = 0
     loss = 0
-    top_10 = []
-    
+    top_5 = []
+
     with torch.no_grad():
         for batch_idx, (data, target) in enumerate(data_loader):
             data, target = Variable(data), Variable(target)
@@ -28,15 +23,18 @@ def evaluate(model, data_loader, criterion, num_classes, DEVICE):
             target = target.to(DEVICE)
 
             output = model(data)
+            print('output', output)
 
             loss += criterion(output, target).item()
-            
-            top_10_batch = top_k_accuracy(output, target, topk=(5,))
-            top_10.append(top_10_batch)
-            
+
+            print('ouput.topk', output.topk(5, dim=1))
+
+            top_5_batch = top_k_accuracy(output, target, topk=(5,))
+            top_5.append(top_5_batch)
+
             pred = output.data.max(1, keepdim=True)[1]
             n_correct += pred.eq(target.data.view_as(pred)).cpu().sum().item()
-            
+
             if batch_idx == 0:
                 pred_cat = pred
                 targ_cat = target
@@ -48,6 +46,6 @@ def evaluate(model, data_loader, criterion, num_classes, DEVICE):
 
     loss /= len(data_loader)
     acc = n_correct / len(data_loader.dataset)
-    top_10_acc = np.mean(top_10)
-    
-    return (loss, acc, top_10_acc), conf_matrix
+    top_5_acc = np.mean(top_5)
+
+    return (loss, acc, top_5_acc), conf_matrix
