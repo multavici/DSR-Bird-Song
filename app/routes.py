@@ -26,5 +26,5 @@ def classify():
         'image_url': 'https://upload.wikimedia.org/wikipedia/commons/3/3f/Plegadis_chihi_at_Aransas.jpg',
         })
 
-if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=8000)
+#if __name__ == "__main__":
+#    app.run(host='0.0.0.0', port=8000)
