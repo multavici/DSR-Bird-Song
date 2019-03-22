@@ -1,8 +1,9 @@
 import os
 from urllib.request import urlcleanup
 from .utils.balanced_split import make_split
-from .precomputing_slices import Slicer
 from .utils import sql_selectors
+from .precomputing_slices import Slicer
+from .selections import Selection
 from collections import Counter
 import pandas as pd
 import sqlite3
@@ -12,7 +13,7 @@ import matplotlib.pyplot as plt
 class DatabaseManager(object):
     """ This class bundles the various functions for acquiring, inventorizing, 
     manipulating and serving data and exposes them as easily usable methods."""
-    def __init__(self, storage_dir, Selection):
+    def __init__(self, storage_dir):
         self.storage_dir = storage_dir
         self.Selection = Selection
         self.signal_dir = os.path.join(storage_dir, 'signal_slices')
@@ -36,6 +37,9 @@ class DatabaseManager(object):
         self.SignalSlicer = Slicer(self.signal_dir, type='signal')
         self.NoiseSlicer = Slicer(self.noise_dir, type='noise')
     
+    def make_selection(self, nr_of_classes=100, slices_per_class=1200):
+        self.Selection = Selection(self.conn, nr_of_classes, slices_per_class)
+    
     def get_df(self):
         """ Retrieves class name for each slice currently in signal_dir 
         and returns of df with the file name for each recording and its 
@@ -57,30 +61,8 @@ class DatabaseManager(object):
         
     def download_missing(self):
         already_available = self.slices_per_species()
-        to_download = self.Selection.missing_slices(already_available)
-        #self._download_threaded(to_download)
-        
-    def download_below_median(self, max_classes=None, max_recordings=10):
-        """ Collects class names for which the number of slices is below median
-        number of slices and retrieves rec_ids and urls for the first 10 recordings
-        for each class that have not been downloaded yet. """
-        c = self.conn.cursor()
-        balances = self.slices_per_species()
-        below_median = balances.index.values[balances < balances.median()]
-        if max_classes is None:
-            max_classes = len(below_median)
-            
-        print(f'Fetching recordings for {len(below_median)} classes')
-        recordings = []
-        running_low = []
-        for label in below_median[:max_classes]:
-            recordings_for_class = sql_selectors.lookup_recordings_to_download(c, label, max_recordings)
-            if len(recordings_for_class) < 10:
-                print(f'Running low on {label}')
-                running_low.append(label)
-            recordings += recordings_for_class
-        print(f'Selected {len(recordings)} recordings for slicing')
-        self._download_threaded(recordings)
+        to_download = self.Selection(already_available)
+        self._download_threaded(to_download)
     
     def _download_threaded(self, recordings):
         # Handle recordings in bunches of 24 to avoid filling tmp too much:

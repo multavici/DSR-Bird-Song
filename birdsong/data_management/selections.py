@@ -11,7 +11,7 @@ class Selection:
     a given duration based on previous downloads and thus prioritize
     which files to download to make the selection available locally. """
 
-    def __init__(self, db_conn, nr_of_classes=100, slices_per_class=1200):
+    def __init__(self, db_conn, nr_of_classes, slices_per_class):
         self.conn = db_conn
         self.nr_of_classes = nr_of_classes
         self.slices_per_class = slices_per_class
@@ -39,10 +39,10 @@ class Selection:
             self.slices_per_class = selected_classes.total_available.min()
             
         selected_classes['missing_slices'] = self.slices_per_class - selected_classes.available_slices
+        selected_classes = selected_classes[selected_classes.missing_slices > 0]
         return selected_classes.missing_slices
-            
     
-    def missing_recordings(self, already_available):
+    def _missing_recordings(self, already_available):
         """ For the specified selection query all not yet downloaded recordings 
         in the database and compute the expected nr of signal slices for each
         of them. """
@@ -53,35 +53,19 @@ class Selection:
         still_available = df.groupby('label').expected_slices.sum().sort_values()
         
         selected_classes_missing = self.missing_slices(still_available, already_available)
+        nr_needed = selected_classes_missing.sum()
+        print(f'Need {nr_needed} more slices, that is {nr_needed * 432.2 // 1024} MB.')
+        
         selected_recordings = df[df.label.isin(selected_classes_missing.index.values)]
-        
-        return selected_recordings
+        selected_recordings = selected_recordings.sort_values(['label','expected_slices'])
+        selected_recordings = selected_recordings[selected_recordings.expected_slices > 0]
+
+        selected_recordings['cumulative'] = selected_recordings.groupby('label')['expected_slices'].cumsum()
     
-
+        selected_recordings = selected_recordings[selected_recordings.cumulative <= self.slices_per_class]
+        print(f'Filling up requires downloading {len(selected_recordings)} more recordings.')
         
-    def __call__(self):
-        pass
-
-
-
-import sqlite3
-from birdsong.data_management.utils import sql_selectors
-
-conn = sqlite3.connect('storage/db.sqlite')
-sel = Selection(conn, nr_of_classes=100)
-
-
-from birdsong.data_management.management import DatabaseManager
-dbm = DatabaseManager('storage', sel)
-already_available = dbm.slices_per_species()
-
-selected_recordings = sel.missing_recordings(already_available)
-
-selected_recordings = selected_recordings.sort_values(['label','expected_slices'])
-
-selected_recordings = selected_recordings[selected_recordings.expected_slices > 0]
-
-selected_recordings['cumulative'] = selected_recordings.groupby('label')['expected_slices'].cumsum()
-
-
-selected_recordings[selected_recordings.cumulative < 1200]
+        return list(selected_recordings[['id', 'file']].itertuples(index=False, name=None))
+        
+    def __call__(self, already_available):
+        return self._missing_recordings(already_available)
