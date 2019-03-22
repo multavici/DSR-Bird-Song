@@ -40,7 +40,6 @@ class Slicer:
     
     def _save_slices(self, slices, rec_id):
         """ Save slices as pickles """
-        print(f'Pickling {len(slices)} slices')
         for index, audio_slice in enumerate(slices):
             slice_name = str(rec_id) + '_' + str(index) + '.pkl'
             with open(os.path.join(self.output_dir, slice_name), 'wb') as output:
@@ -53,28 +52,23 @@ class Slicer:
         try:
             signal, noise, sr = self._temp_download(url)
         except urllib.error.HTTPError:
-            print(f'file {rec_id} not found, HTTPError')
             return
         if self.type == 'signal':
             if len(signal) >= (self.window / 1000) * sr:
                 spec_slices = self._spec_slices(signal, sr)
             else:
-                print(f'Too little signal for {rec_id}')
                 return
         if self.type == 'noise':
             if len(noise) >= (self.window / 1000) * sr:
                 spec_slices = self._spec_slices(noise, sr)
-                if len(spec_slices) > 3:
-                    spec_slices = random.sample(spec_slices, 3)
+                if len(spec_slices) > 2:
+                    spec_slices = random.sample(spec_slices, 2)
             else:
-                print(f'Too little noise for {rec_id}')
                 return
         self._save_slices(spec_slices, rec_id)
                     
     def __call__(self, list_of_tuples):
         """ Accepts a list of (rec_id, url) tuples that it will process in a 
         threadpool. """
-        print(f'Downloading {len(list_of_tuples)} recordings')
         pool = ThreadPool(min(24, len(list_of_tuples)))
         pool.map(self.download_and_slice, list_of_tuples)
-        print('Done')
