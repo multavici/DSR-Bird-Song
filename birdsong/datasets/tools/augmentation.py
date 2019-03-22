@@ -12,6 +12,7 @@ class SoundscapeNoise(object):
         noise = random.choice(self.noise_bank)
         noise -= noise.min()
         noise /= noise.max()
+        noise *= img.max()
         return img + self.scaling * noise
     
     def _load_noise(self, noise_dir):
@@ -19,7 +20,9 @@ class SoundscapeNoise(object):
         noise = []
         for file in os.listdir(noise_dir):
             path = os.path.join(noise_dir, file)
-            noise.append(self._unpickle(path))
+            noise_slice = self._unpickle(path)
+            if noise_slice.max() != 0:
+                noise.append(noise_slice)
         return noise
     
     def _unpickle(self, path):
