@@ -88,11 +88,11 @@ def main(config_file):
 
         train_stats, train_conf_matrix = evaluate(
             net, dl_train, criterion, no_classes, DEVICE)
-        print(
-            f'Training: Loss: {train_stats[0]:.5f}, Acc: {train_stats[1]:.5f}, Top 5: {train_stats[2]:.5f}')
+        print(f'''Training: Loss: {train_stats[0]:.5f}, Acc: {train_stats[1]:.5f}, Top 5: {train_stats[2]:.5f}''' )
+                  
         test_stats, test_conf_matrix = evaluate(
             net, dl_test, criterion, no_classes, DEVICE)
-        print(f'Validation: Loss: {test_stats[0]:.5f}, Acc: {test_stats[1]:.5f}, Top 5: {test_stats[2]:.5f}')
+        print(f'''Validation: Loss: {test_stats[0]:.5f}, Acc: {test_stats[1]:.5f}, Top 5: {test_stats[2]:.5f}''')
 
         is_best = test_stats[1] > best_acc
         best_acc = max(test_stats[1], best_acc)
@@ -103,6 +103,7 @@ def main(config_file):
             'state_dict': net.state_dict(),
             'best_accuracy': best_acc,
             'label_dict': ds_train.encoder.codes,
+            'model': net,
         }, is_best, filename=state_fname)
 
         """
