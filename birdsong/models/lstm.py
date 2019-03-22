@@ -25,8 +25,8 @@ class LstmModel(nn.Module):
         
         # Hyper parameters
         # Hidden dimensions and number of hidden layers
-        self.hidden_dim = 500
-        self.layer_dim = 7
+        self.hidden_dim = 200 #500
+        self.layer_dim = 5 #7
 
 
         self.layer1 = nn.Sequential(
@@ -35,7 +35,7 @@ class LstmModel(nn.Module):
 
              
         # batch_first=True shapes Tensors : batch_dim, seq_dim, feature_dim)
-        self.lstm = nn.LSTM(self.input_dim, self.hidden_dim, self.layer_dim, batch_first=True)
+        self.lstm = nn.LSTM(self.input_dim, self.hidden_dim, self.layer_dim, dropout=0.8, batch_first=True)
 
         self.fc = nn.Linear(self.hidden_dim, self.no_classes)
         
