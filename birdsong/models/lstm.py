@@ -35,7 +35,7 @@ class LstmModel(nn.Module):
 
              
         # batch_first=True shapes Tensors : batch_dim, seq_dim, feature_dim)
-        self.lstm = nn.LSTM(self.input_dim, self.hidden_dim, self.layer_dim, dropout=0.8, batch_first=True)
+        self.lstm = nn.LSTM(self.input_dim, self.hidden_dim, self.layer_dim, dropout=0.5, batch_first=True)
 
         self.fc = nn.Linear(self.hidden_dim, self.no_classes)
         
