@@ -52,13 +52,13 @@ class DatabaseManager(object):
     def slices_per_species(self):
         """ Retrieves Dataframe with class names for currently available slices
         and groups by class """
-        df = self.get_df()
-        return df.groupby('label').path.count().sort_values()
+        df = self.get_df().rename(columns={'path':'available_slices'})
+        return df.groupby('label').available_slices.count().astype(int).sort_values()
         
     def download_missing(self):
         already_available = self.slices_per_species()
-        to_download = self.Selection.missing_recordings(already_available)
-        self._download_threaded(to_download)
+        to_download = self.Selection.missing_slices(already_available)
+        #self._download_threaded(to_download)
         
     def download_below_median(self, max_classes=None, max_recordings=10):
         """ Collects class names for which the number of slices is below median

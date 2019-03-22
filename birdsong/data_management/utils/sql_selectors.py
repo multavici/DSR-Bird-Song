@@ -32,7 +32,7 @@ def lookup_recordings_to_download(c, label, nr_recordings):
 def lookup_downloaded_german_recordings(conn):
     """ Check how many recordings of german birds have already been downloaded """
     query = """ 
-        SELECT r.id, r.scraped_duration, (t.genus || '_' || t.species) AS label
+        SELECT r.id, r.file, r.scraped_duration, (t.genus || '_' || t.species) AS label
         FROM taxonomy AS t
         JOIN recordings AS r ON t.id = r.taxonomy_id
         WHERE t.german = 1.0 
@@ -43,12 +43,12 @@ def lookup_downloaded_german_recordings(conn):
 def lookup_not_downloaded_german_recordings(conn):
     """ Check how many recordings of german birds have not been downloaded yet """
     query = """ 
-        SELECT r.id, r.scraped_duration, (t.genus || '_' || t.species) AS label
+        SELECT r.id, r.file, r.scraped_duration, (t.genus || '_' || t.species) AS label
         FROM taxonomy AS t
         JOIN recordings AS r ON t.id = r.taxonomy_id
         WHERE t.german = 1.0 
         AND r.downloaded IS NULL 
-        AND r.scraped_duration IS > 5.0 """                                     #TODO: Set these with environment variables
+        AND r.scraped_duration > 5.0 """                                     #TODO: Set these with environment variables
     return pd.read_sql(query, conn)
     
 def lookup_all_recordings(conn, n_seconds=5.0):
