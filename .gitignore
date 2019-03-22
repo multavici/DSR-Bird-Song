@@ -10,7 +10,11 @@
 *.h5
 *.mp3
 *.pkl
+*.webm
 .directory
+
+# Keys
+*.pem
 
 # Apple files
 .DS_store
