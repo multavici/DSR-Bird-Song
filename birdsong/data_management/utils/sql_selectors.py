@@ -80,5 +80,8 @@ def lookup_recordings_for_noise(c, label, nr_recordings):
 
 # Used to set files to 'downloaded' if in rec_id_list
 def set_downloaded(c, id_list):
-    c.execute('UPDATE recordings SET downloaded = 1.0 WHERE id IN ' +
-              str(tuple(id_list)))
+    if len(id_list) == 1:
+        c.execute('UPDATE recordings SET downloaded = 1.0 WHERE id = ' + str(id_list[0]))
+    else:
+        c.execute('UPDATE recordings SET downloaded = 1.0 WHERE id IN ' +
+                  str(tuple(id_list)))
