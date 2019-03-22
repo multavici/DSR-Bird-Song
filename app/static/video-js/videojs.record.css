@@ -132,8 +132,8 @@ Default styles for videojs-record 3.5.1
     border-radius: .8em;
     /* Need a slightly gray bg so it can be seen on black backgrounds */
     /* background-color-with-alpha */
-    background-color: #07141e;
-    background-color: rgba(7, 20, 30, 0.7);
+    background-color: #ff625e;
+    /* background-color: rgba(7, 20, 30, 0.7); */
     /* box-shadow */
     -webkit-box-shadow: 0 0 1em rgba(255, 255, 255, 0.25);
     -moz-box-shadow: 0 0 1em rgba(255, 255, 255, 0.25);
