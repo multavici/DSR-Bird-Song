@@ -25,8 +25,8 @@ class LstmModel(nn.Module):
         
         # Hyper parameters
         # Hidden dimensions and number of hidden layers
-        self.hidden_dim = 200
-        self.layer_dim = 5
+        self.hidden_dim = 500
+        self.layer_dim = 7
 
 
         self.layer1 = nn.Sequential(
