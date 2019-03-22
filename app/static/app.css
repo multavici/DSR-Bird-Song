@@ -1,0 +1,35 @@
+body {
+    align-content: center;
+    background-color: white;
+}
+
+div #container {
+    margin: auto;
+    width: 800px;
+    align-self: center;
+    text-align: center;
+}
+
+#myAudio {
+    background-color: white;
+    border-width: 0px;
+    border-style: solid;
+    border-color: black;
+    margin-bottom: 10px;
+}
+
+div #warn {
+    min-height: 30px;
+}
+
+button #classify {
+    align-self: center;
+    display: flex;
+    justify-content: center;
+    color: red;
+}
+
+img #bird_image {
+    width: 200px;
+    height: 100px;
+}
