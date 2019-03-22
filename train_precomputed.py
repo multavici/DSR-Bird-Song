@@ -101,7 +101,8 @@ def main(config_file):
         logger.save_checkpoint({
             'epoch': epoch + 1,
             'state_dict': net.state_dict(),
-            'best_accuracy': best_acc
+            'best_accuracy': best_acc,
+            'label_dict': ds_train.encoder.codes,
         }, is_best, filename=state_fname)
 
         """
