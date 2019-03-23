@@ -42,7 +42,10 @@ class DatabaseManager(object):
         already_available = self.slices_per_species()
         self.Selection.assess_missing_recordings(already_available)
         
-    def get_df(self):
+    def selection_df(self):
+        """ Based on the classes in the current selection return a dataframe with 
+        label and path for each slice available for these classes. Alert the user 
+        if additional slices could be downloaded to complete the selection. """
         classes_in_selection = self.Selection.classes_in_selection
         all = self.inventory_df()
         available_in_selection = all[all.label.isin(classes_in_selection)].reset_index(drop=True)
@@ -53,7 +56,7 @@ class DatabaseManager(object):
             You can call the method 'download_missing' to fill them up if more are available.")
             
         return available_in_selection
-        
+    
     def inventory_df(self):
         """ Retrieves class name for each slice currently in signal_dir 
         and returns of df with the file name for each recording and its 
@@ -67,7 +70,17 @@ class DatabaseManager(object):
                 list_recs.append((file, species))   
         df = pd.DataFrame(list_recs, columns=['path', 'label'])
         return df
-        
+                
+    def clean_db(self):
+        """ Reset the 'downloaded' column in the recordings table and update it
+        again for all recordings for which slices exist in 'signal_dir'. """
+        rec_id_list = list(self.slices_per_downloaded_recording().keys())
+        cursor = self.conn.cursor()
+        sql_selectors.reset_downloaded(cursor)
+        sql_selectors.set_downloaded(cursor, rec_id_list)
+        self.conn.commit()
+        self.conn.close()
+
     def slices_per_species(self):
         """ Retrieves Dataframe with class names for currently available slices
         and groups by class """

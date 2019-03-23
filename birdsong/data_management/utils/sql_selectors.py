@@ -78,6 +78,11 @@ def lookup_recordings_for_noise(c, label, nr_recordings):
     recordings = c.fetchall()
     return list(map((lambda x: (x[0],'http:' + x[1])), recordings))
 
+
+
+def reset_downloaded(c):
+    c.execute('UPDATE recordings SET downloaded = NULL')
+    
 # Used to set files to 'downloaded' if in rec_id_list
 def set_downloaded(c, id_list):
     if len(id_list) == 1:
