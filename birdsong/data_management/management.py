@@ -92,15 +92,23 @@ class DatabaseManager(object):
     def _download_threaded(self, recordings):
         # Handle recordings in bunches of 24 to avoid filling tmp too much:
         at_a_time = 24
-        print(f'Downloading {len(recordings)} recording(s)')
-        for bunch in [recordings[i:i+at_a_time] for i in range(0, len(recordings), at_a_time)]:
+        total = len(recordings)
+        print(f'Downloading {total} recording(s)')
+        for iteration, bunch in enumerate([recordings[i:i+at_a_time] for i in range(0, len(recordings), at_a_time)]):
             self.SignalSlicer(bunch)
-            urlcleanup()
+            percent = ("{0:." + str(decimals) + "f}").format(100 * (iteration / float(total)))
+            filledLength = int(100 * iteration // total)
+            bar = fill * filledLength + '-' * (100 - filledLength)
+            print('\r%s |%s| %s%% %s' % ('', bar, percent, ''), end = '\r')
+            if iteration == total: 
+                print()
+        
         print('Done downloading!')
         # Update DB:
         c = self.conn.cursor()
         rec_ids_to_download = list(map((lambda x: str(x[0])), recordings))
         sql_selectors.set_downloaded(c, rec_ids_to_download)
+        return
     
     def seconds_per_species_local_remote(self):
         """ This compares the total seconds of audio material available for each

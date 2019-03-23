@@ -10,12 +10,13 @@ import pickle
 import librosa
 import numpy as np
 import urllib
-from urllib.request import urlretrieve
+from urllib.request import urlretrieve, urlcleanup
 from multiprocessing.pool import ThreadPool
 from .utils.signal_extraction import signal_noise_separation
 from .utils.io import slice_audio
 from .utils.spectrograms import mel_s
 import random
+from contextlib import suppress
 
 class Slicer:
     def __init__(self, output_dir, window=5000, stride=2500, type='signal'):
@@ -35,7 +36,8 @@ class Slicer:
     def _spec_slices(self, audio, sr):
         """ Take audio and return mel spectrogram slices """
         audio_slices = slice_audio(audio, sr, self.window, self.stride)
-        spec_slices = [mel_s(s, n_mels=256, fmax=12000) for s in audio_slices]
+        with suppress(UserWarning):
+            spec_slices = [mel_s(s, n_mels=256, fmax=12000) for s in audio_slices]
         return spec_slices
     
     def _save_slices(self, slices, rec_id):
@@ -72,3 +74,4 @@ class Slicer:
         threadpool. """
         pool = ThreadPool(min(24, len(list_of_tuples)))
         pool.map(self.download_and_slice, list_of_tuples)
+        urlcleanup()
