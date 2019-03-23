@@ -5,9 +5,10 @@ from .precomputing_slices import Slicer
 from .selections import Selection
 from collections import Counter
 import pandas as pd
+import numpy as np
 import sqlite3
 import datetime
-import matplotlib.pyplot as plt
+from tqdm import tqdm
 
 class DatabaseManager(object):
     """ This class bundles the various functions for acquiring, inventorizing, 
@@ -45,7 +46,7 @@ class DatabaseManager(object):
         if additional slices could be downloaded to complete the selection. """
         classes_in_selection = self.Selection.classes_in_selection
         all = self.inventory_df()
-        available_in_selection = all[all.label.isin(classes_in_selection)].reset_index(drop=True)
+        available_in_selection = all[all.label.isin(classes_in_selection.label)].reset_index(drop=True)
         ideal = self.Selection.nr_of_classes * self.Selection.slices_per_class
         slices_available = available_in_selection.groupby('label').count().sum().values
         if slices_available < ideal:
@@ -82,27 +83,34 @@ class DatabaseManager(object):
     def download_missing(self):
         already_available = self.slices_per_species_downloaded()
         missing_slices = self.Selection.assess_missing(already_available)
-        to_download = []
-        for row in missing_slices.itertuples(name=False):
-            print(row)
-            to_download += sql_selectors.recordings_to_download(self.conn, row[0], row[1])
-        return to_download
+        if len(missing_slices) == 0: 
+            print('Nothing missing, selection complete')
+        else:
+            print(f'{missing_slices.missing_slices.sum()} slices missing.')
+            to_download = []
+            for row in missing_slices.itertuples(name=False):
+                to_download += sql_selectors.recordings_to_download(self.conn, row[0], row[1])
+            if to_download:
+                self._download_threaded(self.SignalSlicer, to_download)
+                newly_available = self.slices_per_species_downloaded()
+                still_missing = self.Selection.assess_missing(newly_available)
+                if len(still_missing) != 0:
+                    print(f'Still missing {still_missing.missing_slices.sum()}, getting more.')
+                    self.download_missing()  
+                else:
+                    print('Done downloading!')           
+            else:
+                print('Available recordings exhausted, reduce selection.')
+        
     
     def _download_threaded(self, ChosenSlicer, recordings, update_db=True):
         # Handle recordings in bunches of 24 to avoid filling tmp too much:
         at_a_time = 24
-        total = len(recordings)
-        print(f'Downloading {total} recording(s)')
-        for iteration, bunch in enumerate([recordings[i:i+at_a_time] for i in range(0, len(recordings), at_a_time)]):
+        total = np.ceil(len(recordings) / at_a_time)
+        print(f'Downloading {len(recordings)} recording(s)')
+        for bunch in tqdm([recordings[i:i+at_a_time] for i in range(0, len(recordings), at_a_time)]):
             ChosenSlicer(bunch)
-            percent = ("{0:." + str(decimals) + "f}").format(100 * (iteration / float(total)))
-            filledLength = int(100 * iteration // total)
-            bar = fill * filledLength + '-' * (100 - filledLength)
-            print('\r%s |%s| %s%% %s' % ('', bar, percent, ''), end = '\r')
-            if iteration == total: 
-                print()
-        
-        print('Done downloading!')
+            
         # Update DB:
         if update_db:
             rec_ids_to_download = list(map((lambda x: str(x[0])), recordings))

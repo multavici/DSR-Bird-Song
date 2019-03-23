@@ -63,4 +63,6 @@ class Selection:
             We have reduced the selection to that amount.')
 
         inventory['missing_slices'] = self.slices_per_class - inventory.downloaded_slices
+        
+        inventory = inventory[inventory.missing_slices > 0]
         return inventory[['missing_slices']]

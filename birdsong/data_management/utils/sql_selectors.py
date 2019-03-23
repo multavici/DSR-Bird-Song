@@ -35,7 +35,11 @@ def recordings_to_download(conn, label, desired_slices):
     recordings['cumulative'] = recordings.scraped_duration.cumsum()
     
     # The first time the cumsum of duration surpasses the needed duration
-    index = recordings[recordings.cumulative > needed_duration].cumulative.idxmin()
+    if recordings.cumulative.max() >= needed_duration: 
+        index = recordings[recordings.cumulative > needed_duration].cumulative.idxmin()
+    else:
+        index = recordings.cumulative.idxmax()
+        print(f'The cap for {label} has been reached at {recordings.cumulative.max():.1f} seconds remaining.')
     needed_recordings = recordings.iloc[:index+1]
     return list(needed_recordings[['rec_id', 'url']].itertuples(index=False, name=False))
 
