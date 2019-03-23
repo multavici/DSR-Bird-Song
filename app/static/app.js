@@ -16,11 +16,10 @@ function activateButtonElement(rec) {
         request.setRequestHeader('X-File-Size', rec.size);
         request.setRequestHeader('Content-Type', rec.type);
 
-        console.log('remove player')
+        console.log('remove player and show spectrogram instead')
         var spectrogram = document.createElement("img");
         spectrogram.src = '../static/images/spect.png'
         soundDiv.innerHTML = ''
-
         soundDiv.appendChild(spectrogram);
 
         request.onload = function () {
