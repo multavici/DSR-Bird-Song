@@ -37,15 +37,14 @@ def main(config_file):
     # read from config
     local_config = __import__(config_file)
     model_name = local_config.INPUTS['MODEL']
-    model = getattr(__import__('.models', fromlist=[model_name]), model_name)
+    model = getattr(__import__('birdsong.models',
+                               fromlist=[model_name]), model_name)
     batch_size = local_config.INPUTS['BATCHSIZE']
     optimizer = local_config.INPUTS['OPTIMIZER']
     num_epochs = local_config.INPUTS['EPOCHS']
     no_classes = local_config.INPUTS['CLASSES']
     learning_rate = local_config.INPUTS['LR']
-    
-    
-    
+
     # logging
     start_time = time.time()
     date = time.strftime('%d-%m-%Y-%H-%M-%S', time.localtime())
