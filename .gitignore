@@ -12,6 +12,7 @@
 *.pkl
 *.webm
 .directory
+images/
 
 # Keys
 *.pem
