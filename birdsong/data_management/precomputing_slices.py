@@ -16,7 +16,7 @@ from .utils.signal_extraction import signal_noise_separation
 from .utils.io import slice_audio
 from .utils.spectrograms import mel_s
 import random
-from contextlib import suppress
+import warnings
 
 class Slicer:
     def __init__(self, output_dir, window=5000, stride=2500, type='signal'):
@@ -36,7 +36,8 @@ class Slicer:
     def _spec_slices(self, audio, sr):
         """ Take audio and return mel spectrogram slices """
         audio_slices = slice_audio(audio, sr, self.window, self.stride)
-        with suppress(UserWarning):
+        with warnings.catch_warnings():
+            warnings.filterwarnings("ignore")
             spec_slices = [mel_s(s, n_mels=256, fmax=12000) for s in audio_slices]
         return spec_slices
     
