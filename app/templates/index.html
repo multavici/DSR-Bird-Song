@@ -26,9 +26,13 @@
   <div id='container'>
     <h1>Which bird would it be?</h1>
     <p>Record a at least 5 seconds of sound and click submit to see which bird is making the sound!</p>
-    <audio id="myAudio" class="video-js vjs-default-skin"></audio>
+    <div id='soundInfo'>
+      <audio id="myAudio" class="video-js vjs-default-skin"></audio>
+    </div>
     <div id='warn'></div>
-    <button id='classify' disabled>Submit</button>
+    <div>
+      <button id='classify' disabled>Submit</button>
+    </div>
     <p id='species'></p>
     <img id='bird_image' style='width:200px;height:100px;'>
     <script src="../static/app.js"></script>

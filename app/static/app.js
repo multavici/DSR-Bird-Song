@@ -2,21 +2,26 @@ const warning = document.getElementById('warn');
 const buttonEl = document.getElementById('classify');
 const speciesEl = document.getElementById('species');
 const imageEl = document.getElementById('bird_image');
+const soundDiv = document.getElementById("soundInfo");
+const audio = document.getElementById('myAudio')
 
 function activateButtonElement(rec) {
     buttonEl.disabled = false;
     console.log(buttonEl); 
     
     buttonEl.onclick = function() {
-        console.log('bla');
         var request = new XMLHttpRequest();    
         request.open('POST', '/classify', true);
         request.setRequestHeader('X-File-Name', rec.name);
-        console.log(rec.name)
         request.setRequestHeader('X-File-Size', rec.size);
-        console.log(rec.size)
         request.setRequestHeader('Content-Type', rec.type);
-        console.log(rec.type)
+
+        console.log('remove player')
+        var spectrogram = document.createElement("img");
+        spectrogram.src = '../static/images/spect.png'
+        soundDiv.innerHTML = ''
+
+        soundDiv.appendChild(spectrogram);
 
         request.onload = function () {
             var data = JSON.parse(this.response);

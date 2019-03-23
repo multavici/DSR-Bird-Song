@@ -14,6 +14,7 @@
 .directory
 config_*
 *.pyc
+images/
 
 # Keys
 *.pem
