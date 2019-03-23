@@ -1,5 +1,4 @@
 from .utils import sql_selectors
-import pandas as pd
 
 class Selection:
     """ A selection of audio material for a combination of nr. of species and
@@ -9,7 +8,10 @@ class Selection:
     turned into spectrogram slices at previous times. It can then estimate the 
     unknown map D -> S, that is how many slices of signal will be available for 
     a given duration based on previous downloads and thus prioritize
-    which files to download to make the selection available locally. """
+    which files to download to make the selection available locally. 
+    
+    The main method of the selection informs the DatabaseManager how many 
+    slices are still missing for each class in the selection. """
 
     def __init__(self, db_conn, nr_of_classes, slices_per_class):
         self.conn = db_conn
@@ -19,15 +21,17 @@ class Selection:
         
     def _select_top_k_classes(self):
         """ Selections are always made based on the most popular birds in terms 
-        of the total seconds of audio available """
+        of the total seconds of audio available. """
         return sql_selectors.top_k_duration_all_recordings(self.conn, self.nr_of_classes)
     
     def _expected_slices(self):
         """ For the given species selection, check how many seconds of audio are
-        still available and compute the expected slices """
+        still available and compute the expected slices. """
         remaining_audio_per_species = sql_selectors.duration_per_not_downloaded_german_species(self.conn, self.classes_in_selection)
         
         def _expected_slices_per_second(duration):
+            """ A simple estimator, for now based on experimentally established
+            median signal per original duration. """
             #TODO: implement better estimator 
             median_signal_per_second = 0.64 # Experimentally established amount
             expectec_signal = duration * median_signal_per_second
@@ -41,6 +45,8 @@ class Selection:
         return expected
         
     def _inventorize_selection(self, already_available):
+        """ Compute the total amount of slices per species in the selection 
+        given the already available slices and the still expected ones. """
         expected = self._expected_slices()
         inventory = expected.join(already_available, how= 'left').fillna(0)
         inventory['total_slices'] = inventory.expected_slices + inventory.downloaded_slices
@@ -48,10 +54,13 @@ class Selection:
         return inventory
     
     def assess_missing(self, already_available):
+        """ Return a dataframe of species labels and nr of slices missing for 
+        completing the selection, to be used by the DatabaseManager. """
         inventory = self._inventorize_selection(already_available)
         if inventory.total_slices.min() < self.slices_per_class:
             self.slices_per_class = inventory.total_slices.min()
-            print(f'For {self.nr_of_classes} classes only {self.slices_per_class} slices are available.')
-        
+            print(f'For {self.nr_of_classes} classes only {self.slices_per_class} slices are available.\
+            We have reduced the selection to that amount.')
+
         inventory['missing_slices'] = self.slices_per_class - inventory.downloaded_slices
         return inventory[['missing_slices']]
