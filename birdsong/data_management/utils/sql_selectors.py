@@ -13,24 +13,31 @@ def species_by_rec_id(conn, rec_id):
     fetch = c.fetchone()
     return fetch[1] + "_" + fetch[2]
 
-def recordings_to_download(conn, label, nr_recordings):
-    """ For a cursor and label ('genus_species'), return nr_recordings
-    if bird is german and recordings have not been downloaded yet """
+def recordings_to_download(conn, label, desired_slices):
+    """ For a cursor, a species label ('genus_species') and a desired number
+    of slices, return a list of tuples of rec_ids and urls for a number of 
+    recordings that are expected to suffice that number of slices. """
     genus, species = label.split('_')
-    c = conn.cursor()
-
-    c.execute("""
-        SELECT r.id, r.file
+    
+    needed_signal = 5 + (desired_slices * 2.5) #TODO: Set with environment variables
+    needed_duration = needed_signal * 2 #Safety factor, based on experiments
+    
+    query = f"""
+        SELECT r.id as rec_id, ('http:' || r.file) as url, r.scraped_duration
         FROM taxonomy AS t
         JOIN recordings AS r ON t.id = r.taxonomy_id
         WHERE t.german = 1.0 
         AND r.downloaded IS NULL 
-        AND t.genus = ?
-        AND t.species = ?
-        LIMIT ? """, (genus, species, nr_recordings))
-    recordings = c.fetchall()
-    return list(map((lambda x: (x[0],'http:' + x[1])), recordings))
-
+        AND t.genus = '{genus}'
+        AND t.species = '{species}' """
+    
+    recordings = pd.read_sql(query, conn)
+    recordings['cumulative'] = recordings.scraped_duration.cumsum()
+    
+    # The first time the cumsum of duration surpasses the needed duration
+    index = recordings[recordings.cumulative > needed_duration].cumulative.idxmin()
+    needed_recordings = recordings.iloc[:index+1]
+    return list(needed_recordings[['rec_id', 'url']].itertuples(index=False, name=False))
 
 def downloaded_german_recordings(conn):
     """ Check how many recordings of german birds have already been downloaded """
