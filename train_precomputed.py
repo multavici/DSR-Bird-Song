@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 import torch
 import time
 import os
@@ -11,14 +9,11 @@ import torchvision.transforms as transforms
 from torch.utils.data import DataLoader
 from torch import nn
 
-sys.path.append("./birdsong")
-
-from datasets.tools.sampling import upsample_df
-from datasets.tools.augmentation import SoundscapeNoise
-from datasets.tools.enhancement import exponent
-from datasets.sequential import SpectralDataset
-from training import train, evaluate, logger, plot_conf_mat
-
+from birdsong.datasets.tools.sampling import upsample_df
+from birdsong.datasets.tools.augmentation import SoundscapeNoise
+from birdsong.datasets.tools.enhancement import exponent
+from birdsong.datasets.sequential import SpectralDataset
+from birdsong.training import train, evaluate, logger, plot_conf_mat
 
 
 if 'HOSTNAME' in os.environ:
@@ -88,11 +83,13 @@ def main(config_file):
 
         train_stats, train_conf_matrix = evaluate(
             net, dl_train, criterion, no_classes, DEVICE)
-        print(f'''Training: Loss: {train_stats[0]:.5f}, Acc: {train_stats[1]:.5f}, Top 5: {train_stats[2]:.5f}''' )
-                  
+        print(
+            f'Training: Loss: {train_stats[0]:.5f}, Acc: {train_stats[1]:.5f}, Top 5: {train_stats[2]:.5f}')
+
         test_stats, test_conf_matrix = evaluate(
             net, dl_test, criterion, no_classes, DEVICE)
-        print(f'''Validation: Loss: {test_stats[0]:.5f}, Acc: {test_stats[1]:.5f}, Top 5: {test_stats[2]:.5f}''')
+        print(
+            f'Validation: Loss: {test_stats[0]:.5f}, Acc: {test_stats[1]:.5f}, Top 5: {test_stats[2]:.5f}')
 
         is_best = test_stats[1] > best_acc
         best_acc = max(test_stats[1], best_acc)
@@ -101,9 +98,10 @@ def main(config_file):
         logger.save_checkpoint({
             'epoch': epoch + 1,
             'state_dict': net.state_dict(),
+            'optimizer_state_dict': optimizer.state_dict(),
             'best_accuracy': best_acc,
             'label_dict': ds_train.encoder.codes,
-            #'model': net,
+            # 'model': net,
         }, is_best, filename=state_fname)
 
         """
@@ -121,6 +119,9 @@ def main(config_file):
 
     writer.close()
     print('Finished Training')
+
+    with open(os.path.join(log_path, 'model.pt'), 'wb') as f:
+        torch.save(net, f)
 
 
 if __name__ == "__main__":
