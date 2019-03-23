@@ -1,7 +1,7 @@
 import os
 import pandas as pd
 
-def lookup_species_by_rec_id(conn, rec_id):
+def species_by_rec_id(conn, rec_id):
     """ For a cursor and a recording id, look up the foreground species for 
     this recording and return label as 'genus_species' """
     c = conn.cursor()
@@ -13,7 +13,7 @@ def lookup_species_by_rec_id(conn, rec_id):
     fetch = c.fetchone()
     return fetch[1] + "_" + fetch[2]
 
-def lookup_recordings_to_download(conn, label, nr_recordings):
+def recordings_to_download(conn, label, nr_recordings):
     """ For a cursor and label ('genus_species'), return nr_recordings
     if bird is german and recordings have not been downloaded yet """
     genus, species = label.split('_')
@@ -32,7 +32,7 @@ def lookup_recordings_to_download(conn, label, nr_recordings):
     return list(map((lambda x: (x[0],'http:' + x[1])), recordings))
 
 
-def lookup_downloaded_german_recordings(conn):
+def downloaded_german_recordings(conn):
     """ Check how many recordings of german birds have already been downloaded """
     query = """ 
         SELECT r.id, r.file, r.scraped_duration, (t.genus || '_' || t.species) AS label
@@ -43,7 +43,7 @@ def lookup_downloaded_german_recordings(conn):
         AND r.scraped_duration IS NOT NULL """
     return pd.read_sql(query, conn)
 
-def lookup_not_downloaded_german_recordings(conn):
+def not_downloaded_german_recordings(conn):
     """ Check how many recordings of german birds have not been downloaded yet """
     query = """ 
         SELECT r.id, r.file, r.scraped_duration, (t.genus || '_' || t.species) AS label
@@ -54,30 +54,35 @@ def lookup_not_downloaded_german_recordings(conn):
         AND r.scraped_duration > 5.0 """                                     #TODO: Set these with environment variables
     return pd.read_sql(query, conn)
     
-def lookup_duration_per_not_downloaded_german_species(conn):
-    query = """ 
+def duration_per_not_downloaded_german_species(conn, selection):
+    tuple = *list(selection.label),
+    query = f""" 
         SELECT (t.genus || '_' || t.species) AS label, sum(r.scraped_duration) as total_audio
         FROM taxonomy AS t
         JOIN recordings AS r ON t.id = r.taxonomy_id
         WHERE t.german = 1.0 
         AND r.downloaded IS NULL 
-        AND r.scraped_duration > 5.0                                  
+        AND r.scraped_duration > 5.0   
+        AND label IN {tuple}                             
         GROUP BY label  
         ORDER By total_audio DESC """  
     return pd.read_sql(query, conn)
     
-def lookup_all_recordings(conn, n_seconds=5.0):
+def top_k_duration_all_recordings(conn, k):
     """ Return a df of all recordings that are
     longer than the window size of the spectrogram function """                 #TODO: Set these with environment variables
     query = """ 
-        SELECT r.id, r.file, r.sum_signal, r.scraped_duration, (t.genus || '_' || t.species) AS label
+        SELECT (t.genus || '_' || t.species) AS label
         FROM taxonomy AS t
         JOIN recordings AS r ON t.id = r.taxonomy_id
         WHERE t.german = 1.0 
-        AND r.scraped_duration > ? """
-    return pd.read_sql(query, conn, params=(n_seconds,))
+        AND r.scraped_duration > 5.0                                  
+        GROUP BY label  
+        ORDER BY sum(r.scraped_duration) DESC
+        LIMIT ? """  
+    return pd.read_sql(query, conn, params=(k,))
     
-def lookup_recordings_for_noise(conn, label, nr_recordings):
+def recordings_for_noise(conn, label, nr_recordings):
     """ Return random recordings for soundscape noise bank """
     genus, species = label.split('_')
     c = conn.cursor()

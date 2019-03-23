@@ -15,9 +15,17 @@ class Selection:
         self.conn = db_conn
         self.nr_of_classes = nr_of_classes
         self.slices_per_class = slices_per_class
+        self.classes_in_selection = self._select_top_k_classes()
+        
+    def _select_top_k_classes(self):
+        """ Selections are always made based on the most popular birds in terms 
+        of the total seconds of audio available """
+        return sql_selectors.top_k_duration_all_recordings(self.conn, self.nr_of_classes)
     
-    def _expected_slices_per_species(self):
-        remaining_audio_per_species = sql_selectors.lookup_duration_per_not_downloaded_german_species(self.conn)
+    def _expected_slices(self):
+        """ For the given species selection, check how many seconds of audio are
+        still available and compute the expected slices """
+        remaining_audio_per_species = sql_selectors.duration_per_not_downloaded_german_species(self.conn, self.classes_in_selection)
         
         def _expected_slices_per_second(duration):
             #TODO: implement better estimator 
@@ -32,35 +40,18 @@ class Selection:
         expected = expected.drop(columns='label')
         return expected
         
-    def _active_selection(self, already_available):
-        expected = self._expected_slices_per_species()
-        assessment = already_available.join(expected, how= 'outer').fillna(0)
-        assessment['total_slices'] = assessment.expected_slices + assessment.downloaded_slices
-        assessment.sort_values(by='total_slices', inplace=True, ascending=False)
-        
-        active_selection = assessment.head(self.nr_of_classes)
-        return active_selection
+    def _inventorize_selection(self, already_available):
+        expected = self._expected_slices()
+        inventory = expected.join(already_available, how= 'left').fillna(0)
+        inventory['total_slices'] = inventory.expected_slices + inventory.downloaded_slices
+        inventory.sort_values(by='total_slices', inplace=True, ascending=False)
+        return inventory
     
     def assess_missing(self, already_available):
-        active_selection = self._active_selection(already_available)
-        if active_selection.total_slices.min() < self.slices_per_class:
-            self.slices_per_class = active_selection.total_slices.min()
+        inventory = self._inventorize_selection(already_available)
+        if inventory.total_slices.min() < self.slices_per_class:
+            self.slices_per_class = inventory.total_slices.min()
             print(f'For {self.nr_of_classes} classes only {self.slices_per_class} slices are available.')
         
-        active_selection['missing_slices'] = self.slices_per_class - active_selection.downloaded_slices
-        return active_selection[['missing_slices']]
-        
-import sqlite3
-from birdsong.data_management.utils import sql_selectors
-from birdsong.data_management.management import DatabaseManager
-
-
-dbm = DatabaseManager('storage')
-already_available = dbm.slices_per_species_downloaded()
-
-sel = Selection(dbm.conn, 100, 1000)
-expected = sel._expected_slices_per_species()
-
-assessment = sel.assess_material(already_available)
-
-assessment
+        inventory['missing_slices'] = self.slices_per_class - inventory.downloaded_slices
+        return inventory[['missing_slices']]

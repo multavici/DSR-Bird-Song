@@ -63,7 +63,7 @@ class DatabaseManager(object):
         for file in os.listdir(self.signal_dir):
             if file.endswith('.pkl'):
                 rec_id = file.split('_')[0]
-                species = sql_selectors.lookup_species_by_rec_id(self.conn, rec_id)
+                species = sql_selectors.species_by_rec_id(self.conn, rec_id)
                 list_recs.append((file, species))   
         df = pd.DataFrame(list_recs, columns=['path', 'label'])
         return df
@@ -120,10 +120,10 @@ class DatabaseManager(object):
         """ This compares the total seconds of audio material available for each
         species that has already been downloaded vs what is still available.   
         """
-        downloaded = sql_selectors.lookup_downloaded_german_recordings(self.conn)
+        downloaded = sql_selectors.downloaded_german_recordings(self.conn)
         downloaded['downloaded'] = 1
         
-        not_downloaded = sql_selectors.lookup_not_downloaded_german_recordings(self.conn)
+        not_downloaded = sql_selectors.not_downloaded_german_recordings(self.conn)
         not_downloaded['downloaded'] = 0
         df = pd.concat([downloaded, not_downloaded])
         return df
@@ -146,7 +146,7 @@ class DatabaseManager(object):
         # Get noise for all species currently downloaded
         recordings = []
         for label in labels:
-            recordings_for_class = sql_selectors.lookup_recordings_for_noise(self.conn, label, 1)
+            recordings_for_class = sql_selectors.recordings_for_noise(self.conn, label, 1)
             recordings += recordings_for_class
         print(f'Selected {len(recordings)} recordings for noise slicing')
         rec_ids_to_download = list(map((lambda x: str(x[0])), recordings))
