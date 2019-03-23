@@ -39,7 +39,7 @@ class DatabaseManager(object):
     
     def make_selection(self, nr_of_classes=100, slices_per_class=1200):
         self.Selection = Selection(self.conn, nr_of_classes, slices_per_class)
-        already_available = self.slices_per_species()
+        already_available = self.slices_per_species_downloaded()
         self.Selection.assess_missing_recordings(already_available)
         
     def selection_df(self):
@@ -61,12 +61,11 @@ class DatabaseManager(object):
         """ Retrieves class name for each slice currently in signal_dir 
         and returns of df with the file name for each recording and its 
         associated label. """
-        c = self.conn.cursor()
         list_recs = []
         for file in os.listdir(self.signal_dir):
             if file.endswith('.pkl'):
                 rec_id = file.split('_')[0]
-                species = sql_selectors.lookup_species_by_rec_id(c, rec_id)
+                species = sql_selectors.lookup_species_by_rec_id(self.conn, rec_id)
                 list_recs.append((file, species))   
         df = pd.DataFrame(list_recs, columns=['path', 'label'])
         return df
@@ -75,20 +74,20 @@ class DatabaseManager(object):
         """ Reset the 'downloaded' column in the recordings table and update it
         again for all recordings for which slices exist in 'signal_dir'. """
         rec_id_list = list(self.slices_per_downloaded_recording().keys())
-        cursor = self.conn.cursor()
-        sql_selectors.reset_downloaded(cursor)
-        sql_selectors.set_downloaded(cursor, rec_id_list)
-        self.conn.commit()
-        self.conn.close()
+        sql_selectors.reset_downloaded(self.conn)
+        sql_selectors.set_downloaded(self.conn, rec_id_list)
 
-    def slices_per_species(self):
+
+    def slices_per_species_downloaded(self):
         """ Retrieves Dataframe with class names for currently available slices
         and groups by class """
         df = self.inventory_df().rename(columns={'path':'available_slices'})
         return df.groupby('label').available_slices.count().astype(int).sort_values()
         
     def download_missing(self):
-        balances = self.slices_per_species()
+        already_available = self.slices_per_species_downloaded()
+        self.Selection.assess_missing_recordings(already_available)
+        
         to_download = self.Selection.missing_recordings
         if len(to_download) == 0:
             print('Nothing to download, Selection compltete.')
@@ -96,11 +95,9 @@ class DatabaseManager(object):
         
         self._download_threaded(to_download)
         # Log update of slices:
-        new_balances = self.slices_per_species()
+        new_balances = self.slices_per_species_downloaded()
         differences = new_balances - balances
         print(differences[differences > 0])
-        
-        #self._plot_slices_before_after_downloading(balances, differences)
     
     def _download_threaded(self, recordings):
         # Handle recordings in bunches of 24 to avoid filling tmp too much:
@@ -118,9 +115,8 @@ class DatabaseManager(object):
         
         print('Done downloading!')
         # Update DB:
-        c = self.conn.cursor()
         rec_ids_to_download = list(map((lambda x: str(x[0])), recordings))
-        sql_selectors.set_downloaded(c, rec_ids_to_download)
+        sql_selectors.set_downloaded(self.conn, rec_ids_to_download)
         return
     
     def seconds_per_species_local_remote(self):
@@ -147,14 +143,13 @@ class DatabaseManager(object):
         return {k: v for k,v in zip(Counter(rec_ids).keys(), Counter(rec_ids).values())}
         
     def make_some_noise(self):
-        c = self.conn.cursor()
-        balances = self.slices_per_species()
+        balances = self.slices_per_species_downloaded()
         labels = balances.index.values
             
         # Get noise for all species currently downloaded
         recordings = []
         for label in labels:
-            recordings_for_class = sql_selectors.lookup_recordings_for_noise(c, label, 1)
+            recordings_for_class = sql_selectors.lookup_recordings_for_noise(self.conn, label, 1)
             recordings += recordings_for_class
         print(f'Selected {len(recordings)} recordings for noise slicing')
         rec_ids_to_download = list(map((lambda x: str(x[0])), recordings))

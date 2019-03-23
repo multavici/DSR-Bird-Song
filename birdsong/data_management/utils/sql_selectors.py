@@ -1,9 +1,10 @@
 import os
 import pandas as pd
 
-def lookup_species_by_rec_id(c, rec_id):
+def lookup_species_by_rec_id(conn, rec_id):
     """ For a cursor and a recording id, look up the foreground species for 
     this recording and return label as 'genus_species' """
+    c = conn.cursor()
     c.execute("""
         SELECT r.taxonomy_id, t.genus, t.species FROM recordings as r 
         JOIN taxonomy as t ON r.taxonomy_id = t.id
@@ -12,10 +13,12 @@ def lookup_species_by_rec_id(c, rec_id):
     fetch = c.fetchone()
     return fetch[1] + "_" + fetch[2]
 
-def lookup_recordings_to_download(c, label, nr_recordings):
+def lookup_recordings_to_download(conn, label, nr_recordings):
     """ For a cursor and label ('genus_species'), return nr_recordings
     if bird is german and recordings have not been downloaded yet """
     genus, species = label.split('_')
+    c = conn.cursor()
+
     c.execute("""
         SELECT r.id, r.file
         FROM taxonomy AS t
@@ -51,6 +54,18 @@ def lookup_not_downloaded_german_recordings(conn):
         AND r.scraped_duration > 5.0 """                                     #TODO: Set these with environment variables
     return pd.read_sql(query, conn)
     
+def lookup_duration_per_not_downloaded_german_species(conn):
+    query = """ 
+        SELECT (t.genus || '_' || t.species) AS label, sum(r.scraped_duration) as total_audio
+        FROM taxonomy AS t
+        JOIN recordings AS r ON t.id = r.taxonomy_id
+        WHERE t.german = 1.0 
+        AND r.downloaded IS NULL 
+        AND r.scraped_duration > 5.0                                  
+        GROUP BY label  
+        ORDER By total_audio DESC """  
+    return pd.read_sql(query, conn)
+    
 def lookup_all_recordings(conn, n_seconds=5.0):
     """ Return a df of all recordings that are
     longer than the window size of the spectrogram function """                 #TODO: Set these with environment variables
@@ -62,10 +77,10 @@ def lookup_all_recordings(conn, n_seconds=5.0):
         AND r.scraped_duration > ? """
     return pd.read_sql(query, conn, params=(n_seconds,))
     
-
-def lookup_recordings_for_noise(c, label, nr_recordings):
+def lookup_recordings_for_noise(conn, label, nr_recordings):
     """ Return random recordings for soundscape noise bank """
     genus, species = label.split('_')
+    c = conn.cursor()
     c.execute("""
         SELECT r.id, r.file
         FROM taxonomy AS t
@@ -78,15 +93,17 @@ def lookup_recordings_for_noise(c, label, nr_recordings):
     recordings = c.fetchall()
     return list(map((lambda x: (x[0],'http:' + x[1])), recordings))
 
-
-
-def reset_downloaded(c):
+def reset_downloaded(conn):
+    c = conn.cursor()
     c.execute('UPDATE recordings SET downloaded = NULL')
+    conn.commit()
     
 # Used to set files to 'downloaded' if in rec_id_list
-def set_downloaded(c, id_list):
+def set_downloaded(conn, id_list):
+    c = conn.cursor()
     if len(id_list) == 1:
         c.execute('UPDATE recordings SET downloaded = 1.0 WHERE id = ' + str(id_list[0]))
     else:
         c.execute('UPDATE recordings SET downloaded = 1.0 WHERE id IN ' +
                   str(tuple(id_list)))
+    conn.commit()
