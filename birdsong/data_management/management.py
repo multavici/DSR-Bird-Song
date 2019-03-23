@@ -39,8 +39,7 @@ class DatabaseManager(object):
     
     def make_selection(self, nr_of_classes=100, slices_per_class=1200):
         self.Selection = Selection(self.conn, nr_of_classes, slices_per_class)
-        already_available = self.slices_per_species_downloaded()
-        self.Selection.assess_missing_recordings(already_available)
+
         
     def selection_df(self):
         """ Based on the classes in the current selection return a dataframe with 
@@ -53,8 +52,7 @@ class DatabaseManager(object):
         slices_available = available_in_selection.groupby('label').count().sum().values
         if slices_available < ideal:
             print(f"We are {ideal - slices_available} slices short of the Selection. \
-            You can call the method 'download_missing' to fill them up if more are available.")
-            
+            You can call the method 'download_missing' to fill them up if more are available.")    
         return available_in_selection
     
     def inventory_df(self):
@@ -81,12 +79,11 @@ class DatabaseManager(object):
     def slices_per_species_downloaded(self):
         """ Retrieves Dataframe with class names for currently available slices
         and groups by class """
-        df = self.inventory_df().rename(columns={'path':'available_slices'})
-        return df.groupby('label').available_slices.count().astype(int).sort_values()
+        df = self.inventory_df().rename(columns={'path':'downloaded_slices'})
+        return df.groupby('label').downloaded_slices.count().astype(int).sort_values().to_frame()
         
     def download_missing(self):
-        already_available = self.slices_per_species_downloaded()
-        self.Selection.assess_missing_recordings(already_available)
+        # reimplement
         
         to_download = self.Selection.missing_recordings
         if len(to_download) == 0:
