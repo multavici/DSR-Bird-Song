@@ -12,6 +12,8 @@
 *.pkl
 *.webm
 .directory
+config_*
+*.pyc
 
 # Keys
 *.pem
