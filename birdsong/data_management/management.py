@@ -1,6 +1,7 @@
 import os
 from .utils.balanced_split import make_split
 from .utils import sql_selectors
+from .utils.encoding import LabelEncoder
 from .precomputing_slices import Slicer
 from .selections import Selection
 from collections import Counter
@@ -53,6 +54,23 @@ class DatabaseManager(object):
             print(f"We are {ideal - slices_available} slices short of the Selection. \
             You can call the method 'download_missing' to fill them up if more are available.")    
         return available_in_selection
+        
+    def train_validation_split(self):
+        in_selection = self.selection_df()
+        min_slices = in_selection.groupby('label').count().min()
+        val_size = int(min_slices * 0.3)
+        
+        encoder = LabelEncoder(in_selection.label)
+        in_selection.label = encoder.encode()
+        
+        rest, validation = make_split(in_selection, test_samples=val_size)
+        train = self.resample_df(rest, self.Selection.slices_per_class)
+        
+        print(f'Validation size: {val_size} slices per class')
+        print(f'Training size: {self.Selection.slices_per_class} slices per class')
+
+        return train, validation
+        
     
     def inventory_df(self):
         """ Retrieves class name for each slice currently in signal_dir 

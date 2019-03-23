@@ -15,7 +15,6 @@ from birdsong.datasets.tools.enhancement import exponent
 from birdsong.datasets.sequential import SpectralDataset
 from birdsong.training import train, evaluate, logger, plot_conf_mat
 
-
 if 'HOSTNAME' in os.environ:
     # script runs on server
     INPUT_DIR = '/storage/step1_slices/'
@@ -44,7 +43,9 @@ def main(config_file):
     num_epochs = local_config.INPUTS['EPOCHS']
     no_classes = local_config.INPUTS['CLASSES']
     learning_rate = local_config.INPUTS['LR']
-
+    
+    
+    
     # logging
     start_time = time.time()
     date = time.strftime('%d-%m-%Y-%H-%M-%S', time.localtime())
