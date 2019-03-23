@@ -5,9 +5,8 @@ dbm = DatabaseManager('storage')
 dbm.make_selection(100, 300)
 dbm.download_missing()
 
-selec = dbm.selection_df()
+t, v = dbm.train_validation_split()
 
 
-selec
-import matplotlib.pyplot as plt
-selec.groupby('label').count().plot(kind='barh')
+t.to_csv()
+v.to_csv()

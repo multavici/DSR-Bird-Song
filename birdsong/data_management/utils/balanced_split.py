@@ -53,6 +53,8 @@ def make_split(df, test_samples=200, train_samples=2200, both_even=False):
     the training set which is then randomly up or downsampled if both_even is
     True.
     """
+    df['rec_id'] = df.path.apply(lambda x: int(x.split('_')[0]))
+    
     def get_rec_ids(df, value):
         rec_ids = []
         for class_ in classes:
@@ -77,7 +79,7 @@ def make_split(df, test_samples=200, train_samples=2200, both_even=False):
 
     # Get test dataset
     test_df = df[df.rec_id.isin(rec_ids)].reset_index(drop = True)
-    print(f"Class split for test_df: \n {test_df.groupby('label').count()} \n")
+    #print(f"Class split for test_df: \n {test_df.groupby('label').count()} \n")
 
     # Get remaining
     rest_train_df = df[~df.rec_id.isin(rec_ids)]
@@ -85,9 +87,9 @@ def make_split(df, test_samples=200, train_samples=2200, both_even=False):
     # If desired return even dataset for train as well
     if both_even:
         train_df = rest_train_df.groupby('label').apply(lambda x: x.sample(n = train_samples)).reset_index(drop = True)
-        print(f"Class split for train_df: \n {train_df.groupby('label').count()}")
+        #print(f"Class split for train_df: \n {train_df.groupby('label').count()}")
         return train_df, test_df
 
     else:
-        print(f"Class split for train_df: \n {rest_train_df.groupby('label').count()}")
+        #print(f"Class split for train_df: \n {rest_train_df.groupby('label').count()}")
         return rest_train_df, test_df
