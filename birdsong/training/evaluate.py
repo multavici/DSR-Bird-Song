@@ -19,8 +19,6 @@ def evaluate(model, data_loader, criterion, num_classes, DEVICE):
 
     with torch.no_grad():
         for batch_idx, (data, target) in enumerate(data_loader):
-            data, target = Variable(data), Variable(target)
-            data = data.float()
             data = data.to(DEVICE)
             target = target.to(DEVICE)
 

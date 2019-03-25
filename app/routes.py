@@ -80,6 +80,7 @@ def classify():
     print(sliced_spect.shape)
     print(sliced_spect)
 
+    plt.figure(figsize=(4, 2))
     plt.imshow(sliced_spect)
     plt.savefig('static/images/sliced_spect.svg')
     plt.savefig('static/images/sliced_spect.png')

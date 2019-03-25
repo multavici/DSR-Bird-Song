@@ -5,20 +5,6 @@
 
     <link rel="icon" href="static/favicon.png"/>
 
-    <link href="../static/video-js/video-js.css" rel="stylesheet">
-    <link href="../static/video-js/videojs.wavesurfer.css" rel="stylesheet">
-    <link href="../static/video-js/videojs.record.css" rel="stylesheet">
-
-    <script src="../static/video-js/video.js"></script>
-    <script src="../static/video-js/RecordRTC.js"></script>
-    <script src="../static/video-js/adapter.js"></script>
-    <script src="../static/video-js/wavesurfer.js"></script>
-    <script src="../static/video-js/wavesurfer.microphone.js"></script>
-    <script src="../static/video-js/videojs.wavesurfer.js"></script>
-
-    <script src="../static/video-js/videojs.record.js"></script>
-    <script src="../static/video-js/browser-workarounds.js"></script>
-
     <link href="../static/app.css" rel="stylesheet">
 
 </head>
@@ -26,15 +12,15 @@
   <div id='container'>
     <h1>Which bird would it be?</h1>
     <p>Record a at least 5 seconds of sound and click submit to see which bird is making the sound!</p>
-    <div id='soundInfo'>
-      <audio id="myAudio" class="video-js vjs-default-skin"></audio>
-    </div>
+    <div id='recording'></div>
     <div id='warn'></div>
-    <div>
-      <button id='classify' disabled>Submit</button>
+    <div id='actions'>
+      <button id='record'>Record</button>
+      <button id='classify' disabled hidden=true>Submit</button>
     </div>
+    <div id='spectrogram'></div>
     <p id='species'></p>
-    <img id='bird_image' style='width:200px;height:100px;'>
+    <img id='bird_image' style='width:200px;height:100px;' hidden=true>
     <script src="../static/app.js"></script>
   </div>
 </body>
