@@ -32,7 +32,7 @@ def train(model, data_loader, epoch, optimizer, criterion, DEVICE):
         optimizer.step()
 
         pred = output.data.max(1, keepdim=True)[1]
-        n_correct.append(pred.eq(target.data.view_as(pred)).cpu().sum().item())
+        n_correct.append(pred.eq(target.data.view_as(pred)).sum().item())
         losses.append(loss.item())
 
         latest_losses = losses[-50:]

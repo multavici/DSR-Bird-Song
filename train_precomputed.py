@@ -78,12 +78,12 @@ def main(config_file):
     for epoch in range(num_epochs):
         train(net, dl_train, epoch, optimizer, criterion, DEVICE)
 
-        train_stats, train_conf_matrix = evaluate(
+        train_stats = evaluate(
             net, dl_train, criterion, no_classes, DEVICE)
         print(
             f'Training: Loss: {train_stats[0]:.5f}, Acc: {train_stats[1]:.5f}, Top 5: {train_stats[2]:.5f}')
 
-        test_stats, test_conf_matrix = evaluate(
+        test_stats = evaluate(
             net, dl_test, criterion, no_classes, DEVICE)
         print(
             f'Validation: Loss: {test_stats[0]:.5f}, Acc: {test_stats[1]:.5f}, Top 5: {test_stats[2]:.5f}')
