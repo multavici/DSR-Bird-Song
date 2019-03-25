@@ -5,7 +5,7 @@ Created on Fri Mar  8 21:33:11 2019
 
 @author: ssharma
 """
-
+import torch
 from torch.autograd import Variable
 from .utils import printProgressBar
 from time import perf_counter as pf
@@ -17,8 +17,8 @@ def train(model, data_loader, epoch, optimizer, criterion, DEVICE):
     model.train()
     model = model.to(DEVICE)
 
-    n_correct = []
-    losses = []
+    n_correct = torch.Tensor([])
+    losses = torch.Tensor([])
     
     for batch_idx, (data, target) in enumerate(data_loader):
         data = data.to(DEVICE)
@@ -32,14 +32,15 @@ def train(model, data_loader, epoch, optimizer, criterion, DEVICE):
         optimizer.step()
 
         pred = output.data.max(1, keepdim=True)[1]
-        n_correct.append(pred.eq(target.data.view_as(pred)).sum().item())
-        losses.append(loss.item())
+        corr = pred.eq(target.data.view_as(pred)).sum()
+        n_correct = torch.cat((n_correct, corr.unsqueeze(dim=0).float()))
+        losses = torch.cat((losses, loss.unsqueeze(dim=0).float()))
 
         latest_losses = losses[-50:]
         latest_correct = n_correct[-50:]
 
-        running_loss = sum(latest_losses) / len(latest_losses)
-        running_acc = sum(latest_correct) / (len(latest_correct) * data_loader.batch_size)
+        running_loss = latest_losses.sum() / len(latest_losses)
+        running_acc = latest_correct.sum() / (len(latest_correct) * data_loader.batch_size)
 
         printProgressBar(batch_idx + 1, 
                          len(data_loader),
