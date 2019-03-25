@@ -29,7 +29,8 @@ def recordings_to_download(conn, label, desired_slices):
         WHERE t.german = 1.0 
         AND r.downloaded IS NULL 
         AND t.genus = '{genus}'
-        AND t.species = '{species}' """
+        AND t.species = '{species}' 
+        AND r.duration < 1000 """
     
     recordings = pd.read_sql(query, conn)
     recordings['cumulative'] = recordings.scraped_duration.cumsum()

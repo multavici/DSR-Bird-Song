@@ -40,7 +40,12 @@ class DatabaseManager(object):
     
     def make_selection(self, nr_of_classes=100, slices_per_class=1200):
         self.Selection = Selection(self.conn, nr_of_classes, slices_per_class)
-
+        already_available = self.slices_per_species_downloaded()
+        missing_slices = self.Selection.assess_missing(already_available)
+        total_missing = missing_slices.missing_slices.sum()
+        ideal = nr_of_classes * slices_per_class
+        print(f'{total_missing} out of {ideal} slices are missing.')
+        
     def selection_df(self):
         """ Based on the classes in the current selection return a dataframe with 
         label and path for each slice available for these classes. Alert the user 
@@ -123,7 +128,7 @@ class DatabaseManager(object):
     
     def _download_threaded(self, ChosenSlicer, recordings, update_db=True):
         # Handle recordings in bunches of 24 to avoid filling tmp too much:
-        at_a_time = 24
+        at_a_time = 30
         total = np.ceil(len(recordings) / at_a_time)
         print(f'Downloading {len(recordings)} recording(s)')
         for bunch in tqdm([recordings[i:i+at_a_time] for i in range(0, len(recordings), at_a_time)]):

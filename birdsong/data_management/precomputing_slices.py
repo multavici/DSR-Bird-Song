@@ -73,6 +73,6 @@ class Slicer:
     def __call__(self, list_of_tuples):
         """ Accepts a list of (rec_id, url) tuples that it will process in a 
         threadpool. """
-        pool = ThreadPool(min(24, len(list_of_tuples)))
+        pool = ThreadPool(min(12, len(list_of_tuples)))
         pool.map(self.download_and_slice, list_of_tuples)
         urlcleanup()
