@@ -2,6 +2,7 @@ import numpy as np
 import random
 import pickle
 import os
+from PIL import Image
 
 class SoundscapeNoise(object):
     def __init__(self, noise_dir, scaling=0.2):
@@ -20,18 +21,32 @@ class SoundscapeNoise(object):
         noise = []
         for file in os.listdir(noise_dir):
             path = os.path.join(noise_dir, file)
-            noise_slice = self._unpickle(path)
+            noise_slice = self._load(path)
             if noise_slice.max() != 0:
                 noise.append(noise_slice)
         return noise
     
-    def _unpickle(self, path):
+    def _load(self, path):
         with open(path, 'rb') as f:
             slice_ = pickle.load(f)
         return slice_
 
     def __repr__(self):
         return self.__class__.__name__ + f' Scaling: {self.scaling}'
+
+
+
+class ImageSoundscapeNoise(SoundscapeNoise):
+    def __init__(self, noise_dir, scaling=0.2):
+        super(ImageSoundscapeNoise, self).__init__(noise_dir, scaling)
+    
+    def __call__(self, img):
+        noise = random.choice(self.noise_bank)
+        return img + self.scaling * noise
+    
+    def _load(self, path):
+        return Image.open(path)
+
 
 class VerticalRoll(object):
     def __init__(self, amount=10):

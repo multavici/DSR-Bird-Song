@@ -13,6 +13,7 @@ from torch.utils.data import Dataset
 from pandas.api.types import is_numeric_dtype
 import os
 import h5py
+from PIL import Image
 
 class SpectralDataset(Dataset):
     """ For fast training of models with precomputed spectrogram slices: """
@@ -66,6 +67,34 @@ class SpectralDataset(Dataset):
             slice_ = h5f['sound'][:]
             h5f.close()
         return slice_
+        
+class SpectralImageDataset(SpectralDataset):
+    def __init__(self, df, input_dir, augmentation_func=None, enhancement_func=None):
+        """ Initialize with a dataframe containing:
+        label and path for images of precomputed spectrogram slice"""
+        super(RandomSpectralDataset, self).__init__(df, input_dir, augmentation_func, enhancement_func)
+    
+    def __getitem__(self, i):
+        path = self.df.path.iloc[i]
+        full_path = os.path.join(self.input_dir, path)
+        y = self.df.label.iloc[i]
+        X = self.load_image(full_path)
+
+        if not self.enhancement_func is None:
+            X = self.enhancement_func(X)
+
+        if not self.augmentation_func is None:
+            X = self.augmentation_func(X)
+            
+        X -= X.min()
+        X /= X.max()
+        X = np.expand_dims(X, 0)
+        
+        return (X, y)
+    
+    def load_image(self, path):
+        img = Image.open(path)
+        return image
 
 class RandomSpectralDataset(SpectralDataset):
     """ Rather than returning a sequential list of files, this dataset can be "blown" up to any

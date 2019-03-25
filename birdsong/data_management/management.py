@@ -40,7 +40,12 @@ class DatabaseManager(object):
     
     def make_selection(self, nr_of_classes=100, slices_per_class=1200):
         self.Selection = Selection(self.conn, nr_of_classes, slices_per_class)
-
+        already_available = self.slices_per_species_downloaded()
+        missing_slices = self.Selection.assess_missing(already_available)
+        total_missing = missing_slices.missing_slices.sum()
+        ideal = nr_of_classes * slices_per_class
+        print(f'{total_missing} out of {ideal} slices are missing.')
+        
     def selection_df(self):
         """ Based on the classes in the current selection return a dataframe with 
         label and path for each slice available for these classes. Alert the user 
@@ -64,10 +69,12 @@ class DatabaseManager(object):
         in_selection.label = encoder.encode()
         
         rest, validation = make_split(in_selection, test_samples=val_size)
-        train = self.resample_df(rest, self.Selection.slices_per_class)
+        
+        train_size = int(self.Selection.slices_per_class + self.Selection.slices_per_class/5)
+        train = self.resample_df(rest, train_size)
         
         print(f'Validation size: {val_size} slices per class')
-        print(f'Training size: {self.Selection.slices_per_class} slices per class')
+        print(f'Training size: {train_size} slices per class')
 
         return train, validation
         
@@ -104,7 +111,8 @@ class DatabaseManager(object):
         if len(missing_slices) == 0: 
             print('Nothing missing, selection complete')
         else:
-            print(f'{missing_slices.missing_slices.sum()} slices missing.')
+            missing = missing_slices.missing_slices.sum()
+            print(f'{missing} slices missing ({missing * 433.2 / 1024:.1f} MB).')
             to_download = []
             for row in missing_slices.itertuples(name=False):
                 to_download += sql_selectors.recordings_to_download(self.conn, row[0], row[1])
@@ -123,7 +131,7 @@ class DatabaseManager(object):
     
     def _download_threaded(self, ChosenSlicer, recordings, update_db=True):
         # Handle recordings in bunches of 24 to avoid filling tmp too much:
-        at_a_time = 24
+        at_a_time = 30
         total = np.ceil(len(recordings) / at_a_time)
         print(f'Downloading {len(recordings)} recording(s)')
         for bunch in tqdm([recordings[i:i+at_a_time] for i in range(0, len(recordings), at_a_time)]):

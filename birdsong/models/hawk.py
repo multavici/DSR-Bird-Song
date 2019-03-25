@@ -30,39 +30,39 @@ class Hawk(nn.Module):
             )        
         self.conv1 = nn.Sequential(
             nn.Conv2d(1,16, kernel_size=(7, int(0.90*self.y_axis)), stride=1), #padding=1),
-            nn.ReLU(),
             nn.BatchNorm2d(16), 
+            nn.ReLU(),
             nn.MaxPool2d(kernel_size=(1,102), stride =(1,102))
            )
         self.conv2 = nn.Sequential(
             nn.Conv2d(1,32, kernel_size=(3, int(0.90*self.y_axis)), stride=1), #padding=1),
-            nn.ReLU(),
             nn.BatchNorm2d(32), 
+            nn.ReLU(),
             nn.MaxPool2d(kernel_size=(1,102), stride =(1,102))
            )
         self.conv3 = nn.Sequential(
             nn.Conv2d(1,64, kernel_size=(1, int(0.90*self.y_axis)), stride=1), #padding=1),
-            nn.ReLU(),
             nn.BatchNorm2d(64), 
+            nn.ReLU(),
             nn.MaxPool2d(kernel_size=(1,102), stride =(1,102))
            )
 ###
         self.conv4 = nn.Sequential(
             nn.Conv2d(1,16, kernel_size=(7, int(0.40*self.y_axis)), stride=1), #padding=1),
-            nn.ReLU(),
             nn.BatchNorm2d(16), 
+            nn.ReLU(),
             nn.MaxPool2d(kernel_size=(1,166), stride =(1,166))
            )
         self.conv5 = nn.Sequential(
             nn.Conv2d(1,32, kernel_size=(3, int(0.40*self.y_axis)), stride=1), #padding=1),
-            nn.ReLU(),
             nn.BatchNorm2d(32), 
+            nn.ReLU(),
             nn.MaxPool2d(kernel_size=(1,166), stride =(1,166))
            )
         self.conv6 = nn.Sequential(
             nn.Conv2d(1,64, kernel_size=(1, int(0.40*self.y_axis)), stride=1), #padding=1),
-            nn.ReLU(),
             nn.BatchNorm2d(64), 
+            nn.ReLU(),
             nn.MaxPool2d(kernel_size=(1,166), stride =(1,166))
            )
 ###
@@ -73,39 +73,39 @@ class Hawk(nn.Module):
 
         self.conv7 = nn.Sequential(
                 nn.Conv1d(1, 16, kernel_size=165, stride=1, padding=82),
-                nn.ReLU(),
                 nn.BatchNorm1d(16), 
+                nn.ReLU(),
            )
 
         self.conv8 = nn.Sequential(                
                 nn.Conv1d(1,32, kernel_size=125, stride=1, padding=62),
-                nn.ReLU(),
                 nn.BatchNorm1d(32), 
+                nn.ReLU(),
            )
 
         self.conv9 = nn.Sequential(                
                 nn.Conv1d(1,64, kernel_size=65, stride=1, padding=32),
-                nn.ReLU(),
                 nn.BatchNorm1d(64), 
+                nn.ReLU(),
            )
 
         self.conv10 = nn.Sequential(                
                 nn.Conv1d(1,128, kernel_size=31, stride=1, padding=15),
-                nn.ReLU(),
                 nn.BatchNorm1d(128), 
+                nn.ReLU(),
            )
 
 ###
         
         self.conv_bn1 = nn.Sequential(                
                 nn.Conv2d(1,512, kernel_size=(464,7), stride=1),
-                nn.ReLU(),
                 nn.BatchNorm2d(512), 
+                nn.ReLU(),
            )
         self.conv_bn2 = nn.Sequential(                
                 nn.Conv2d(1,512, kernel_size=(7,512), stride=1),
-                nn.ReLU(),
                 nn.BatchNorm2d(512), 
+                nn.ReLU(),
            )
         #temporal pooling    
         self.pool_t = nn.Sequential(
@@ -113,18 +113,19 @@ class Hawk(nn.Module):
                 )
         self.conv11 = nn.Sequential(                
                 nn.Conv2d(1,512, kernel_size=(7,512), stride=1),
-                nn.ReLU(),
+#                nn.ReLU(),
            )
         self.conv11_b = nn.Sequential(                
                 nn.BatchNorm2d(1),
+                nn.ReLU(),
            )
         
 ###
         self.fc = nn.Sequential(
                 nn.Dropout(0.5),
                 nn.Linear(1024, 512),
-                nn.ReLU(),
                 nn.BatchNorm1d(512),
+                nn.ReLU(),
                 nn.Dropout(0.5),
                 nn.Linear(512, self.no_classes),
                 nn.Sigmoid()                

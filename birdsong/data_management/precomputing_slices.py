@@ -54,7 +54,8 @@ class Slicer:
         rec_id, url = rec_id_url_tuple
         try:
             signal, noise, sr = self._temp_download(url)
-        except urllib.error.HTTPError:
+        except:# urllib.error.HTTPError: NoBackEndError
+            print('Problem with recording',  rec_id)
             return
         if self.type == 'signal':
             if len(signal) >= (self.window / 1000) * sr:
@@ -73,6 +74,6 @@ class Slicer:
     def __call__(self, list_of_tuples):
         """ Accepts a list of (rec_id, url) tuples that it will process in a 
         threadpool. """
-        pool = ThreadPool(min(24, len(list_of_tuples)))
+        pool = ThreadPool(min(12, len(list_of_tuples)))
         pool.map(self.download_and_slice, list_of_tuples)
         urlcleanup()
