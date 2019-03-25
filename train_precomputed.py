@@ -97,7 +97,7 @@ def main(config_file):
             'state_dict': net.state_dict(),
             'optimizer_state_dict': optimizer.state_dict(),
             'best_accuracy': best_acc,
-            'label_dict': ds_train.encoder.codes,
+            #'label_dict': ds_train.encoder.codes,
             # 'model': net,
         }, is_best, filename=state_fname)
 
