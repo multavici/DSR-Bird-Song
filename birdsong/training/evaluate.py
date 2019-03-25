@@ -19,8 +19,6 @@ def evaluate(model, data_loader, criterion, num_classes, DEVICE):
 
     with torch.no_grad():
         for batch_idx, (data, target) in enumerate(data_loader):
-            data, target = Variable(data), Variable(target)
-            data = data.float()
             data = data.to(DEVICE)
             target = target.to(DEVICE)
 
@@ -31,9 +29,9 @@ def evaluate(model, data_loader, criterion, num_classes, DEVICE):
             topk = output.topk(k, dim=1)[1]
             pred = output.data.max(1, keepdim=True)[1]
 
-            n_correct += pred.eq(target.data.view_as(pred)).cpu().sum().item()
+            n_correct += pred.eq(target.data.view_as(pred)).sum().item()
             n_intopk += topk.eq(target.reshape(len(target), 1)
-                                ).cpu().sum().item()
+                                ).sum().item()
 
             if batch_idx == 0:
                 pred_cat = pred
@@ -42,10 +40,10 @@ def evaluate(model, data_loader, criterion, num_classes, DEVICE):
                 pred_cat = torch.cat((pred_cat, pred))
                 targ_cat = torch.cat((targ_cat, target))
 
-    conf_matrix = calc_conf_mat(pred_cat, targ_cat, num_classes)
+    #conf_matrix = calc_conf_mat(pred_cat, targ_cat, num_classes)
 
     loss /= len(data_loader)
     acc = n_correct / len(data_loader.dataset)
     top_5_acc = n_intopk / len(data_loader.dataset)
 
-    return (loss, acc, top_5_acc), conf_matrix
+    return (loss, acc, top_5_acc)#, conf_matrix

@@ -3,6 +3,7 @@ import random
 import pickle
 import os
 from PIL import Image
+from torchvision import transforms
 
 class SoundscapeNoise(object):
     def __init__(self, noise_dir, scaling=0.2):
@@ -44,8 +45,19 @@ class ImageSoundscapeNoise(SoundscapeNoise):
         noise = random.choice(self.noise_bank)
         return img + self.scaling * noise
     
+    def _load_noise(self, noise_dir):
+        print('Loading noise bank into RAM.')
+        noise = []
+        for file in os.listdir(noise_dir):
+            path = os.path.join(noise_dir, file)
+            noise_slice = self._load(path)
+            if noise_slice.max() != 0:
+                noise.append(noise_slice)
+        return noise
+    
     def _load(self, path):
-        return Image.open(path)
+        noise = Image.open(path)
+        return transforms.ToTensor()(noise)
 
 
 class VerticalRoll(object):

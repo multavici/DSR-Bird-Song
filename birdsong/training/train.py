@@ -21,8 +21,6 @@ def train(model, data_loader, epoch, optimizer, criterion, DEVICE):
     losses = []
     
     for batch_idx, (data, target) in enumerate(data_loader):
-        data, target = Variable(data), Variable(target)
-        data = data.float()
         data = data.to(DEVICE)
         target = target.to(DEVICE)
 
@@ -34,7 +32,7 @@ def train(model, data_loader, epoch, optimizer, criterion, DEVICE):
         optimizer.step()
 
         pred = output.data.max(1, keepdim=True)[1]
-        n_correct.append(pred.eq(target.data.view_as(pred)).cpu().sum().item())
+        n_correct.append(pred.eq(target.data.view_as(pred)).sum().item())
         losses.append(loss.item())
 
         latest_losses = losses[-50:]
