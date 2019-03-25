@@ -30,7 +30,7 @@ def recordings_to_download(conn, label, desired_slices):
         AND r.downloaded IS NULL 
         AND t.genus = '{genus}'
         AND t.species = '{species}' 
-        AND r.duration < 1000 """
+        AND r.scraped_duration < 1000.0 """
     
     recordings = pd.read_sql(query, conn)
     recordings['cumulative'] = recordings.scraped_duration.cumsum()
@@ -40,7 +40,7 @@ def recordings_to_download(conn, label, desired_slices):
         index = recordings[recordings.cumulative > needed_duration].cumulative.idxmin()
     else:
         index = recordings.cumulative.idxmax()
-        print(f'The cap for {label} has been reached at {recordings.cumulative.max():.1f} seconds remaining.')
+        print(f'For {label} we would need ~{needed_duration} but only {recordings.cumulative.max():.1f} seconds remain.')
     needed_recordings = recordings.iloc[:index+1]
     return list(needed_recordings[['rec_id', 'url']].itertuples(index=False, name=False))
 
@@ -74,7 +74,8 @@ def duration_per_not_downloaded_german_species(conn, selection):
         JOIN recordings AS r ON t.id = r.taxonomy_id
         WHERE t.german = 1.0 
         AND r.downloaded IS NULL 
-        AND r.scraped_duration > 5.0   
+        AND r.scraped_duration > 5.0
+        AND r.scraped_duration < 1000.0  
         AND label IN {tuple}                             
         GROUP BY label  
         ORDER By total_audio DESC """  

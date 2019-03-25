@@ -109,7 +109,8 @@ class DatabaseManager(object):
         if len(missing_slices) == 0: 
             print('Nothing missing, selection complete')
         else:
-            print(f'{missing_slices.missing_slices.sum()} slices missing.')
+            missing = missing_slices.missing_slices.sum()
+            print(f'{missing} slices missing ({missing * 433.2 / 1024:.1f} MB).')
             to_download = []
             for row in missing_slices.itertuples(name=False):
                 to_download += sql_selectors.recordings_to_download(self.conn, row[0], row[1])

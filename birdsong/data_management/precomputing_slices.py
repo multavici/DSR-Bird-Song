@@ -54,7 +54,8 @@ class Slicer:
         rec_id, url = rec_id_url_tuple
         try:
             signal, noise, sr = self._temp_download(url)
-        except urllib.error.HTTPError:
+        except:# urllib.error.HTTPError: NoBackEndError
+            print('Problem with recording',  rec_id)
             return
         if self.type == 'signal':
             if len(signal) >= (self.window / 1000) * sr:
