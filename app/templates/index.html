@@ -1,7 +1,10 @@
 <html>
 <head>
     <meta charset="utf-8">
+
     <title>Find the bird!</title>
+
+    <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
 
     <link rel="icon" href="static/favicon.png"/>
 
@@ -10,13 +13,13 @@
 </head>
 <body>
   <div id='container'>
-    <h1>Which bird would it be?</h1>
+    <h1>Who's chirping?</h1>
     <p>Record a at least 5 seconds of sound and click submit to see which bird is making the sound!</p>
     <div id='recording'></div>
     <div id='warn'></div>
     <div id='actions'>
-      <button id='record'>Record</button>
-      <button id='classify' disabled hidden=true>Submit</button>
+      <button id='record' class='primary'>Record</button>
+      <button id='classify' class='primary' disabled hidden=true>Submit</button>
     </div>
     <div id='spectrogram'></div>
     <p id='species'></p>

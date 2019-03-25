@@ -4,6 +4,8 @@ body {
     margin-left: auto;
     margin-right: auto;
     max-width: 800px;
+    font-family: 'Roboto', sans-serif;
+    color: #363946;
 }
 
 h1, p, button {
@@ -20,16 +22,41 @@ div #recording {
 
 div #warn {
     min-height: 30px;
-}
-
-button #classify {
-    align-self: center;
-    display: flex;
-    justify-content: center;
     color: red;
+    font-size: 12px;
 }
 
 img #bird_image {
     width: 200px;
     height: 100px;
+}
+
+button {
+    outline: none;
+    height: 36px;
+    line-height: 36px;
+    padding: 0 14px;
+    border-radius: 4px;
+    font-size: 14px;
+    color: #525f7f;
+    box-shadow: 0 4px 6px rgba(50,50,93,.11), 0 1px 3px rgba(0,0,0,.08);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .025em;
+    transition: all .15s ease;
+}
+
+
+button.primary {
+    border: none;
+    color: white;
+    background-color: 3ecf8e;
+}
+
+button.secondary {
+    border: none;
+    /* border-color: 3ecf8e;
+    border-width: 2px;
+    color: black; */
+    background-color: white;
 }
