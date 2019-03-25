@@ -40,5 +40,5 @@ class Reformatter:
                     print('Problem with', file)
             
 
-ref = Reformatter('storage/signal_slices', 'storage/images')
+ref = Reformatter('storage/noise_slices', 'storage/noise_images')
 ref()

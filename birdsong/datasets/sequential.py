@@ -11,6 +11,7 @@ from .tools.io import load_audio, get_signal
 from .tools.encoding import LabelEncoder
 from torch.utils.data import Dataset
 from pandas.api.types import is_numeric_dtype
+from torchvision import transforms
 import os
 import h5py
 from PIL import Image
@@ -72,7 +73,7 @@ class SpectralImageDataset(SpectralDataset):
     def __init__(self, df, input_dir, augmentation_func=None, enhancement_func=None):
         """ Initialize with a dataframe containing:
         label and path for images of precomputed spectrogram slice"""
-        super(RandomSpectralDataset, self).__init__(df, input_dir, augmentation_func, enhancement_func)
+        super(SpectralImageDataset, self).__init__(df, input_dir, augmentation_func, enhancement_func)
     
     def __getitem__(self, i):
         path = self.df.path.iloc[i]
@@ -94,7 +95,7 @@ class SpectralImageDataset(SpectralDataset):
     
     def load_image(self, path):
         img = Image.open(path)
-        return image
+        return transforms.ToTensor()(img)
 
 class RandomSpectralDataset(SpectralDataset):
     """ Rather than returning a sequential list of files, this dataset can be "blown" up to any

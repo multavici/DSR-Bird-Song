@@ -10,9 +10,9 @@ from torch.utils.data import DataLoader
 from torch import nn
 
 from birdsong.datasets.tools.sampling import upsample_df
-from birdsong.datasets.tools.augmentation import SoundscapeNoise
+from birdsong.datasets.tools.augmentation import ImageSoundscapeNoise
 from birdsong.datasets.tools.enhancement import exponent
-from birdsong.datasets.sequential import SpectralDataset
+from birdsong.datasets.sequential import SpectralImageDataset
 from birdsong.training import train, evaluate, logger, plot_conf_mat
 
 if 'HOSTNAME' in os.environ:
@@ -22,9 +22,9 @@ if 'HOSTNAME' in os.environ:
     TEST = pd.read_csv('mel_slices_test.csv')
 else:
     # script runs locally
-    INPUT_DIR = 'storage/signal_slices'
-    TRAIN = pd.read_csv('mel_slices_train.csv')
-    TEST = pd.read_csv('mel_slices_test.csv')
+    INPUT_DIR = 'storage/signal_images'
+    TRAIN = pd.read_csv('top100_img_train.csv')
+    TEST = pd.read_csv('top100_img_val.csv')
 
 
 DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
@@ -52,15 +52,12 @@ def main(config_file):
     state_fname, log_fname, summ_tensor_board = logger.create_log(log_path)
     writer = SummaryWriter(str(summ_tensor_board))
 
-    # Upsampling
-    train_df = upsample_df(TRAIN, 400)
-
     # Augmentation
-    noiser = SoundscapeNoise('storage/noise_slices', scaling=1)
+    noiser = ImageSoundscapeNoise('storage/noise_images', scaling=0.3)
 
-    ds_train = SpectralDataset(
-        train_df, INPUT_DIR, enhancement_func=exponent, augmentation_func=noiser)
-    ds_test = SpectralDataset(TEST, INPUT_DIR, enhancement_func=exponent)
+    ds_train = SpectralImageDataset(
+        TRAIN, INPUT_DIR, enhancement_func=exponent, augmentation_func=noiser)
+    ds_test = SpectralImageDataset(TEST, INPUT_DIR, enhancement_func=exponent)
 
     dl_train = DataLoader(ds_train, batch_size,
                           num_workers=4, pin_memory=PIN, shuffle=True)

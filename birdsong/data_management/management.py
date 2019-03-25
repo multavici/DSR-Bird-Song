@@ -67,7 +67,7 @@ class DatabaseManager(object):
         
         encoder = LabelEncoder(in_selection.label)
         in_selection.label = encoder.encode()
-        
+        codes = encoder.codes
         rest, validation = make_split(in_selection, test_samples=val_size)
         
         train_size = int(self.Selection.slices_per_class + self.Selection.slices_per_class/5)
@@ -76,7 +76,7 @@ class DatabaseManager(object):
         print(f'Validation size: {val_size} slices per class')
         print(f'Training size: {train_size} slices per class')
 
-        return train, validation
+        return train, validation, codes
         
     
     def inventory_df(self):
