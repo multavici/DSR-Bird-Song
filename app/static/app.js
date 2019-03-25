@@ -1,5 +1,3 @@
-
-
 const recordingDiv = document.getElementById('recording');
 const warningDiv = document.getElementById('warn');
 const actionsDiv = document.getElementById('actions');
@@ -105,7 +103,9 @@ function startRecording(button) {
             return 0;
           }
 
-          activateSubmitButton(blob)
+          activateSubmitButton(blob);
+          recordButton.classList.remove('primary');
+          recordButton.classList.add('secondary');
         }
       }
       recorder.start(1000);
