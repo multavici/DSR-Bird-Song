@@ -69,10 +69,12 @@ class DatabaseManager(object):
         in_selection.label = encoder.encode()
         
         rest, validation = make_split(in_selection, test_samples=val_size)
-        train = self.resample_df(rest, self.Selection.slices_per_class)
+        
+        train_size = int(self.Selection.slices_per_class + self.Selection.slices_per_class/5)
+        train = self.resample_df(rest, train_size)
         
         print(f'Validation size: {val_size} slices per class')
-        print(f'Training size: {self.Selection.slices_per_class} slices per class')
+        print(f'Training size: {train_size} slices per class')
 
         return train, validation
         
