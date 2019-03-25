@@ -89,8 +89,7 @@ class SpectralImageDataset(SpectralDataset):
             
         X -= X.min()
         X /= X.max()
-        X = np.expand_dims(X, 0)
-        
+        #X = np.expand_dims(X, 0)
         return (X, y)
     
     def load_image(self, path):
