@@ -44,7 +44,7 @@ def save_checkpoint(state, is_best, filename='./checkpoint.pth.tar'):
         print("=> Validation Accuracy did not improve")
 
 
-def dump_log_txt(date, start_time, local_config, train_stats, test_stats, best_acc, log_fname, enhancement, augmentation, type):
+def dump_log_txt(date, start_time, local_config, train_stats, test_stats, best_acc, epoch, log_fname):
     total_time = time.time() - start_time
     log = {
         'date': date,
@@ -54,13 +54,13 @@ def dump_log_txt(date, start_time, local_config, train_stats, test_stats, best_a
         'epochs': local_config.INPUTS['EPOCHS'],
         'learning_rate': local_config.INPUTS['LR'],
         'model': local_config.INPUTS['MODEL'],
+        'final_epoch' : epoch,
+        'best_accuracy_test' : best_acc,
+        'final_accuracy_train': train_stats[1],
+        'final_loss_train': train_stats[0],
         'final_accuracy_test': test_stats[1],
         'final_loss_test': test_stats[0],
         'total_time': total_time,
-        'check_point': log_fname,
-        'enhancement_func': enhancement.__repr__(),
-        'augmentation_func': augmentation.__repr__(),
-        'file_type': type
     }
 
     json.dump(log, open(log_fname, 'w'))
