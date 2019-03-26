@@ -4,9 +4,9 @@ import torch
 from torch.autograd import Variable
 
 from .conf_mat import calc_conf_mat
-from .utils import top_k_accuracy
+from .utils import profileit
 
-
+@profileit('evaluation_loop.prof')
 def evaluate(model, data_loader, criterion, num_classes, DEVICE):
     model.eval()
     model = model.to(DEVICE)
