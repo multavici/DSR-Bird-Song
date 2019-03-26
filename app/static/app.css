@@ -16,17 +16,26 @@ div {
     text-align: center;
 }
 
-div #recording {
+div#recording {
     min-height: 50px;
 }
 
-div #warn {
+div#info {
+    min-height: 30px;
+    font-size: 12px;
+}
+
+div.warn {
+    color: red;
+}
+
+div#connection {
     min-height: 30px;
     color: red;
     font-size: 12px;
 }
 
-img #bird_image {
+img#bird_image {
     width: 200px;
     height: 100px;
 }

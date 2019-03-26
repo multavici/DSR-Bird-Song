@@ -17,8 +17,8 @@ def train(model, data_loader, epoch, optimizer, criterion, DEVICE):
     model.train()
     model = model.to(DEVICE)
 
-    n_correct = torch.LongTensor([]).to(DEVICE)
-    losses = torch.LongTensor([]).to(DEVICE)
+    n_correct = torch.FloatTensor([]).to(DEVICE)
+    losses = torch.FloatTensor([]).to(DEVICE)
     
     for batch_idx, (data, target) in enumerate(data_loader):
         data = data.to(DEVICE)
@@ -33,8 +33,8 @@ def train(model, data_loader, epoch, optimizer, criterion, DEVICE):
 
         pred = output.data.max(1, keepdim=True)[1]
         corr = pred.eq(target.data.view_as(pred)).sum()
-        n_correct = torch.cat((n_correct, corr.unsqueeze(dim=0)))
-        losses = torch.cat((losses, loss.unsqueeze(dim=0)))
+        n_correct = torch.cat((n_correct, corr.unsqueeze(dim=0).float()))
+        losses = torch.cat((losses, loss.unsqueeze(dim=0).float()))
 
         latest_losses = losses[-50:]
         latest_correct = n_correct[-50:]
