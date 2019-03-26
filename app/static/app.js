@@ -85,7 +85,7 @@ function startRecording(button) {
         console.log('chunk pushed');
         console.log(e.data);
         chunks.push(e.data);
-        infoDiv.innerHTML = chunks.length / 10 + ' s'
+        infoDiv.innerHTML = Math.floor(chunks.length / 10) + ':' + chunks.length % 10 + '0 s'
         // var tempBlob = new Blob(chunks, { type: 'audio/webm' })
 
         if (recorder.state == 'inactive') {
