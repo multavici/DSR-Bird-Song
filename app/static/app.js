@@ -66,9 +66,12 @@ function startRecording(button) {
       
       button.innerHTML = 'Stop recording';
       submitButton.disabled = true;
-      recordingDiv.innerHTML = ''
-      infoDiv.innerHTML = ''
-      infoDiv.classList.remove('warn')
+      recordingDiv.innerHTML = '';
+      infoDiv.innerHTML = '';
+      infoDiv.classList.remove('warn');
+      connectionDiv.innerHTML = '';
+      speciesEl.textContent = '';
+      imageEl.hidden = true;
 
       recorder.ondataavailable = e => {
         console.log('chunk pushed');
