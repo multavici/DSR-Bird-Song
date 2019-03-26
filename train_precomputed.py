@@ -40,7 +40,8 @@ def main(config_file):
     model = getattr(__import__('birdsong.models',
                                fromlist=[model_name]), model_name)
     batch_size = local_config.INPUTS['BATCHSIZE']
-    optimizer = local_config.INPUTS['OPTIMIZER']
+    optimizer_name = local_config.INPUTS['OPTIMIZER']
+    optimizer = getattr(__import__('torch.optim', fromlist=[optimizer_name]), optimizer_name)
     num_epochs = local_config.INPUTS['EPOCHS']
     no_classes = local_config.INPUTS['CLASSES']
     learning_rate = local_config.INPUTS['LR']
@@ -71,7 +72,7 @@ def main(config_file):
                 no_classes=no_classes)
 
     criterion = nn.CrossEntropyLoss()
-    optimizer = optim.Adam(net.parameters(), lr=learning_rate)
+    optimizer = optimizer(net.parameters(), lr=learning_rate)
 
     # local vars
     best_acc = 0
