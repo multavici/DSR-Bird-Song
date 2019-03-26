@@ -17,8 +17,8 @@ def train(model, data_loader, epoch, optimizer, criterion, DEVICE):
     model.train()
     model = model.to(DEVICE)
 
-    #n_correct = torch.FloatTensor([]).to(DEVICE)
-    #losses = torch.FloatTensor([]).to(DEVICE)
+    n_correct = torch.FloatTensor([]).to(DEVICE)
+    losses = torch.FloatTensor([]).to(DEVICE)
     
     for batch_idx, (data, target) in enumerate(data_loader):
         data = data.to(DEVICE)
@@ -31,7 +31,7 @@ def train(model, data_loader, epoch, optimizer, criterion, DEVICE):
         loss.backward()
         optimizer.step()
         
-        """
+
         pred = output.data.max(1, keepdim=True)[1]
         corr = pred.eq(target.data.view_as(pred)).sum()
         n_correct = torch.cat((n_correct, corr.unsqueeze(dim=0).float()))
@@ -42,9 +42,9 @@ def train(model, data_loader, epoch, optimizer, criterion, DEVICE):
 
         running_loss = latest_losses.sum() / len(latest_losses)
         running_acc = latest_correct.sum() / (len(latest_correct) * data_loader.batch_size)
-        """
+
         printProgressBar(batch_idx + 1, 
                          len(data_loader),
                          prefix=f'Epoch: {epoch+1}',
-                         suffix=f'Time: {pf()-start:.1f}', #Running Loss:{running_loss:.5f}, Running Acc:{running_acc:.5f},
+                         suffix=f'Running Loss:{running_loss:.5f}, Running Acc:{running_acc:.5f}, Time: {pf()-start:.1f}',
                          length=50)

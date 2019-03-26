@@ -33,7 +33,7 @@ class SoundscapeNoise(object):
         return slice_
 
     def __repr__(self):
-        return self.__class__.__name__ + f' Scaling: {self.scaling}'
+        return self.__class__.__name__ + f' Scaling: {self.scaling}, Total Noise: {len(self.noise_bank)}'
 
 
 

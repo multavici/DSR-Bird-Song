@@ -11,7 +11,7 @@ from torch import nn
 
 from birdsong.datasets.tools.sampling import upsample_df
 from birdsong.datasets.tools.augmentation import ImageSoundscapeNoise
-from birdsong.datasets.tools.enhancement import exponent
+from birdsong.datasets.tools.enhancement import Exponent
 from birdsong.datasets.sequential import SpectralImageDataset
 from birdsong.training import train, evaluate, logger, plot_conf_mat
 
@@ -26,6 +26,7 @@ else:
     TRAIN = pd.read_csv('top100_img_train.csv')
     TEST = pd.read_csv('top100_img_val.csv')
 
+FILE_TYPE = TRAIN.path.iloc[0].split('.')[-1]
 
 DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
 PIN = torch.cuda.is_available()
@@ -51,13 +52,16 @@ def main(config_file):
     log_path = f'./birdsong/run_log/{model_name}_{date}'
     state_fname, log_fname, summ_tensor_board = logger.create_log(log_path)
     writer = SummaryWriter(str(summ_tensor_board))
-
+    
+    # Enhancement
+    enh = Exponent(0.17)
+    
     # Augmentation
-    noiser = ImageSoundscapeNoise('storage/noise_images', scaling=0.3)
+    aug = ImageSoundscapeNoise('storage/noise_images', scaling=0.3)
 
     ds_train = SpectralImageDataset(
-        TRAIN, INPUT_DIR, enhancement_func=exponent, augmentation_func=noiser)
-    ds_test = SpectralImageDataset(TEST, INPUT_DIR, enhancement_func=exponent)
+        TRAIN, INPUT_DIR, enhancement_func=enh, augmentation_func=aug)
+    ds_test = SpectralImageDataset(TEST, INPUT_DIR, enhancement_func=enh)
 
     dl_train = DataLoader(ds_train, batch_size,
                           num_workers=4, pin_memory=PIN, shuffle=True)
@@ -112,7 +116,7 @@ def main(config_file):
 
         logger.write_summary(writer, epoch, train_stats, test_stats)
         logger.dump_log_txt(date, start_time, local_config,
-                            train_stats, test_stats, best_acc, log_fname)
+                            train_stats, test_stats, best_acc, log_fname, enh, aug, FILE_TYPE)
 
     writer.close()
     print('Finished Training')
