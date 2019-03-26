@@ -163,13 +163,3 @@ class Eagle(nn.Module):
 
         out = self.fc(pool2.reshape(pool2.size(0), -1))
         return out
-
-
-
-
-
-
-image = torch.randn(5, 1, 256, 216)
-cnn = Hawk(256, 216, 10)
-output = cnn(image)
-
