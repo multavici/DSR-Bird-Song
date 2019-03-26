@@ -5,65 +5,60 @@ Created on Fri Mar  8 21:21:30 2019
 
 @author: ssharma
 """
+
 import numpy as np
 import matplotlib.pyplot as plt
-from io import BytesIO
-from PIL import Image
-from .utils import profileit
-
-def calc_conf_mat(pred, target, num_classes):
-
-    predicted = pred.squeeze(dim = -1).cpu().numpy()
-    target = target.cpu().numpy()
-
-    assert predicted.shape[0] == target.shape[0], \
-            'number of targets and predicted outputs do not match'
-
-    x = predicted + num_classes * target
-    bincount_2d = np.bincount(x.astype(np.int32),
-                                      minlength=num_classes ** 2)
-    conf_mat = bincount_2d.reshape((num_classes, num_classes))
-        
-    return conf_mat
-
-@profileit('conf_matrix.prof')
-def plot_conf_mat(img_path, conf_matrix):
+from sklearn import svm, datasets
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import confusion_matrix
+from sklearn.utils.multiclass import unique_labels
     
-    fig = plt.figure(figsize=(12,12))
-    
-    normalize = 1
+def plot_confusion_matrix(y_true, y_pred, classes,
+                          normalize=False,
+                          title=None,
+                          cmap=plt.cm.Blues):
+    """
+    This function prints and plots the confusion matrix.
+    Normalization can be applied by setting `normalize=True`.
+    """
+    if not title:
+        if normalize:
+            title = 'Normalized confusion matrix'
+        else:
+            title = 'Confusion matrix, without normalization'
+
+    # Compute confusion matrix
+    cm = confusion_matrix(y_true, y_pred)
+    # Only use the labels that appear in the data
+    classes = classes[unique_labels(y_true, y_pred)]
     if normalize:
-        cm = conf_matrix.astype('float') / conf_matrix.sum(axis=1)[:, np.newaxis]
-        plt.imshow(cm, interpolation='nearest', cmap='Blues')
-
-    else:
-        plt.imshow(conf_matrix, interpolation='nearest', cmap='Blues')
-
-
-   # print(cm)
-
-    plt.title('Confusion Matrix')
-    plt.colorbar()
-
-   # fmt = '.2f' if normalize else 'd'
-   # thresh = cm.max() / 2.
+        cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
     
-    for i in np.arange(cm.shape[0]):
-        for j in np.arange(cm.shape[1]):
-            plt.text(j, i, '%0.2f' %(cm[i][j]))
-
-    plt.ylabel('Actual label')
-    plt.xlabel('Predicted label')
-    plt.tight_layout()
-    plt.savefig(img_path)
-
-    buf = BytesIO()
-    fig.savefig(buf)
-    buf.seek(0)
-
-    buf_img = buf.read()
-
-    image = np.array(Image.open(BytesIO(buf_img))).astype(np.uint8)
-    img = image[:, :, :3]
     
-    return img
+    fig, ax = plt.subplots(figsize=(25, 25))
+    im = ax.imshow(cm, interpolation='nearest', cmap=cmap)
+    ax.figure.colorbar(im, ax=ax)
+    # We want to show all ticks...
+    ax.set(xticks=np.arange(cm.shape[1]),
+           yticks=np.arange(cm.shape[0]),
+           # ... and label them with the respective list entries
+           xticklabels=classes, yticklabels=classes,
+           title=title,
+           ylabel='True label',
+           xlabel='Predicted label')
+
+    # Rotate the tick labels and set their alignment.
+    plt.setp(ax.get_xticklabels(), rotation=45, ha="right",
+             rotation_mode="anchor")
+
+    # Loop over data dimensions and create text annotations.
+    fmt = '.2f' if normalize else 'd'
+    thresh = cm.max() / 2.
+    for i in range(cm.shape[0]):
+        for j in range(cm.shape[1]):
+            ax.text(j, i, format(cm[i, j], fmt),
+                    fontsize=6,
+                    ha="center", va="center",
+                    color="white" if cm[i, j] > thresh else "black")
+    fig.tight_layout()
+    return fig

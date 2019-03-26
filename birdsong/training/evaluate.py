@@ -2,8 +2,8 @@
 import numpy as np
 import torch
 from torch.autograd import Variable
-
-from .conf_mat import calc_conf_mat
+#from sklearn.metrics import confusion_matrix
+from .conf_mat import plot_confusion_matrix
 from .utils import profileit
 
 @profileit('evaluation_loop.prof')
@@ -40,10 +40,8 @@ def evaluate(model, data_loader, criterion, num_classes, DEVICE):
                 pred_cat = torch.cat((pred_cat, pred))
                 targ_cat = torch.cat((targ_cat, target))
 
-    #conf_matrix = calc_conf_mat(pred_cat, targ_cat, num_classes)
-
     loss /= len(data_loader)
     acc = n_correct / len(data_loader.dataset)
     top_5_acc = n_intopk / len(data_loader.dataset)
 
-    return (loss, acc, top_5_acc)#, conf_matrix
+    return (loss, acc, top_5_acc), (targ_cat, pred_cat)
