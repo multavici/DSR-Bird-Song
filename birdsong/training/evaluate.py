@@ -44,4 +44,4 @@ def evaluate(model, data_loader, criterion, num_classes, DEVICE):
     acc = n_correct / len(data_loader.dataset)
     top_5_acc = n_intopk / len(data_loader.dataset)
 
-    return (loss, acc, top_5_acc), (targ_cat, pred_cat)
+    return (loss, acc, top_5_acc), (targ_cat.cpu(), pred_cat.cpu())
