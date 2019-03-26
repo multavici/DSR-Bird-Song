@@ -3,10 +3,18 @@ import librosa
 import torch
 import numpy as np
 import matplotlib.pyplot as plt
+import os
+import sys
 
-# from ..birdsong.models import Zilpzalp
+dir_path = os.path.dirname(os.path.realpath(__file__))
+parent_dir = os.path.dirname(dir_path)
+
+sys.path.append(os.path.join(parent_dir, 'birdsong'))
+from models import Zilpzalp
 
 app = Flask(__name__)
+
+model = Zilpzalp()
 
 # load the model from checkpoint
 checkpoint_path = 'model/checkpoint.tar'
@@ -16,8 +24,8 @@ checkpoint = torch.load(checkpoint_path, map_location='cpu')
 state = checkpoint['state_dict']
 label_dict = checkpoint['label_dict']
 
-# model.load_state_dict(state)
-# model.eval()
+#model.load_state_dict(state)
+#model.eval()
 
 
 @app.route("/")
