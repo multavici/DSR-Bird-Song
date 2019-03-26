@@ -8,12 +8,13 @@ import torch.optim as optim
 import torchvision.transforms as transforms
 from torch.utils.data import DataLoader
 from torch import nn
-
+import numpy as np
 from birdsong.datasets.tools.sampling import upsample_df
 from birdsong.datasets.tools.augmentation import ImageSoundscapeNoise
 from birdsong.datasets.tools.enhancement import Exponent
 from birdsong.datasets.sequential import SpectralImageDataset
-from birdsong.training import train, evaluate, logger, plot_conf_mat
+from birdsong.training import train, evaluate, logger
+from birdsong.training.conf_mat import plot_confusion_matrix
 
 if 'HOSTNAME' in os.environ:
     # script runs on server
@@ -59,7 +60,8 @@ def main(config_file):
     
     # Augmentation
     aug = ImageSoundscapeNoise('storage/noise_images', scaling=0.3)
-
+    
+    # Datasets and Dataloaders
     ds_train = SpectralImageDataset(
         TRAIN, INPUT_DIR, enhancement_func=enh, augmentation_func=aug)
     ds_test = SpectralImageDataset(TEST, INPUT_DIR, enhancement_func=enh)
@@ -69,7 +71,8 @@ def main(config_file):
     dl_test = DataLoader(ds_test, batch_size, num_workers=4,
                          pin_memory=PIN, shuffle=True)
     print('Dataloaders initialized')
-
+    
+    # Model 
     time_axis = ds_test.shape[1]
     freq_axis = ds_test.shape[0]
     net = model(time_axis=time_axis, freq_axis=freq_axis,
@@ -77,18 +80,31 @@ def main(config_file):
 
     criterion = nn.CrossEntropyLoss()
     optimizer = optimizer(net.parameters(), lr=learning_rate)
-
+    
+    # Logging general run information:
+    info = f""" INFO: \n
+    File type: {FILE_TYPE} \n
+    Optimizer: {optimizer_name} \n
+    Batch Size: {batch_size} \n
+    Classes': {no_classes} \n 
+    Enhancement: {ds_train.enhancement_func.__repr__()} \n
+    Augmentation: {ds_train.augmentation_func.__repr__()} \n
+    Supposed to run for: {num_epochs} \n
+    Date: {date}"""
+    
+    writer.add_text('Info: ', info)
+    
     # local vars
     best_acc = 0
     for epoch in range(num_epochs):
         train(net, dl_train, epoch, optimizer, criterion, DEVICE)
 
-        train_stats = evaluate(
+        train_stats, train_preds = evaluate(
             net, dl_train, criterion, no_classes, DEVICE)
         print(
             f'Training: Loss: {train_stats[0]:.5f}, Acc: {train_stats[1]:.5f}, Top 5: {train_stats[2]:.5f}')
 
-        test_stats = evaluate(
+        test_stats, test_preds = evaluate(
             net, dl_test, criterion, no_classes, DEVICE)
         print(
             f'Validation: Loss: {test_stats[0]:.5f}, Acc: {test_stats[1]:.5f}, Top 5: {test_stats[2]:.5f}')
@@ -102,28 +118,21 @@ def main(config_file):
             'state_dict': net.state_dict(),
             'optimizer_state_dict': optimizer.state_dict(),
             'best_accuracy': best_acc,
-            #'label_dict': ds_train.encoder.codes,
-            # 'model': net,
         }, is_best, filename=state_fname)
-
-        """
-        print('Making images')
-        img_path = log_path + '/train' + '_' + str(epoch) + '.png'
-        img = plot_conf_mat(img_path, train_conf_matrix)
-
-        img_path = log_path + '/test' + '_' + str(epoch) + '.png'
-        img = plot_conf_mat(img_path, test_conf_matrix)
-        """
+        
+        # Store confusion matrix every 5 epochs or at the end of training
+        if epoch%5 == 0 or epoch == num_epochs - 1:
+            cm_train = plot_confusion_matrix(train_preds[0], train_preds[1], np.arange(no_classes), normalize=True)
+            cm_val = plot_confusion_matrix(test_preds[0], test_preds[1], np.arange(no_classes), normalize=True)
+            writer.add_figure('Training', cm_train, epoch)
+            writer.add_figure('Validation', cm_val, epoch)
 
         logger.write_summary(writer, epoch, train_stats, test_stats)
         logger.dump_log_txt(date, start_time, local_config,
-                            train_stats, test_stats, best_acc, log_fname, enh, aug, FILE_TYPE)
+                            train_stats, test_stats, best_acc, epoch+1, log_fname)
 
     writer.close()
     print('Finished Training')
-
-    with open(os.path.join(log_path, 'model.pt'), 'wb') as f:
-        torch.save(net, f)
 
 
 if __name__ == "__main__":
