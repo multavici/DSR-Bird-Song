@@ -56,10 +56,10 @@ def main(config_file):
     writer = SummaryWriter(str(summ_tensor_board))
     
     # Enhancement
-    enh = Exponent(0.17)
+    enh = None #Exponent(0.17)
     
     # Augmentation
-    aug = ImageSoundscapeNoise('storage/noise_images', scaling=0.3)
+    aug = None #ImageSoundscapeNoise('storage/noise_images', scaling=0.3)
     
     # Datasets and Dataloaders
     ds_train = SpectralImageDataset(
