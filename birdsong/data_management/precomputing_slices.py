@@ -65,8 +65,8 @@ class Slicer:
         if self.type == 'noise':
             if len(noise) >= (self.window / 1000) * sr:
                 spec_slices = self._spec_slices(noise, sr)
-                if len(spec_slices) > 2:
-                    spec_slices = random.sample(spec_slices, 2)
+                if len(spec_slices) > 4:
+                    spec_slices = random.sample(spec_slices, 4)
             else:
                 return
         self._save_slices(spec_slices, rec_id)

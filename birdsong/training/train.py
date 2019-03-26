@@ -30,6 +30,7 @@ def train(model, data_loader, epoch, optimizer, criterion, DEVICE):
 
         loss.backward()
         optimizer.step()
+        
 
         pred = output.data.max(1, keepdim=True)[1]
         corr = pred.eq(target.data.view_as(pred)).sum()

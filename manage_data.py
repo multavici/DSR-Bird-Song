@@ -1,14 +1,16 @@
 from birdsong.data_management.management import DatabaseManager
 
 dbm = DatabaseManager('storage')
+dbm.make_selection(100, 1000)
+
 
 #dbm.clean_db()
 
-dbm.make_selection(100, 1000)
+
 dbm.download_missing()
 
 
-
+"""
 t, v, codes = dbm.train_validation_split()
 
 import pandas as pd
@@ -21,3 +23,4 @@ v.path = v.path.apply(lambda x: x.replace('.pkl', '.png'))
 t.to_csv('top100_img_train.csv')
 v.to_csv('top100_img_val.csv')
 c.to_csv('top100_img_codes.csv')
+"""

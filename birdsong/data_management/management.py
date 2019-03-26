@@ -158,7 +158,7 @@ class DatabaseManager(object):
 
         
     def make_some_noise(self):
-        labels = self.Selection.classes_in_selection.index.values
+        labels = self.Selection.classes_in_selection.label.values
         
         # Get noise for all species in current selection
         recordings = []
