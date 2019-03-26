@@ -8,7 +8,13 @@ const submitButton = document.getElementById('classify');
 
 const speciesEl = document.getElementById('species');
 const imageEl = document.getElementById('bird_image');
-const spect = document.getElementById('spectrogram')
+const spect = document.getElementById('spectrogram');
+
+const recordingAnimation = document.createElement('object');
+recordingAnimation.type = 'image/svg+xml';
+recordingAnimation.data = '../static/images/recording.svg';
+recordingAnimation.width = 50;
+recordingAnimation.height = 50;
 
 var currentDate = new Date();
 var currentTime = currentDate.getTime();
@@ -67,11 +73,13 @@ function startRecording(button) {
       button.innerHTML = 'Stop recording';
       submitButton.disabled = true;
       recordingDiv.innerHTML = '';
+      recordingDiv.appendChild(recordingAnimation)
       infoDiv.innerHTML = '';
       infoDiv.classList.remove('warn');
       connectionDiv.innerHTML = '';
       speciesEl.textContent = '';
       imageEl.hidden = true;
+
 
       recorder.ondataavailable = e => {
         console.log('chunk pushed');
