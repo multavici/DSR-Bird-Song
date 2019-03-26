@@ -73,7 +73,13 @@ if (navigator.mediaDevices) {
       audioBitsPerSecond : 128000,
       mimeType : 'audio/webm'
     }
-    var recorder = new MediaRecorder(stream, options);
+
+    try {
+      var recorder = new MediaRecorder(stream, options);
+    }
+    catch(err) {
+      connectionDiv.innerHTML = "Your browser doesn't support MediaRecorder, please use Chrome, Firefox or Opera";
+    }
 
     // visualize(stream);
 

@@ -33,6 +33,7 @@ div#connection {
     min-height: 30px;
     color: red;
     font-size: 12px;
+    line-height: 30px;
 }
 
 img#bird_image {
