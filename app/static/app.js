@@ -86,7 +86,7 @@ if (navigator.mediaDevices) {
 
       if (this.innerHTML === 'Record' || this.innerHTML === 'Try again') {
         chunks = [];
-        recorder.start(100);
+        recorder.start(500);
 
         currentDate = new Date();
         startTime = currentDate.getTime();
@@ -108,7 +108,7 @@ if (navigator.mediaDevices) {
       console.log('chunk pushed');
       console.log(e.data);
       chunks.push(e.data);
-      infoDiv.innerHTML = Math.floor(chunks.length / 10) + ':' + chunks.length % 10 + '0 s';
+      infoDiv.innerHTML = Math.floor(chunks.length / 2) + ':' + (chunks.length % 2) * 5 + '0 s';
       // var tempBlob = new Blob(chunks, { type: 'audio/webm' })
     }
 
@@ -140,82 +140,3 @@ if (navigator.mediaDevices) {
 
   }).catch(console.error);
 }
-
-// function startRecording(button) {
-//   navigator.mediaDevices.getUserMedia({ audio: true})
-//     .then(stream => {
-//       const chunks = [];
-//       var options = {
-//         audioBitsPerSecond : 128000,
-//         mimeType : 'audio/webm'
-//       }
-//       const recorder = new MediaRecorder(stream, options);
-      
-//       visualize(stream);
-      
-//       currentDate = new Date();
-//       startTime = currentDate.getTime();
-      
-//       button.innerHTML = 'Stop recording';
-//       recordingDiv.innerHTML = '';
-//       recordingDiv.appendChild(recordingAnimation)
-//       infoDiv.innerHTML = '';
-//       infoDiv.classList.remove('warn');
-//       connectionDiv.innerHTML = '';
-//       speciesEl.textContent = '';
-//       imageEl.hidden = true;
-
-
-//       recorder.ondataavailable = e => {
-//         console.log('chunk pushed');
-//         console.log(e.data);
-//         chunks.push(e.data);
-//         infoDiv.innerHTML = Math.floor(chunks.length / 10) + ':' + chunks.length % 10 + '0 s'
-//         // var tempBlob = new Blob(chunks, { type: 'audio/webm' })
-
-//         if (recorder.state == 'inactive') {
-
-//           const blob = new Blob(chunks, { type: 'audio/webm' });
-//           button.innerHTML = 'Try again'
-//           showAudioElement(URL.createObjectURL(blob));
-//           console.log(blob);
-//           console.log(blob.size);
-
-//           currentDate = new Date();
-//           stopTime = currentDate.getTime();
-//           durationRecording = (stopTime - startTime) / 1000;
-//           console.log('finished recording: ');
-//           console.log('duration recording: ' + durationRecording.toString() + 's');
-
-//           if (durationRecording < 5) {
-//             console.log('recording is too short');
-//             infoDiv.classList.add('warn')
-//             infoDiv.innerHTML = 'This recording is too short, please record at least 5 seconds';
-//             return 0;
-//           }
-
-//           activateSubmitButton(blob);
-//           recordButton.classList.remove('primary');
-//           recordButton.classList.add('secondary');
-//         }
-//       }
-//       recorder.start(100);
-      
-//       button.onclick = function() {
-//         if (button.innerHTML === 'Stop recording') {
-//           recorder.stop()
-//           recordingDiv.innerHTML = ''
-//         }
-//         if (button.innerHTML === 'Try again') {
-//           startRecording(this)
-//         }
-        
-//       }
-
-//     }).catch(console.error);
-// }
-
-
-// recordButton.onclick = function() {
-//   startRecording(this)
-// }
