@@ -70,8 +70,8 @@ class Bulbul(nn.Module):
 
 
 def test():
-    image = torch.randn(1, 1, 80, 1000)
-    cnn = Bulbul(80, 1000, 10)
+    image = torch.randn(64, 1, 256, 216)
+    cnn = Bulbul(256, 216, 10)
     output = cnn(image)
     print("input shape:")
     print(image.shape)
@@ -80,3 +80,4 @@ def test():
 
 if __name__ == '__main__':
     test()
+
