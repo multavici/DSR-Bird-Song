@@ -42,8 +42,13 @@ function activateSubmitButton(rec) {
     request.setRequestHeader('X-File-Size', rec.size);
     request.setRequestHeader('Content-Type', rec.type);
 
+    request.onerror = function () {
+      connectionDiv.innerHTML = 'There is a problem with the server. Please try again later'
+    }
+
     request.onload = function () {
       var data = JSON.parse(this.response);
+      console.log(request.status);
       
       if (request.status < 200 || request.status > 400) {
         console.log('error connecting to API')
@@ -90,7 +95,7 @@ function activateSubmitButton(rec) {
       responseDiv.appendChild(top5_1);
       responseDiv.appendChild(top5_2);
       responseDiv.appendChild(top5_3);
-    }.catch(console.log('ERROR'))
+    }
     
     request.send(rec);
   }
