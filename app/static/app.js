@@ -43,17 +43,19 @@ function activateSubmitButton(rec) {
     request.setRequestHeader('Content-Type', rec.type);
 
     request.onerror = function () {
+      console.log('error connecting to API')
       connectionDiv.innerHTML = 'There is a problem with the server. Please try again later'
     }
 
     request.onload = function () {
-      var data = JSON.parse(this.response);
       console.log(request.status);
-      
+
       if (request.status < 200 || request.status > 400) {
         console.log('error connecting to API')
-        connectionDiv.innerHTML = 'The server is not available at the moment'
+        connectionDiv.innerHTML = 'There is a problem with the server. Please try again later'
       }
+
+      var data = JSON.parse(this.response);
 
       recordButton.classList.remove('secondary')
       recordButton.classList.add('primary')
@@ -98,6 +100,7 @@ function activateSubmitButton(rec) {
     }
     
     request.send(rec);
+    console.log(request.status);
   }
 }
 
@@ -147,12 +150,12 @@ if (navigator.mediaDevices) {
         infoDiv.classList.remove('warn');
         speciesEl.innerHTML = '';
         imageEl.hidden = true;
-        responseDiv.removeChild(top5_1)
-        responseDiv.removeChild(top5_2)
-        responseDiv.removeChild(top5_3)
-
+        if (this.innerHTML === 'Try again') {
+          responseDiv.removeChild(top5_1)
+          responseDiv.removeChild(top5_2)
+          responseDiv.removeChild(top5_3)
+        }
       }
-
     }
 
     recorder.ondataavailable = e => {
