@@ -48,8 +48,9 @@ function activateSubmitButton(rec) {
     }
 
     request.onload = function () {
-      var data = JSON.parse(this.response);
       console.log(request.status);
+      var data = JSON.parse(this.response);
+      
       
       if (request.status < 200 || request.status > 400) {
         console.log('error connecting to API')
@@ -99,6 +100,7 @@ function activateSubmitButton(rec) {
     }
     
     request.send(rec);
+    console.log(request.status);
   }
 }
 
