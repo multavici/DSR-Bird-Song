@@ -59,7 +59,7 @@ def main(config_file):
     enh = None #Exponent(0.17)
     
     # Augmentation
-    aug = None #ImageSoundscapeNoise('storage/noise_images', scaling=0.3)
+    aug = SoundscapeNoise('storage/noise_slices', scaling=0.3)
     
     # Datasets and Dataloaders
     ds_train = SpectralDataset(

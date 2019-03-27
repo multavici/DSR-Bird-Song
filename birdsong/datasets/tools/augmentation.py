@@ -21,10 +21,11 @@ class SoundscapeNoise(object):
         print('Loading noise bank into RAM.')
         noise = []
         for file in os.listdir(noise_dir):
-            path = os.path.join(noise_dir, file)
-            noise_slice = self._load(path)
-            if noise_slice.max() != 0:
-                noise.append(noise_slice)
+            if file.endswith('.pkl'):
+                path = os.path.join(noise_dir, file)
+                noise_slice = self._load(path)
+                if noise_slice.max() != 0:
+                    noise.append(noise_slice)
         return noise
     
     def _load(self, path):
