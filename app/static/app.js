@@ -148,6 +148,7 @@ if (navigator.mediaDevices) {
         recordingDiv.appendChild(recordingAnimation)
         infoDiv.innerHTML = '';
         infoDiv.classList.remove('warn');
+        connectionDiv.innerHTML = ''
         speciesEl.innerHTML = '';
         imageEl.hidden = true;
         if (this.innerHTML === 'Try again') {
@@ -167,7 +168,7 @@ if (navigator.mediaDevices) {
     }
 
     recorder.onstop = function(e) {
-
+      console.log(chunks)
       const blob = new Blob(chunks, { type: 'audio/webm' });
       recordButton.innerHTML = 'Try again';
       showAudioElement(URL.createObjectURL(blob));
