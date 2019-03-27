@@ -43,6 +43,7 @@ function activateSubmitButton(rec) {
     request.setRequestHeader('Content-Type', rec.type);
 
     request.onerror = function () {
+      console.log('ERROR: AJAX call not returned')
       connectionDiv.innerHTML = 'There is a problem with the server. Please try again later'
     }
 
@@ -147,12 +148,12 @@ if (navigator.mediaDevices) {
         infoDiv.classList.remove('warn');
         speciesEl.innerHTML = '';
         imageEl.hidden = true;
-        responseDiv.removeChild(top5_1)
-        responseDiv.removeChild(top5_2)
-        responseDiv.removeChild(top5_3)
-
+        if (this.innerHTML === 'Try again') {
+          responseDiv.removeChild(top5_1)
+          responseDiv.removeChild(top5_2)
+          responseDiv.removeChild(top5_3)
+        }
       }
-
     }
 
     recorder.ondataavailable = e => {
