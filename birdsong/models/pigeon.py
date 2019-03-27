@@ -19,28 +19,29 @@ class Pigeon(nn.Module):
             #nn.BatchNorm2d(16),
             nn.ReLU(),
             nn.Dropout(0.5),
-            nn.MaxPool2d(kernel_size=3, stride=3))
+            nn.MaxPool2d(kernel_size=2, stride=2))
         
         self.layer2 = nn.Sequential(
             nn.Conv2d(16, 32, kernel_size=3, stride=1, padding=1),
             #nn.BatchNorm2d(16),
             nn.ReLU(),
             nn.Dropout(0.5),
-            nn.MaxPool2d(kernel_size=3, stride=3))
+            nn.MaxPool2d(kernel_size=2, stride=2))
         
         self.layer3 = nn.Sequential(
             nn.Conv2d(32, 32, kernel_size=3, stride=1, padding=1),
             #nn.BatchNorm2d(16),
             nn.ReLU(),
             nn.Dropout(0.5),
-            nn.MaxPool2d(kernel_size=3, stride=3))
+            nn.MaxPool2d(kernel_size=2, stride=2))
 
-        self.fc = nn.Linear(32 * 9 * 8, no_classes)
+        self.fc = nn.Linear(32 * 32 * 27, no_classes)
 
     def forward(self, x):
         out = self.layer1(x)
         out = self.layer2(out)
         out = self.layer3(out)
+        #print(out.shape)
         out = out.reshape(out.size(0), -1)
         out = self.fc(out)
         return out
