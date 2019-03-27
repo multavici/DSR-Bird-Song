@@ -51,11 +51,40 @@ function activateSubmitButton(rec) {
       
       console.log(data);
 
-      speciesEl.innerHTML = 'Species: ' + data.species;
+      // speciesEl.innerHTML = 'Species: ' + data.species;
 
       imageEl.src = data.image_url;
       imageEl.alt = data.species;
       imageEl.hidden = false;
+
+
+      top5_1 = document.createElement('ul')
+      var i
+      for (i = 0; i < 5; i++) {
+        species = document.createElement('li')
+        species.innerHTML = data.top5_1[i]
+        top5_1.appendChild(species)
+      }
+
+      top5_2 = document.createElement('ul')
+      var i
+      for (i = 0; i < 5; i++) {
+        species = document.createElement('li')
+        species.innerHTML = data.top5_2[i]
+        top5_2.appendChild(species)
+      }
+
+      top5_3 = document.createElement('ul')
+      var i
+      for (i = 0; i < 5; i++) {
+        species = document.createElement('li')
+        species.innerHTML = data.top5_3[i]
+        top5_3.appendChild(species)
+      }
+
+      document.getElementById('container').appendChild(top5_1);
+      document.getElementById('container').appendChild(top5_2);
+      document.getElementById('container').appendChild(top5_3);
     }
     
     request.send(rec);
