@@ -6,6 +6,7 @@ Created on Mon Feb  4 14:07:07 2019
 @author: tim
 """
 import pickle
+import torch
 import numpy as np
 from .tools.io import load_audio, get_signal
 from .tools.encoding import LabelEncoder
@@ -56,7 +57,7 @@ class SpectralDataset(Dataset):
         X -= X.min()
         X /= X.max()
         X = np.expand_dims(X, 0)
-        
+        X = torch.Tensor(X)
         return (X, y)
 
     def unpack(self, path):

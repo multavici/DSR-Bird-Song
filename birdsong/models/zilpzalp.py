@@ -64,10 +64,21 @@ class Zilpzalp(nn.Module):
         batch_size = x.shape[0]
         freq = self.frequency(x).view(batch_size, 128, -1, 1)
         time = self.time(x).view(batch_size, 128, 1, -1)
-
+        
         comb = torch.matmul(freq, time)
-
         summ = self.summary(comb)
         out = F.max_pool2d(summ, kernel_size=summ.size()[2:]).view(batch_size, summ.size()[1])
 
         return out
+
+def test():
+    image = torch.randn(64, 1, 256, 216)
+    cnn = Zilpzalp(256, 216, 10)
+    output = cnn(image)
+    print("input shape:")
+    print(image.shape)
+    print("output shape:")
+    print(output.shape)
+
+if __name__ == '__main__':
+    test()

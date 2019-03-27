@@ -6,3 +6,4 @@ from .lstm import LstmModel
 from .hawk import Hawk
 from .eagle import Eagle
 from .owl import Owl
+from .puffin import Puffin
