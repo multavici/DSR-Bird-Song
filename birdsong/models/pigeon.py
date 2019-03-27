@@ -5,11 +5,8 @@ Created on Wed Mar 27 16:10:44 2019
 
 @author: ssharma
 """
-import torch
+
 import torch.nn as nn
-import torch.nn.functional as F
-from PIL import Image
-DEVICE = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 
 # A simple network from nn.Module
@@ -39,8 +36,8 @@ class Pigeon(nn.Module):
         out = self.fc(out)
         return out
 
-    
-#img = torch.randn(5, 1, 256, 216)
-#cnn = Pigeon(256, 216, 100)
-#output = cnn(img)
-
+"""   
+img = torch.randn(5, 1, 256, 216)
+cnn = Pigeon(256, 216, 100)
+output = cnn(img)
+"""
