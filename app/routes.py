@@ -5,6 +5,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os
 import sys
+import csv
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 parent_dir = os.path.dirname(dir_path)
@@ -14,18 +15,25 @@ from models import Zilpzalp
 
 app = Flask(__name__)
 
-model = Zilpzalp()
+# initiate the model
+model = Zilpzalp(
+    time_axis=216,
+    freq_axis=256,
+    no_classes=100)
 
-# load the model from checkpoint
-checkpoint_path = 'model/checkpoint.tar'
+# load the state of  model from checkpoint
+checkpoint_path = 'model/checkpoint_Zilpzalp_26-03'
 checkpoint = torch.load(checkpoint_path, map_location='cpu')
 
-# model = checkpoint['model']
 state = checkpoint['state_dict']
-label_dict = checkpoint['label_dict']
+label_dict = {}
+reader = csv.DictReader(open('model/top100_img_codes.csv'), fieldnames=('id', 'id2', 'species'))
+for row in reader:
+    label_dict[int(row['id'])] = row['species']
+print(label_dict)
 
-#model.load_state_dict(state)
-#model.eval()
+model.load_state_dict(state)
+model.eval()
 
 
 @app.route("/")
@@ -38,72 +46,58 @@ def classify():
     input = request.data
     with open('temp/audio.webm', 'wb+') as f:
         f.write(input)
-    # audio, sr = librosa.load('temp/audio.webm')
-    # print('sr', sr)
-    # print('audio', audio)
-    # print('shape', audio.shape)
-    # length = audio.shape[0] / sr
-    # print('length', length)
-    # print('-----')
-    # stft = librosa.stft(audio, n_fft=2048)
-    # print('stft shape', stft.shape)
-    # print('columns per second', stft.shape[1] / length)
-    # print(stft)
-    # print('-----')
-    # stft = np.abs(stft)
-    # print(stft)
-    # stft -= stft.min()
-    # print('-----')
-    # print(stft)
-    # stft / stft.max()
-    # print(stft)
-    # print('-----')
-    # print(stft.shape)
-    # print('-----')
-    # # TODO: Add slicing function
+    audio, sr = librosa.load('temp/audio.webm')
+    length = audio.shape[0] / sr
 
-    # spect = librosa.feature.melspectrogram(
-    #     audio, sr=22050, n_fft=2048, hop_length=512, n_mels=256, fmin=0, fmax=12000)
-    # plt.imshow(spect)
-    # plt.savefig('static/images/spect.svg')
-    # plt.savefig('static/images/spect.png')
+    spect = librosa.feature.melspectrogram(
+        audio, sr=22050, n_fft=2048, hop_length=512, n_mels=256, fmin=0, fmax=12000)
 
-    # print(spect.shape)
-    # print(spect)
-    # print('-----')
-    # sum = np.sum(spect, axis=0)
-    # print(sum.shape)
-    # print(sum)
-    # print('-----')
-    # top_indices = sum.argsort()[-216:][::-1]
-    # print(len(top_indices))
-    # print(top_indices)
-    # print(type(top_indices))
-    # print('-----')
-    # top_indices_sorted = np.sort(top_indices)
-    # # print(len(top_indices_sorted))
-    # print(top_indices_sorted)
-    # print('-----')
-    # sliced_spect = spect[:, top_indices_sorted]
-    # print(sliced_spect.shape)
-    # print(sliced_spect)
+    # We test 2 ways of slicing the complete spectogram
 
-    # plt.figure(figsize=(4, 2))
-    # plt.imshow(sliced_spect)
-    # plt.savefig('static/images/sliced_spect.svg')
-    # plt.savefig('static/images/sliced_spect.png')
+    # 1: We take the columns with most signal
 
-    # slice_ = "TODO"
+    colsum = np.sum(spect, axis=0)
+    top_indices = colsum.argsort()[-216:][::-1]
+    top_indices_sorted = np.sort(top_indices)
+    slice_maxsignal = spect[:, top_indices_sorted].reshape((1, 1, 256, 216))
+
+    # 2: We take the first 5s seconds of signal
+
+    slice_start = spect[:, 0:216].reshape((1, 1, 256, 216))
+
+    # 3 We take a sliding window with the most signal
+
+    maxdensity, i_start = 0, 0
+    for i in range(len(colsum) - 216):
+        density = np.sum(colsum[i:i + 216])
+        if density > maxdensity:
+            i_start = i
+    slice_maxwindow = spect[:, i_start:i_start + 216].reshape((1, 1, 256, 216))
 
     # make prediction
-    #encoded_pred = model(torch.tensor(slice_).float()).argmax()
-    #pred = label_dict[encoded_pred]
 
-    pred = "Plegadis falcinellus"
+    top5_maxsignal = get_top5_prediction(slice_maxsignal)
+
+    top5_first5s = get_top5_prediction(slice_start)
+
+    top5_maxwindow = get_top5_prediction(slice_maxwindow)
+
+    # pred = "Plegadis falcinellus"
     return jsonify({
-        'species': pred,
+        'top5_1': top5_maxsignal,
+        'top5_2': top5_first5s,
+        'top5_3': top5_maxwindow,
         'image_url': 'https://upload.wikimedia.org/wikipedia/commons/3/3f/Plegadis_chihi_at_Aransas.jpg',
     })
 
-# if __name__ == "__main__":
-#    app.run()
+def get_top5_prediction(slice_):
+    output = model(torch.tensor(slice_).float()).reshape(100)
+    scores_raw = torch.nn.functional.softmax(output, dim=0)
+    scores, indices = scores_raw.sort(descending=True)
+
+    top5 = []
+    for code, score in zip(indices[0:5].tolist(), scores[0:5].tolist()):
+        top5.append(
+            (label_dict[code], f'{score:.2f}')
+        )
+    return top5
