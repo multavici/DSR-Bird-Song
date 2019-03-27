@@ -23,20 +23,20 @@ class Puffin(nn.Module):
         self.frequency = nn.Sequential(
 
             # One filter, two frequency bands over time
-            nn.Conv1d(freq_axis, freq_axis//2, kernel_size=5, stride=1, groups=freq_axis//2),
+            nn.Conv1d(freq_axis, freq_axis//2, kernel_size=5, stride=1),
             nn.BatchNorm1d(freq_axis//2),
             nn.ReLU(),
             nn.Dropout(0.3),
             nn.MaxPool1d(kernel_size=3, stride=3),
             
             # One filter, two frequency bands over time
-            nn.Conv1d(freq_axis//2, freq_axis//4, kernel_size=5, stride=1, groups=freq_axis//4),
+            nn.Conv1d(freq_axis//2, freq_axis//4, kernel_size=5, stride=1),
             nn.BatchNorm1d(freq_axis//4),
             nn.ReLU(),
             nn.Dropout(0.3),
             nn.MaxPool1d(kernel_size=3, stride=3),
             
-            nn.Conv1d(freq_axis//4, freq_axis//8, kernel_size=22, stride=1, groups=freq_axis//8),
+            nn.Conv1d(freq_axis//4, freq_axis//8, kernel_size=22, stride=1),
             nn.BatchNorm1d(freq_axis//8),
             nn.ReLU(),
             nn.Dropout(0.3),
@@ -45,19 +45,19 @@ class Puffin(nn.Module):
         # Time block
         self.time = nn.Sequential(
 
-            nn.Conv1d(time_axis, time_axis//2, kernel_size=5, stride=1, groups=time_axis//2),
+            nn.Conv1d(time_axis, time_axis//2, kernel_size=5, stride=1),
             nn.BatchNorm1d(time_axis//2),
             nn.ReLU(),
             nn.Dropout(0.3),
             nn.MaxPool1d(kernel_size=3, stride=3),
             
-            nn.Conv1d(time_axis//2, time_axis//4, kernel_size=5, stride=1, groups=time_axis//4),
+            nn.Conv1d(time_axis//2, time_axis//4, kernel_size=5, stride=1),
             nn.BatchNorm1d(time_axis//4),
             nn.ReLU(),
             nn.Dropout(0.3),
             nn.MaxPool1d(kernel_size=3, stride=3),
             
-            nn.Conv1d(time_axis//4, time_axis//8, kernel_size=26, stride=1, groups=time_axis//8),
+            nn.Conv1d(time_axis//4, time_axis//8, kernel_size=26, stride=1),
             nn.BatchNorm1d(time_axis//8),
             nn.ReLU(),
             nn.Dropout(0.3),
