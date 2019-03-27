@@ -43,19 +43,20 @@ function activateSubmitButton(rec) {
     request.setRequestHeader('Content-Type', rec.type);
 
     request.onerror = function () {
-      console.log('ERROR: AJAX call not returned')
+      console.log('error connecting to API')
       connectionDiv.innerHTML = 'There is a problem with the server. Please try again later'
     }
 
     request.onload = function () {
       console.log(request.status);
-      var data = JSON.parse(this.response);
-      
-      
+      console.log(request.status < 200 || request.status > 400);
+
       if (request.status < 200 || request.status > 400) {
         console.log('error connecting to API')
         connectionDiv.innerHTML = 'The server is not available at the moment'
       }
+
+      var data = JSON.parse(this.response);
 
       recordButton.classList.remove('secondary')
       recordButton.classList.add('primary')
