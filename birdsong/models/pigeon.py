@@ -16,15 +16,17 @@ class Pigeon(nn.Module):
         
         self.layer1 = nn.Sequential(
             nn.Conv2d(1, 16, kernel_size=3, stride=1, padding=1),
-            nn.BatchNorm2d(16),
+            #nn.BatchNorm2d(16),
             nn.ReLU(),
+            nn.Dropout(0.4),
             nn.MaxPool2d(kernel_size=2, stride=2))
 
         
         self.layer2 = nn.Sequential(
             nn.Conv2d(16, 32, kernel_size=3, stride=1, padding=1),
-            nn.BatchNorm2d(32),
+            #nn.BatchNorm2d(32),
             nn.ReLU(),
+            nn.Dropout(0.4),
             nn.MaxPool2d(kernel_size=2, stride=2))
         
         self.fc = nn.Linear(32 * 64 * 54, no_classes)
