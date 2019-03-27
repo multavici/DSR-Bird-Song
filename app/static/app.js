@@ -90,7 +90,7 @@ function activateSubmitButton(rec) {
       responseDiv.appendChild(top5_1);
       responseDiv.appendChild(top5_2);
       responseDiv.appendChild(top5_3);
-    }
+    }.catch(console.log('ERROR'))
     
     request.send(rec);
   }
