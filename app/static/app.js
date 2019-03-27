@@ -49,11 +49,10 @@ function activateSubmitButton(rec) {
 
     request.onload = function () {
       console.log(request.status);
-      console.log(request.status < 200 || request.status > 400);
 
       if (request.status < 200 || request.status > 400) {
         console.log('error connecting to API')
-        connectionDiv.innerHTML = 'The server is not available at the moment'
+        connectionDiv.innerHTML = 'There is a problem with the server. Please try again later'
       }
 
       var data = JSON.parse(this.response);
