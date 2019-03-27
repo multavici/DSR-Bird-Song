@@ -133,6 +133,9 @@ if (navigator.mediaDevices) {
         startTime = currentDate.getTime();
         
         this.innerHTML = 'Stop recording';
+        submitButton.hidden = true;
+        recordButton.classList.remove('secondary')
+        recordButton.classList.add('primary')
         recordingDiv.innerHTML = '';
         recordingDiv.appendChild(recordingAnimation)
         infoDiv.innerHTML = '';
