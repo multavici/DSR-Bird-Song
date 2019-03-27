@@ -2,6 +2,7 @@ const recordingDiv = document.getElementById('recording');
 const infoDiv = document.getElementById('info');
 const actionsDiv = document.getElementById('actions');
 const connectionDiv = document.getElementById('connection');
+const responseDiv = document.getElementById('response');
 
 const recordButton = document.getElementById('record');
 const submitButton = document.getElementById('classify');
@@ -48,10 +49,14 @@ function activateSubmitButton(rec) {
         console.log('error connecting to API')
         connectionDiv.innerHTML = 'The server is not available at the moment'
       }
+
+      recordButton.classList.remove('secondary')
+      recordButton.classList.add('primary')
+      submitButton.hidden = true;
       
       console.log(data);
 
-      // speciesEl.innerHTML = 'Species: ' + data.species;
+      speciesEl.innerHTML = 'Species: ' + data.top5_1[0];
 
       imageEl.src = data.image_url;
       imageEl.alt = data.species;
@@ -82,9 +87,9 @@ function activateSubmitButton(rec) {
         top5_3.appendChild(species)
       }
 
-      document.getElementById('container').appendChild(top5_1);
-      document.getElementById('container').appendChild(top5_2);
-      document.getElementById('container').appendChild(top5_3);
+      responseDiv.appendChild(top5_1);
+      responseDiv.appendChild(top5_2);
+      responseDiv.appendChild(top5_3);
     }
     
     request.send(rec);
@@ -108,6 +113,7 @@ if (navigator.mediaDevices) {
     }
     catch(err) {
       connectionDiv.innerHTML = "Your browser doesn't support MediaRecorder, please use Chrome, Firefox or Opera";
+      recordButton.disabled= true;
     }
 
     // visualize(stream);
@@ -131,9 +137,12 @@ if (navigator.mediaDevices) {
         recordingDiv.appendChild(recordingAnimation)
         infoDiv.innerHTML = '';
         infoDiv.classList.remove('warn');
-        connectionDiv.innerHTML = '';
-        speciesEl.textContent = '';
+        speciesEl.innerHTML = '';
         imageEl.hidden = true;
+        responseDiv.removeChild(top5_1)
+        responseDiv.removeChild(top5_2)
+        responseDiv.removeChild(top5_3)
+
       }
 
     }
@@ -144,7 +153,6 @@ if (navigator.mediaDevices) {
       console.log(e.data);
       chunks.push(e.data);
       infoDiv.innerHTML = Math.floor(chunks.length / 2) + ':' + (chunks.length % 2) * 5 + '0 s';
-      // var tempBlob = new Blob(chunks, { type: 'audio/webm' })
     }
 
     recorder.onstop = function(e) {
