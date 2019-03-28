@@ -63,7 +63,7 @@ function activateSubmitButton(rec) {
       
       console.log(data);
 
-      speciesEl.innerHTML = 'Species: ' + data.top5_1[0];
+      speciesEl.innerHTML = 'We think it is a: ' + data.top5_1[0][0];
 
       imageEl.src = data.image_url;
       imageEl.alt = data.species;

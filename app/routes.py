@@ -101,6 +101,9 @@ def get_top5_prediction(slice_):
     top5 = []
     for code, score in zip(indices[0:5].tolist(), scores[0:5].tolist()):
         top5.append(
-            (label_dict[code], f'{score:.2f}')
+            [format_species(label_dict[code]), f'{score:.2f}']
         )
     return top5
+
+def format_species(raw_name):
+    return raw_name.replace('_', ' ').title()
