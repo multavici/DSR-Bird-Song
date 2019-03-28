@@ -59,4 +59,4 @@ def download_and_slice(input_tuple):
         pass
 
 pool = ThreadPool(4)
-pool.map(download_and_slice, recordings[0:4])
+pool.map(download_and_slice, batch_1)
