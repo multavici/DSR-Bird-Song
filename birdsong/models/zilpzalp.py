@@ -28,6 +28,12 @@ class Zilpzalp(nn.Module):
             nn.ReLU(),
             nn.Dropout(0.3),
             nn.MaxPool2d(kernel_size=3, stride =3),
+            
+            nn.Conv2d(128,256, kernel_size=(3, 5), stride=1),
+            nn.BatchNorm2d(256),
+            nn.ReLU(),
+            nn.Dropout(0.3),
+            nn.MaxPool2d(kernel_size=3, stride =3)
             )
 
         # Time block
@@ -47,38 +53,36 @@ class Zilpzalp(nn.Module):
             nn.ReLU(),
             nn.Dropout(0.3),
             nn.MaxPool2d(kernel_size=3, stride =3),
+            
+            nn.Conv2d(128,256, kernel_size=(6, 2), stride=1),
+            nn.BatchNorm2d(256),
+            nn.ReLU(),
+            nn.Dropout(0.3),
+            nn.MaxPool2d(kernel_size=3, stride =3)
             )
 
         # Summary block
         self.summary = nn.Sequential(
-            nn.Conv2d(128,64, kernel_size=3, stride=1),
-            nn.BatchNorm2d(64),
+            nn.Linear(512, 256),
             nn.ReLU(),
             nn.Dropout(0.3),
-            nn.MaxPool2d(kernel_size=2, stride =2),
 
-            nn.Conv2d(64,no_classes, kernel_size=1, stride=1),
+            nn.Linear(256, no_classes),
+            nn.ReLU(),
+            
             )
 
     def forward(self, x):
-        batch_size = x.shape[0]
-        freq = self.frequency(x).view(batch_size, 128, -1, 1)
-        time = self.time(x).view(batch_size, 128, 1, -1)
-        
-        comb = torch.matmul(freq, time)
-        summ = self.summary(comb)
-        out = F.max_pool2d(summ, kernel_size=summ.size()[2:]).view(batch_size, summ.size()[1])
-
+        freq = self.frequency(x)
+        time = self.time(x)
+        comb = torch.cat((freq, time), 1).squeeze()
+        out = self.summary(comb)
         return out
 
 def test():
-    image = torch.randn(64, 1, 256, 216)
-    cnn = Zilpzalp(256, 216, 10)
-    output = cnn(image)
-    print("input shape:")
-    print(image.shape)
-    print("output shape:")
-    print(output.shape)
+    cnn = Zilpzalp (256, 216, 100)
+    summary(cnn, (1, 256, 216))
 
-if __name__ == '__main__':
+if __name__=="__main__":
+    from torchsummary import summary
     test()
