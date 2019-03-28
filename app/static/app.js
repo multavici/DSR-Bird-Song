@@ -140,7 +140,6 @@ if (navigator.mediaDevices) {
         currentDate = new Date();
         startTime = currentDate.getTime();
         
-        this.innerHTML = 'Stop recording';
         submitButton.hidden = true;
         recordButton.classList.remove('secondary')
         recordButton.classList.add('primary')
@@ -156,6 +155,7 @@ if (navigator.mediaDevices) {
           responseDiv.removeChild(top5_2)
           responseDiv.removeChild(top5_3)
         }
+        this.innerHTML = 'Stop recording';
       }
     }
 
