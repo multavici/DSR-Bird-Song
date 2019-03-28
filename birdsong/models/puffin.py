@@ -19,97 +19,75 @@ class Puffin(nn.Module):
         self.freq_axis = freq_axis
         self.__name__='Puffin'
 
-        # Frequency block
-        self.frequency = nn.Sequential(
-            # One filter, one frequency band over time
-            nn.Conv1d(freq_axis, freq_axis, kernel_size=5, stride=1),#, groups=freq_axis),
-            nn.BatchNorm1d(freq_axis),
+
+        # Harmony block
+        self.harmony = nn.Sequential(
+            nn.Conv2d(1, 16, kernel_size=(5,3), stride=1),
+            nn.BatchNorm2d(16),
             nn.ReLU(),
             nn.Dropout(0.3),
-            nn.MaxPool1d(kernel_size=3, stride=3),
+            nn.MaxPool2d(kernel_size=(2,3), stride=(2,3)),
             
-            # One filter, two frequency bands over time
-            nn.Conv1d(freq_axis, freq_axis//2, kernel_size=5, stride=1),#, groups=freq_axis//2),
-            nn.BatchNorm1d(freq_axis//2),
+            nn.Conv2d(16, 32, kernel_size=(5,3), stride=1),
+            nn.BatchNorm2d(32),
             nn.ReLU(),
             nn.Dropout(0.3),
-            nn.MaxPool1d(kernel_size=3, stride=3),
+            nn.MaxPool2d(kernel_size=(2,3), stride=(2,3)),
             
-            # One filter, two frequency bands over time
-            nn.Conv1d(freq_axis//2, freq_axis//4, kernel_size=5, stride=1),#, groups=freq_axis//4),
-            nn.BatchNorm1d(freq_axis//4),
+            nn.Conv2d(32, 64, kernel_size=(5,3), stride=1),
+            nn.BatchNorm2d(64),
             nn.ReLU(),
             nn.Dropout(0.3),
-            nn.MaxPool1d(kernel_size=3, stride=3),
+            nn.MaxPool2d(kernel_size=(1,3), stride=(1,3)),
             
-            nn.Conv1d(freq_axis//4, freq_axis//8, kernel_size=6, stride=1),#, groups=freq_axis//8),
-            nn.BatchNorm1d(freq_axis//8),
+            nn.Conv2d(64, 128, kernel_size=(5,3), stride=1),
+            nn.BatchNorm2d(128),
             nn.ReLU(),
             nn.Dropout(0.3),
+            nn.MaxPool2d(kernel_size=(1,7), stride=(1,7)),
             )
         
-        # Time block
-        self.time = nn.Sequential(
-            nn.Conv1d(time_axis, time_axis, kernel_size=5, stride=1),#, groups=time_axis),
-            nn.BatchNorm1d(time_axis),
+        # Next three run in parallel, picking up on harmonic features with different dilations
+        self.summary1 = nn.Sequential(
+            nn.Conv2d(128, 64, kernel_size=(3,1), stride=1),
             nn.ReLU(),
-            nn.Dropout(0.3),
-            nn.MaxPool1d(kernel_size=3, stride=3),
-            
-            nn.Conv1d(time_axis, time_axis//2, kernel_size=5, stride=1),#, groups=time_axis//2),
-            nn.BatchNorm1d(time_axis//2),
-            nn.ReLU(),
-            nn.Dropout(0.3),
-            nn.MaxPool1d(kernel_size=3, stride=3),
-            
-            nn.Conv1d(time_axis//2, time_axis//4, kernel_size=5, stride=1),#, groups=time_axis//4),
-            nn.BatchNorm1d(time_axis//4),
-            nn.ReLU(),
-            nn.Dropout(0.3),
-            nn.MaxPool1d(kernel_size=3, stride=3),
-            
-            nn.Conv1d(time_axis//4, time_axis//8, kernel_size=7, stride=1),#, groups=time_axis//8),
-            nn.BatchNorm1d(time_axis//8),
-            nn.ReLU(),
-            nn.Dropout(0.3),
+            nn.MaxPool2d(kernel_size=(3,1), stride=(3,1)),
             )
-
-        # Summary block
-        self.summary = nn.Sequential(
-            nn.Linear(59, no_classes),
+        
+        self.summary2 = nn.Sequential(
+            nn.Conv2d(128, 64, kernel_size=(3,1), stride=1, dilation=2, padding=(1,0)),
             nn.ReLU(),
+            nn.MaxPool2d(kernel_size=(3,1), stride=(3,1)),
             )
+        
+        self.summary3 = nn.Sequential(
+            nn.Conv2d(128, 64, kernel_size=(3,1), stride=1, dilation=3, padding=(2,0)),
+            nn.ReLU(),
+            nn.MaxPool2d(kernel_size=(3,1), stride=(3,1)),
+            )
+        
+        self.fc = nn.Sequential(
+            nn.Linear(64 * 51, no_classes),
+            nn.ReLU()
+            )
+        
+        
+        
 
-    def forward(self, x):        
-        #reshape to have frequency dim as channels:
-        freq_first = x.permute(0, 2, 1, 3).squeeze()
-        #print(freq_first.shape)
-        freq_out = self.frequency(freq_first)
-        #print(freq_out.shape)
-        
-        #reshape to have time dim as channels:
-        time_first = x.permute(0, 3, 1, 2).squeeze()
-        #print(time_first.shape)
-        time_out = self.time(time_first)
-        #print(time_out.shape)
-        
-        # Outer product:
-        comb = torch.cat((freq_out, time_out), dim=1).squeeze()
-        #print(comb.shape)
-        
-        out = self.summary(comb)
-        #print(out.shape)
-
+    def forward(self, x):         
+        harmony_out = self.harmony(x)        
+        summ1 = self.summary1(harmony_out)        
+        summ2 = self.summary2(harmony_out)        
+        summ3 = self.summary3(harmony_out)        
+        comb = torch.cat((summ1,summ2,summ3), 2)
+        comb = comb.view(comb.size(0), -1)
+        out = self.fc(comb)        
         return out
 
 def test():
-    image = torch.randn(64, 1, 256, 216)
-    cnn = Puffin(256, 216, 10)
-    output = cnn(image)
-    print("input shape:")
-    print(image.shape)
-    print("output shape:")
-    print(output.shape)
+    cnn = Puffin(256, 216, 100)
+    summary(cnn, (1, 256, 216))
 
-if __name__ == '__main__':
+if __name__=="__main__":
+    from torchsummary import summary
     test()

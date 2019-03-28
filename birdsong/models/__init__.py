@@ -8,3 +8,5 @@ from .eagle import Eagle
 from .owl import Owl
 from .puffin import Puffin
 from .pigeon import Pigeon
+from .robin import Robin
+from .goose import Goose
