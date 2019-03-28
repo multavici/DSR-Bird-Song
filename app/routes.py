@@ -11,18 +11,20 @@ dir_path = os.path.dirname(os.path.realpath(__file__))
 parent_dir = os.path.dirname(dir_path)
 
 sys.path.append(os.path.join(parent_dir, 'birdsong'))
+sys.path.append('snap/bin')
 from models import Zilpzalp
+from models import Hawk
 
 app = Flask(__name__)
 
 # initiate the model
-model = Zilpzalp(
+model = Hawk(
     time_axis=216,
     freq_axis=256,
     no_classes=100)
 
 # load the state of  model from checkpoint
-checkpoint_path = 'model/checkpoint_Zilpzalp_26-03'
+checkpoint_path = 'model/checkpoint_Hawk_27-03'
 checkpoint = torch.load(checkpoint_path, map_location='cpu')
 
 state = checkpoint['state_dict']
