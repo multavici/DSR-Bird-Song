@@ -20,46 +20,63 @@ class LstmModel(nn.Module):
         self.time_axis = time_axis
         self.no_classes = no_classes
         
-        self.input_dim = 42 #input_dim
-        self.seq_length = 36
+        self.input_features = 64 #input_dim
+        self.seq_length = 52 
         
         # Hyper parameters
         # Hidden dimensions and number of hidden layers
-        self.hidden_dim = 100 #500
-        self.layer_dim = 2 #7
-
-
-        self.layer1 = nn.Sequential(
-            nn.MaxPool2d(kernel_size=(6,6), stride =(6,6))
-           )
-
-             
+        self.hidden_dim = 200 #500
+        self.layer_dim = 3 #7
+        
+        self.harmony = nn.Sequential(
+            nn.Conv2d(1, 16, kernel_size=(5,3), stride=1),
+            #nn.BatchNorm2d(16),
+            nn.ReLU(),
+            nn.Dropout(0.3),
+            nn.MaxPool2d(kernel_size=(3,2), stride=(3,2)),
+            
+            nn.Conv2d(16, 32, kernel_size=(5,3), stride=1),
+            #nn.BatchNorm2d(32),
+            nn.ReLU(),
+            nn.Dropout(0.3),
+            nn.MaxPool2d(kernel_size=(3,2), stride=(3,2)),
+            
+            nn.Conv2d(32, 64, kernel_size=(3,1), stride=1),
+            #nn.BatchNorm2d(64),
+            nn.ReLU(),
+            nn.Dropout(0.3),
+            nn.MaxPool2d(kernel_size=(3,1), stride=(3,1)),
+            
+            nn.Conv2d(64, 64, kernel_size=(3,1), stride=1),
+            #nn.BatchNorm2d(64),
+            nn.ReLU(),
+            nn.Dropout(0.3),
+            nn.MaxPool2d(kernel_size=(3,1), stride=(3,1)),
+            
+            nn.Conv2d(64, 64, kernel_size=(2,1), stride=1),
+            #nn.BatchNorm2d(64),
+            nn.ReLU(),
+            )
+        
         # batch_first=True shapes Tensors : batch_dim, seq_dim, feature_dim)
-        self.lstm = nn.LSTM(self.input_dim, self.hidden_dim, self.layer_dim, dropout=0.5, batch_first=True)
-
+        self.lstm = nn.LSTM(self.input_features, self.hidden_dim, self.layer_dim, dropout=0.5, batch_first=True)
+        
+        
         self.fc = nn.Linear(self.hidden_dim, self.no_classes)
         
-        
-
     def forward(self, x):
-        #reshape 
-        out =  self.layer1(x)         
-        out = out.view(-1, self.seq_length, self.input_dim).type(torch.float)
+        out =  self.harmony(x).squeeze(2).permute(0,2,1)   
+        #Out shape: batch_dim, 52 time_steps, 64 timbral_features
 
-        # Initialize hidden state and cell state with zeros
-        h0 = torch.zeros(self.layer_dim, out.size(0), self.hidden_dim).requires_grad_().to(device)
-        c0 = torch.zeros(self.layer_dim, out.size(0), self.hidden_dim).requires_grad_().to(device)
-
-        # 25 time steps
-        out, (hn, cn) = self.lstm(out, (h0.detach(), c0.detach()))
-
-        out = self.fc(out[:, -1, :])
+        output_seq, hidden_state = self.lstm(out)
+        last_output = output_seq[:, -1]
+        out = self.fc(last_output)
         
         return out
 
 def test():
-    image = torch.randn(1, 1, 256, 216)
-    lstm = LstmModel(256, 216, 10)
+    image = torch.randn(64, 1, 256, 216)
+    lstm = LstmModel(256, 216, 100)
     output = lstm(image)
     
     print("input shape:")
