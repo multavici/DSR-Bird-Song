@@ -54,6 +54,7 @@ def download_and_slice(input_tuple):
         pickle_path = os.path.join(PICKLES_DIR, str(rec_id) + '_0.pkl')
         with open(pickle_path, 'wb+') as f:
             pickle.dump(spect_slice, f)
+        os.remove(file_path)
     except urllib.error.HTTPError:
         print(f'file {rec_id} not found, HTTPError')
         pass
