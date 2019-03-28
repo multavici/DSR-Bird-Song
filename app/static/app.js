@@ -63,28 +63,28 @@ function activateSubmitButton(rec) {
       
       console.log(data);
 
-      speciesEl.innerHTML = 'We think it is a: ' + data.top5_1[0][0];
+      speciesEl.innerHTML = 'We think it is a ... ' + data.top5_3[0][0];
 
       imageEl.src = data.image_url;
       imageEl.alt = data.species;
       imageEl.hidden = false;
 
 
-      top5_1 = document.createElement('ul')
-      var i
-      for (i = 0; i < 5; i++) {
-        species = document.createElement('li')
-        species.innerHTML = data.top5_1[i][0]
-        top5_1.appendChild(species)
-      }
+      // top5_1 = document.createElement('ul')
+      // var i
+      // for (i = 0; i < 5; i++) {
+      //   species = document.createElement('li')
+      //   species.innerHTML = data.top5_1[i][0]
+      //   top5_1.appendChild(species)
+      // }
 
-      top5_2 = document.createElement('ul')
-      var i
-      for (i = 0; i < 5; i++) {
-        species = document.createElement('li')
-        species.innerHTML = data.top5_2[i][0]
-        top5_2.appendChild(species)
-      }
+      // top5_2 = document.createElement('ul')
+      // var i
+      // for (i = 0; i < 5; i++) {
+      //   species = document.createElement('li')
+      //   species.innerHTML = data.top5_2[i][0]
+      //   top5_2.appendChild(species)
+      // }
 
       top5_3 = document.createElement('ul')
       var i
@@ -94,8 +94,11 @@ function activateSubmitButton(rec) {
         top5_3.appendChild(species)
       }
 
-      responseDiv.appendChild(top5_1);
-      responseDiv.appendChild(top5_2);
+      // responseDiv.appendChild(top5_1);
+      // responseDiv.appendChild(top5_2);
+      title = document.createElement('p')
+      title.innerHTML = 'Top 5 predictions:'
+      responseDiv.appendChild(title)
       responseDiv.appendChild(top5_3);
     }
     
@@ -151,9 +154,13 @@ if (navigator.mediaDevices) {
         speciesEl.innerHTML = '';
         imageEl.hidden = true;
         if (this.innerHTML === 'Try again') {
-          responseDiv.removeChild(top5_1)
-          responseDiv.removeChild(top5_2)
-          responseDiv.removeChild(top5_3)
+          // responseDiv.removeChild(top5_1)
+          // responseDiv.removeChild(top5_2)
+          try {
+            responseDiv.removeChild(title)
+            responseDiv.removeChild(top5_3)
+          }
+          catch(err) {}
         }
         this.innerHTML = 'Stop recording';
       }
