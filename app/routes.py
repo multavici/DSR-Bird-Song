@@ -74,6 +74,7 @@ def classify():
     for i in range(len(colsum) - 216):
         density = np.sum(colsum[i:i + 216])
         if density > maxdensity:
+            maxdensity = density
             i_start = i
     slice_maxwindow = spect[:, i_start:i_start + 216].reshape((1, 1, 256, 216))
 
