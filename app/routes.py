@@ -12,6 +12,7 @@ parent_dir = os.path.dirname(dir_path)
 
 sys.path.append(os.path.join(parent_dir, 'birdsong'))
 sys.path.append('/snap/bin')
+sys.path.append('/home/ubuntu/snap')
 from models import Zilpzalp
 from models import Hawk
 
@@ -32,7 +33,6 @@ label_dict = {}
 reader = csv.DictReader(open('model/top100_img_codes.csv'), fieldnames=('id', 'id2', 'species'))
 for row in reader:
     label_dict[int(row['id'])] = row['species']
-print(label_dict)
 
 model.load_state_dict(state)
 model.eval()
