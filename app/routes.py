@@ -13,6 +13,7 @@ parent_dir = os.path.dirname(dir_path)
 sys.path.append(os.path.join(parent_dir, 'birdsong'))
 sys.path.append('/snap/bin')
 sys.path.append('/home/ubuntu/snap')
+print(sys.path)
 from models import Zilpzalp
 from models import Hawk
 
