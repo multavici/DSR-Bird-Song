@@ -56,6 +56,10 @@ button {
     transition: all .15s ease;
 }
 
+button:hover {
+    opacity: 0.8;
+}
+
 
 button.primary {
     border: none;
@@ -69,4 +73,18 @@ button.secondary {
     border-width: 2px;
     color: black; */
     background-color: white;
+}
+
+ul {
+    max-width: 200px;
+    list-style-type: square;
+    align-self: center;
+    margin-left: auto;
+    margin-right: auto;
+    list-style-position: inside;
+    padding-left: 0px;
+}
+
+li {
+    text-align: left;
 }

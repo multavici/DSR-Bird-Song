@@ -74,7 +74,7 @@ function activateSubmitButton(rec) {
       var i
       for (i = 0; i < 5; i++) {
         species = document.createElement('li')
-        species.innerHTML = data.top5_1[i]
+        species.innerHTML = data.top5_1[i][0]
         top5_1.appendChild(species)
       }
 
@@ -82,7 +82,7 @@ function activateSubmitButton(rec) {
       var i
       for (i = 0; i < 5; i++) {
         species = document.createElement('li')
-        species.innerHTML = data.top5_2[i]
+        species.innerHTML = data.top5_2[i][0]
         top5_2.appendChild(species)
       }
 
@@ -90,7 +90,7 @@ function activateSubmitButton(rec) {
       var i
       for (i = 0; i < 5; i++) {
         species = document.createElement('li')
-        species.innerHTML = data.top5_3[i]
+        species.innerHTML = data.top5_3[i][0]
         top5_3.appendChild(species)
       }
 
