@@ -20,8 +20,8 @@ class LstmModel(nn.Module):
         self.time_axis = time_axis
         self.no_classes = no_classes
         
-        self.input_features = 64 #input_dim
-        self.seq_length = 52 
+        self.input_features = 256 #input_dim
+        self.seq_length = 216 
         
         # Hyper parameters
         # Hidden dimensions and number of hidden layers
@@ -65,10 +65,11 @@ class LstmModel(nn.Module):
         self.fc = nn.Linear(self.hidden_dim, self.no_classes)
         
     def forward(self, x):
-        out =  self.harmony(x).squeeze(2).permute(0,2,1)   
+        #out =  self.harmony(x).squeeze(2).permute(0,2,1)   
         #Out shape: batch_dim, 52 time_steps, 64 timbral_features
-
-        output_seq, hidden_state = self.lstm(out)
+        x = x.squeeze(1).permute(0,2,1) 
+        print(x.shape)
+        output_seq, hidden_state = self.lstm(x)
         last_output = output_seq[:, -1]
         out = self.fc(last_output)
         
