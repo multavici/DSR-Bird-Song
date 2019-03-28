@@ -11,7 +11,7 @@ dir_path = os.path.dirname(os.path.realpath(__file__))
 parent_dir = os.path.dirname(dir_path)
 
 sys.path.append(os.path.join(parent_dir, 'birdsong'))
-sys.path.append('snap/bin')
+sys.path.append('/snap/bin')
 from models import Zilpzalp
 from models import Hawk
 
