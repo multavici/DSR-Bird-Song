@@ -30,31 +30,31 @@ class LstmModel(nn.Module):
         
         self.harmony = nn.Sequential(
             nn.Conv2d(1, 16, kernel_size=(5,3), stride=1),
-            nn.BatchNorm2d(16),
+            #nn.BatchNorm2d(16),
             nn.ReLU(),
             nn.Dropout(0.3),
             nn.MaxPool2d(kernel_size=(3,2), stride=(3,2)),
             
             nn.Conv2d(16, 32, kernel_size=(5,3), stride=1),
-            nn.BatchNorm2d(32),
+            #nn.BatchNorm2d(32),
             nn.ReLU(),
             nn.Dropout(0.3),
             nn.MaxPool2d(kernel_size=(3,2), stride=(3,2)),
             
             nn.Conv2d(32, 64, kernel_size=(3,1), stride=1),
-            nn.BatchNorm2d(64),
+            #nn.BatchNorm2d(64),
             nn.ReLU(),
             nn.Dropout(0.3),
             nn.MaxPool2d(kernel_size=(3,1), stride=(3,1)),
             
             nn.Conv2d(64, 64, kernel_size=(3,1), stride=1),
-            nn.BatchNorm2d(64),
+            #nn.BatchNorm2d(64),
             nn.ReLU(),
             nn.Dropout(0.3),
             nn.MaxPool2d(kernel_size=(3,1), stride=(3,1)),
             
             nn.Conv2d(64, 64, kernel_size=(2,1), stride=1),
-            nn.BatchNorm2d(64),
+            #nn.BatchNorm2d(64),
             nn.ReLU(),
             )
         
