@@ -37,7 +37,7 @@ div#connection {
 }
 
 img#bird_image {
-    max-width: 200px;
+    max-width: 300px;
     max-height: 200px;
 }
 
@@ -76,7 +76,7 @@ button.secondary {
 }
 
 ul {
-    max-width: 200px;
+    max-width: 300px;
     list-style-type: square;
     align-self: center;
     margin-left: auto;
@@ -90,5 +90,10 @@ li {
 }
 
 div#footer {
+    font-size: 10px;
+}
+
+p#img_source {
+    margin-top: 5px;
     font-size: 10px;
 }
