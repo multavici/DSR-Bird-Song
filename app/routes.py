@@ -33,7 +33,10 @@ state = checkpoint['state_dict']
 label_dict = {}
 reader = csv.DictReader(open('model/top100_codes_translated.csv'))
 for row in reader:
-    label_dict[int(row['id1'])] = row['english']
+    label_dict[int(row['id1'])] = {
+        'name': row['english'],
+        'img': row['img'],
+    }
 
 model.load_state_dict(state)
 model.eval()
@@ -90,8 +93,7 @@ def classify():
     return jsonify({
         # 'top5_1': top5_maxsignal,
         # 'top5_2': top5_first5s,
-        'top5_3': top5_maxwindow,
-        'image_url': 'https://upload.wikimedia.org/wikipedia/commons/3/3f/Plegadis_chihi_at_Aransas.jpg',
+        'predictions': top5_maxwindow,
     })
 
 def get_top5_prediction(slice_):
@@ -102,6 +104,6 @@ def get_top5_prediction(slice_):
     top5 = []
     for code, score in zip(indices[0:5].tolist(), scores[0:5].tolist()):
         top5.append(
-            [label_dict[code], f'{score:.2f}']
+            [label_dict[code]['name'], label_dict[code]['img'], f'{score:.2f}']
         )
     return top5
