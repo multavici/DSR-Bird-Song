@@ -63,10 +63,10 @@ function activateSubmitButton(rec) {
       
       console.log(data);
 
-      speciesEl.innerHTML = 'We think it is a ... ' + data.top5_3[0][0];
+      speciesEl.innerHTML = 'We think it is the ... ' + data.predictions[0][0];
 
-      imageEl.src = data.image_url;
-      imageEl.alt = data.species;
+      imageEl.src = data.predictions[0][1];
+      imageEl.alt = data.predictions[0][0];
       imageEl.hidden = false;
 
 
@@ -90,7 +90,7 @@ function activateSubmitButton(rec) {
       var i
       for (i = 1; i < 5; i++) {
         species = document.createElement('li')
-        species.innerHTML = data.top5_3[i][0]
+        species.innerHTML = data.predictions[i][0]
         top5_3.appendChild(species)
       }
 
