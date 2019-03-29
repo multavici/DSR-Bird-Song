@@ -60,13 +60,13 @@ def classify():
     # 1: We take the columns with most signal
 
     colsum = np.sum(spect, axis=0)
-    top_indices = colsum.argsort()[-216:][::-1]
-    top_indices_sorted = np.sort(top_indices)
-    slice_maxsignal = spect[:, top_indices_sorted].reshape((1, 1, 256, 216))
+    # top_indices = colsum.argsort()[-216:][::-1]
+    # top_indices_sorted = np.sort(top_indices)
+    # slice_maxsignal = spect[:, top_indices_sorted].reshape((1, 1, 256, 216))
 
     # 2: We take the first 5s seconds of signal
 
-    slice_start = spect[:, 0:216].reshape((1, 1, 256, 216))
+    # slice_start = spect[:, 0:216].reshape((1, 1, 256, 216))
 
     # 3 We take a sliding window with the most signal
 
@@ -74,21 +74,22 @@ def classify():
     for i in range(len(colsum) - 216):
         density = np.sum(colsum[i:i + 216])
         if density > maxdensity:
+            maxdensity = density
             i_start = i
     slice_maxwindow = spect[:, i_start:i_start + 216].reshape((1, 1, 256, 216))
 
     # make prediction
 
-    top5_maxsignal = get_top5_prediction(slice_maxsignal)
+    # top5_maxsignal = get_top5_prediction(slice_maxsignal)
 
-    top5_first5s = get_top5_prediction(slice_start)
+    # top5_first5s = get_top5_prediction(slice_start)
 
     top5_maxwindow = get_top5_prediction(slice_maxwindow)
 
     # pred = "Plegadis falcinellus"
     return jsonify({
-        'top5_1': top5_maxsignal,
-        'top5_2': top5_first5s,
+        # 'top5_1': top5_maxsignal,
+        # 'top5_2': top5_first5s,
         'top5_3': top5_maxwindow,
         'image_url': 'https://upload.wikimedia.org/wikipedia/commons/3/3f/Plegadis_chihi_at_Aransas.jpg',
     })
@@ -101,6 +102,9 @@ def get_top5_prediction(slice_):
     top5 = []
     for code, score in zip(indices[0:5].tolist(), scores[0:5].tolist()):
         top5.append(
-            (label_dict[code], f'{score:.2f}')
+            [format_species(label_dict[code]), f'{score:.2f}']
         )
     return top5
+
+def format_species(raw_name):
+    return raw_name.replace('_', ' ').title()
