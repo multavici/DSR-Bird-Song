@@ -31,9 +31,9 @@ checkpoint = torch.load(checkpoint_path, map_location='cpu')
 
 state = checkpoint['state_dict']
 label_dict = {}
-reader = csv.DictReader(open('model/top100_img_codes.csv'), fieldnames=('id', 'id2', 'species'))
+reader = csv.DictReader(open('model/top100_codes_translated.csv'))
 for row in reader:
-    label_dict[int(row['id'])] = row['species']
+    label_dict[int(row['id1'])] = row['english']
 
 model.load_state_dict(state)
 model.eval()
@@ -102,9 +102,6 @@ def get_top5_prediction(slice_):
     top5 = []
     for code, score in zip(indices[0:5].tolist(), scores[0:5].tolist()):
         top5.append(
-            [format_species(label_dict[code]), f'{score:.2f}']
+            [label_dict[code], f'{score:.2f}']
         )
     return top5
-
-def format_species(raw_name):
-    return raw_name.replace('_', ' ').title()

@@ -1,0 +1,101 @@
+id1,species,english
+0,accipiter_gentilis,northern goshawk
+1,acrocephalus_arundinaceus,great reed warbler
+2,acrocephalus_dumetorum,blyth's reed warbler
+3,acrocephalus_palustris,marsh warbler
+4,acrocephalus_schoenobaenus,sedge warbler
+5,acrocephalus_scirpaceus,eurasian reed warbler
+6,aegithalos_caudatus,long-tailed tit
+7,alauda_arvensis,eurasian skylark
+8,anser_anser,greylag goose
+9,anthus_trivialis,tree pipit
+10,asio_otus,long-eared owl
+11,athene_noctua,little owl
+12,bubo_bubo,eurasian eagle-owl
+13,buteo_buteo,common buzzard
+14,caprimulgus_europaeus,european nightjar
+15,carduelis_carduelis,european goldfinch
+16,carpodacus_erythrinus,common rosefinch
+17,certhia_brachydactyla,short-toed treecreeper
+18,certhia_familiaris,eurasian treecreeper
+19,chroicocephalus_ridibundus,black-headed gull
+20,coccothraustes_coccothraustes,hawfinch
+21,corvus_corax,northern raven
+22,corvus_cornix,hooded crow
+23,corvus_corone,carrion crow
+24,corvus_frugilegus,rook
+25,coturnix_coturnix,common quail
+26,crex_crex,corn crake
+27,cuculus_canorus,common cuckoo
+28,delichon_urbicum,common house martin
+29,dumetella_carolinensis,grey catbird
+30,emberiza_calandra,corn bunting
+31,emberiza_cirlus,cirl bunting
+32,emberiza_citrinella,yellowhammer
+33,emberiza_hortulana,ortolan bunting
+34,emberiza_schoeniclus,common reed bunting
+35,erithacus_rubecula,european robin
+36,falco_naumanni,lesser kestrel
+37,ficedula_albicollis,collared flycatcher
+38,ficedula_hypoleuca,european pied flycatcher
+39,ficedula_parva,red-breasted flycatcher
+40,fringilla_coelebs,common chaffinch
+41,garrulus_glandarius,eurasian jay
+42,grus_grus,common crane
+43,hippolais_icterina,icterine warbler
+44,hippolais_polyglotta,melodious warbler
+45,hirundo_rustica,barn swallow
+46,jynx_torquilla,eurasian wryneck
+47,larus_canus,mew gull
+48,locustella_fluviatilis,river warbler
+49,locustella_naevia,common grasshopper warbler
+50,loxia_curvirostra,red crossbill
+51,lullula_arborea,woodlark
+52,luscinia_luscinia,thrush nightingale
+53,luscinia_megarhynchos,common nightingale
+54,luscinia_svecica,bluethroat
+55,merops_apiaster,european bee-eater
+56,motacilla_alba,white wagtail
+57,motacilla_flava,western yellow wagtail
+58,muscicapa_striata,spotted flycatcher
+59,numenius_arquata,eurasian curlew
+60,oriolus_oriolus,eurasian golden oriole
+61,parus_major,great tit
+62,passer_domesticus,house sparrow
+63,passer_montanus,eurasian tree sparrow
+64,phoenicurus_ochruros,black redstart
+65,phoenicurus_phoenicurus,common redstart
+66,phylloscopus_bonelli,western bonelli's warbler
+67,phylloscopus_collybita,common chiffchaff
+68,phylloscopus_sibilatrix,wood warbler
+69,phylloscopus_trochiloides,greenish warbler
+70,phylloscopus_trochilus,willow warbler
+71,pica_pica,eurasian magpie
+72,picoides_tridactylus,eurasian three-toed woodpecker
+73,prunella_modularis,dunnock
+74,pyrrhula_pyrrhula,eurasian bullfinch
+75,rallus_aquaticus,water rail
+76,regulus_ignicapilla,common firecrest
+77,regulus_regulus,goldcrest
+78,rissa_tridactyla,black-legged kittiwake
+79,saxicola_rubetra,whinchat
+80,serinus_serinus,european serin
+81,sitta_europaea,eurasian nuthatch
+82,streptopelia_decaocto,eurasian collared dove
+83,strix_aluco,tawny owl
+84,sturnus_vulgaris,common starling
+85,sylvia_atricapilla,eurasian blackcap
+86,sylvia_borin,garden warbler
+87,sylvia_communis,common whitethroat
+88,sylvia_curruca,lesser whitethroat
+89,sylvia_melanocephala,sardinian warbler
+90,tringa_totanus,common redshank
+91,troglodytes_troglodytes,eurasian wren
+92,turdus_iliacus,redwing
+93,turdus_merula,common blackbird
+94,turdus_migratorius,american robin
+95,turdus_philomelos,song thrush
+96,turdus_pilaris,fieldfare
+97,turdus_viscivorus,mistle thrush
+98,vanellus_vanellus,northern lapwing
+99,vireo_olivaceus,red-eyed vireo
