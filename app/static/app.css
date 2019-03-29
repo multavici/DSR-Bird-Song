@@ -88,3 +88,7 @@ ul {
 li {
     text-align: left;
 }
+
+div#footer {
+    font-size: 10px;
+}
