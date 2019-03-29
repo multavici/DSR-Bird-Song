@@ -35,7 +35,9 @@ reader = csv.DictReader(open('model/top100_codes_translated.csv'))
 for row in reader:
     label_dict[int(row['id1'])] = {
         'name': row['english'],
-        'img': row['img'],
+        'img_source': row['img_source'],
+        'img_link': row['img_link'],
+        'wiki_link': row['wiki_link'],
     }
 
 model.load_state_dict(state)
@@ -103,7 +105,11 @@ def get_top5_prediction(slice_):
 
     top5 = []
     for code, score in zip(indices[0:5].tolist(), scores[0:5].tolist()):
-        top5.append(
-            [label_dict[code]['name'], label_dict[code]['img'], f'{score:.2f}']
+        top5.append([
+            label_dict[code]['name'],
+            label_dict[code]['img_source'],
+            label_dict[code]['img_link'],
+            label_dict[code]['wiki_link'],
+            f'{score:.2f}'],
         )
     return top5

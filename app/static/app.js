@@ -8,6 +8,9 @@ const recordButton = document.getElementById('record');
 const submitButton = document.getElementById('classify');
 
 const speciesEl = document.getElementById('species');
+const wikiLinkEl = document.getElementById('wiki_link');
+const imgSourceEl = document.getElementById('img_source');
+const imageLinkEl = document.getElementById('bird_link');
 const imageEl = document.getElementById('bird_image');
 const spect = document.getElementById('spectrogram');
 
@@ -63,28 +66,14 @@ function activateSubmitButton(rec) {
       
       console.log(data);
 
-      speciesEl.innerHTML = 'We think it is the ... ' + data.predictions[0][0];
+      speciesEl.innerHTML = 'Sounds like ... ' + data.predictions[0][0];
 
       imageEl.src = data.predictions[0][1];
       imageEl.alt = data.predictions[0][0];
+      wikiLinkEl.href = data.predictions[0][3];
+      imageLinkEl.href = data.predictions[0][2];
       imageEl.hidden = false;
-
-
-      // top5_1 = document.createElement('ul')
-      // var i
-      // for (i = 0; i < 5; i++) {
-      //   species = document.createElement('li')
-      //   species.innerHTML = data.top5_1[i][0]
-      //   top5_1.appendChild(species)
-      // }
-
-      // top5_2 = document.createElement('ul')
-      // var i
-      // for (i = 0; i < 5; i++) {
-      //   species = document.createElement('li')
-      //   species.innerHTML = data.top5_2[i][0]
-      //   top5_2.appendChild(species)
-      // }
+      imgSourceEl.hidden = false;
 
       top5_3 = document.createElement('ul')
       var i
@@ -94,16 +83,15 @@ function activateSubmitButton(rec) {
         top5_3.appendChild(species)
       }
 
-      // responseDiv.appendChild(top5_1);
-      // responseDiv.appendChild(top5_2);
       title = document.createElement('p')
-      title.innerHTML = 'It could also be'
+      title.innerHTML = 'But it could also be'
       responseDiv.appendChild(title)
       responseDiv.appendChild(top5_3);
     }
     
     request.send(rec);
     console.log(request.status);
+    speciesEl.innerHTML = 'Sounds like ... '
   }
 }
 
@@ -153,6 +141,8 @@ if (navigator.mediaDevices) {
         connectionDiv.innerHTML = ''
         speciesEl.innerHTML = '';
         imageEl.hidden = true;
+        imgSourceEl.hidden = true;
+
         if (this.innerHTML === 'Try again') {
           // responseDiv.removeChild(top5_1)
           // responseDiv.removeChild(top5_2)
