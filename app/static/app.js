@@ -88,7 +88,7 @@ function activateSubmitButton(rec) {
 
       top5_3 = document.createElement('ul')
       var i
-      for (i = 0; i < 5; i++) {
+      for (i = 1; i < 5; i++) {
         species = document.createElement('li')
         species.innerHTML = data.top5_3[i][0]
         top5_3.appendChild(species)
@@ -97,7 +97,7 @@ function activateSubmitButton(rec) {
       // responseDiv.appendChild(top5_1);
       // responseDiv.appendChild(top5_2);
       title = document.createElement('p')
-      title.innerHTML = 'Top 5 predictions:'
+      title.innerHTML = 'It could also be'
       responseDiv.appendChild(title)
       responseDiv.appendChild(top5_3);
     }
