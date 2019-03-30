@@ -21,7 +21,7 @@ from models import LstmModel
 app = Flask(__name__)
 
 # initiate the model
-model = Lstm(
+model = LstmModel(
     time_axis=216,
     freq_axis=256,
     no_classes=100)
