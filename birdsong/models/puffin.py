@@ -10,7 +10,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-class LstmModel(nn.Module):
+class Puffin(nn.Module):
 
     def __init__(self, freq_axis, time_axis, no_classes):
         super(LstmModel, self).__init__()
