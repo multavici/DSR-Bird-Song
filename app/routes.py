@@ -1,4 +1,4 @@
-from flask import Flask, render_template, jsonify, request
+from flask import Flask, render_template, jsonify, request, abort
 import librosa
 import torch
 import numpy as np
@@ -6,31 +6,33 @@ import matplotlib.pyplot as plt
 import os
 import sys
 import csv
+import uuid
 
+# Add the models directory to the path
 dir_path = os.path.dirname(os.path.realpath(__file__))
 parent_dir = os.path.dirname(dir_path)
-
 sys.path.append(os.path.join(parent_dir, 'birdsong'))
-# sys.path.append('/snap/bin')
-# sys.path.append('/home/ubuntu/snap')
-# print(sys.path)
+
 #from models import Zilpzalp
 #from models import Hawk
 from models import LstmModel
 
 app = Flask(__name__)
 
-# initiate the model
+# Initiate the model
 model = LstmModel(
     time_axis=216,
     freq_axis=256,
     no_classes=100)
 
-# load the state of  model from checkpoint
+# Load the state of  model from checkpoint
 checkpoint_path = 'model/checkpoint_Lstm_29-03'
 checkpoint = torch.load(checkpoint_path, map_location='cpu')
-
 state = checkpoint['state_dict']
+model.load_state_dict(state)
+model.eval()
+
+# Add the dictionary with the species info
 label_dict = {}
 reader = csv.DictReader(open('model/top100_codes_translated.csv'))
 for row in reader:
@@ -41,9 +43,6 @@ for row in reader:
         'wiki_link': row['wiki_link'],
     }
 
-model.load_state_dict(state)
-model.eval()
-
 
 @app.route("/")
 def index():
@@ -52,12 +51,18 @@ def index():
 
 @app.route("/classify", methods=['POST'])
 def classify():
-    input = request.data
-    with open('temp/audio.webm', 'wb+') as f:
-        f.write(input)
-    audio, sr = librosa.load('temp/audio.webm')
-    length = audio.shape[0] / sr
-
+    # Get audio data from client
+    input_ = request.data
+    audio_path = 'temp/' + str(uuid.uuid4()) +'.webm'
+    with open(audio_path, 'wb+') as f:
+        f.write(input_)
+    try:
+        audio, sr = librosa.load(audio_path)
+        os.remove(audio_path)
+    except:
+        os.remove(audio_path)
+        return 'error', 500
+    
     spect = librosa.feature.melspectrogram(
         audio, sr=22050, n_fft=2048, hop_length=512, n_mels=256, fmin=0, fmax=12000)
 
