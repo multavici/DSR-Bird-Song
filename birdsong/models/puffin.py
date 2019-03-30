@@ -36,7 +36,7 @@ class Puffin(nn.Module):
             nn.Dropout(0.3),
             
             nn.Conv2d(32, 64, kernel_size=3, stride=1),
-            nn.BatchNorm2d(64),
+            #nn.BatchNorm2d(64),
             nn.ReLU(),
             nn.Dropout(0.3),
             nn.MaxPool2d(kernel_size=2, stride=2),
@@ -49,9 +49,9 @@ class Puffin(nn.Module):
             )
         
         # batch_first=True shapes Tensors : batch_dim, seq_dim, feature_dim)
-        self.lstm1 = nn.LSTM(self.input_features, 500, 2, dropout=0.5, batch_first=True)
+        self.lstm1 = nn.LSTM(self.input_features, 600, 3, dropout=0.5, batch_first=True)
        
-        self.lstm2 = nn.LSTM(500, 200, 1, batch_first=True)
+        self.lstm2 = nn.LSTM(600, 200, 1, batch_first=True)
         
         
         
