@@ -10,22 +10,19 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-class LstmModel(nn.Module):
+class Puffin(nn.Module):
 
     def __init__(self, freq_axis, time_axis, no_classes):
-        super(LstmModel, self).__init__()
+        super(Puffin, self).__init__()
         
         self.freq_axis = freq_axis #input_dim
         self.time_axis = time_axis
         self.no_classes = no_classes
         
         self.input_features = 2560 #input_dim
-        self.seq_length = 50 
         
         # Hyper parameters
         # Hidden dimensions and number of hidden layers
-        self.hidden_dim = 400 #500
-        self.layer_dim = 2 #7
         
         self.harmony = nn.Sequential(
             nn.Conv2d(1, 16, kernel_size=3, stride=1),
@@ -39,7 +36,7 @@ class LstmModel(nn.Module):
             nn.Dropout(0.3),
             
             nn.Conv2d(32, 64, kernel_size=3, stride=1),
-            #nn.BatchNorm2d(64),
+            nn.BatchNorm2d(64),
             nn.ReLU(),
             nn.Dropout(0.3),
             nn.MaxPool2d(kernel_size=2, stride=2),
@@ -52,7 +49,10 @@ class LstmModel(nn.Module):
             )
         
         # batch_first=True shapes Tensors : batch_dim, seq_dim, feature_dim)
-        self.lstm = nn.LSTM(self.input_features, self.hidden_dim, self.layer_dim, dropout=0.5, batch_first=True)
+        self.lstm1 = nn.LSTM(self.input_features, 500, 2, dropout=0.5, batch_first=True)
+       
+        self.lstm2 = nn.LSTM(500, 200, 1, batch_first=True)
+        
         
         
         self.fc = nn.Sequential(
@@ -60,7 +60,7 @@ class LstmModel(nn.Module):
             #nn.ReLU(),
             #nn.Dropout(0.3),
             
-            nn.Linear(400, self.no_classes),
+            nn.Linear(200, self.no_classes),
             nn.ReLU(),
             )
 
@@ -70,7 +70,9 @@ class LstmModel(nn.Module):
         out =  self.harmony(x)
         out = out.view(out.shape[0], -1, out.shape[3]).permute(0,2,1)   
         #print(out.shape)
-        output_seq, hidden_state = self.lstm(out)
+        output_seq, hidden_state = self.lstm1(out)
+        output_seq, hidden_state = self.lstm2(output_seq)
+
         last_output = output_seq[:, -1]
         out = self.fc(last_output)
         
