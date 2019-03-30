@@ -16,7 +16,7 @@ sys.path.append(os.path.join(parent_dir, 'birdsong'))
 # print(sys.path)
 #from models import Zilpzalp
 #from models import Hawk
-from models import Lstm
+from models import LstmModel
 
 app = Flask(__name__)
 
