@@ -10,78 +10,70 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+class LstmModel(nn.Module):
 
-class Puffin(nn.Module):
-    def __init__(self, freq_axis=256, time_axis=216,  no_classes=10):
-        super(Puffin, self).__init__()
-
+    def __init__(self, freq_axis, time_axis, no_classes):
+        super(LstmModel, self).__init__()
+        
+        self.freq_axis = freq_axis #input_dim
         self.time_axis = time_axis
-        self.freq_axis = freq_axis
-        self.__name__='Puffin'
-
-
-        # Harmony block
+        self.no_classes = no_classes
+        
+        self.input_features = 2560 #input_dim
+        self.seq_length = 50 
+        
+        # Hyper parameters
+        # Hidden dimensions and number of hidden layers
+        self.hidden_dim = 400 #500
+        self.layer_dim = 2 #7
+        
         self.harmony = nn.Sequential(
-            nn.Conv2d(1, 16, kernel_size=(5,3), stride=1),
+            nn.Conv2d(1, 16, kernel_size=3, stride=1),
             nn.BatchNorm2d(16),
             nn.ReLU(),
-            nn.Dropout(0.3),
-            nn.MaxPool2d(kernel_size=(2,3), stride=(2,3)),
-            
-            nn.Conv2d(16, 32, kernel_size=(5,3), stride=1),
+            #nn.Dropout(0.3),
+        
+            nn.Conv2d(16, 32, kernel_size=3, stride=1),
             nn.BatchNorm2d(32),
             nn.ReLU(),
             nn.Dropout(0.3),
-            nn.MaxPool2d(kernel_size=(2,3), stride=(2,3)),
             
-            nn.Conv2d(32, 64, kernel_size=(5,3), stride=1),
-            nn.BatchNorm2d(64),
+            nn.Conv2d(32, 64, kernel_size=3, stride=1),
+            #nn.BatchNorm2d(64),
             nn.ReLU(),
             nn.Dropout(0.3),
-            nn.MaxPool2d(kernel_size=(1,3), stride=(1,3)),
+            nn.MaxPool2d(kernel_size=2, stride=2),
             
-            nn.Conv2d(64, 128, kernel_size=(5,3), stride=1),
-            nn.BatchNorm2d(128),
+            nn.Conv2d(64, 64, kernel_size=5, stride=1),
+            #nn.BatchNorm2d(64),
             nn.ReLU(),
             nn.Dropout(0.3),
-            nn.MaxPool2d(kernel_size=(1,7), stride=(1,7)),
+            nn.MaxPool2d(kernel_size=(3,2), stride=(3,2)),
             )
         
-        # Next three run in parallel, picking up on harmonic features with different dilations
-        self.summary1 = nn.Sequential(
-            nn.Conv2d(128, 64, kernel_size=(3,1), stride=1),
-            nn.ReLU(),
-            nn.MaxPool2d(kernel_size=(3,1), stride=(3,1)),
-            )
+        # batch_first=True shapes Tensors : batch_dim, seq_dim, feature_dim)
+        self.lstm = nn.LSTM(self.input_features, self.hidden_dim, self.layer_dim, dropout=0.5, batch_first=True)
         
-        self.summary2 = nn.Sequential(
-            nn.Conv2d(128, 64, kernel_size=(3,1), stride=1, dilation=2, padding=(1,0)),
-            nn.ReLU(),
-            nn.MaxPool2d(kernel_size=(3,1), stride=(3,1)),
-            )
-        
-        self.summary3 = nn.Sequential(
-            nn.Conv2d(128, 64, kernel_size=(3,1), stride=1, dilation=3, padding=(2,0)),
-            nn.ReLU(),
-            nn.MaxPool2d(kernel_size=(3,1), stride=(3,1)),
-            )
         
         self.fc = nn.Sequential(
-            nn.Linear(64 * 51, no_classes),
-            nn.ReLU()
+            #nn.Linear(self.hidden_dim, 200),
+            #nn.ReLU(),
+            #nn.Dropout(0.3),
+            
+            nn.Linear(400, self.no_classes),
+            nn.ReLU(),
             )
-        
-        
-        
 
-    def forward(self, x):         
-        harmony_out = self.harmony(x)        
-        summ1 = self.summary1(harmony_out)        
-        summ2 = self.summary2(harmony_out)        
-        summ3 = self.summary3(harmony_out)        
-        comb = torch.cat((summ1,summ2,summ3), 2)
-        comb = comb.view(comb.size(0), -1)
-        out = self.fc(comb)        
+        
+    def forward(self, x):
+        batch_size = x.shape[0]
+        out =  self.harmony(x)
+        out = out.view(out.shape[0], -1, out.shape[3]).permute(0,2,1)   
+        #print(out.shape)
+        output_seq, hidden_state = self.lstm(out)
+        last_output = output_seq[:, -1]
+        out = self.fc(last_output)
+        
         return out
 
 def test():
