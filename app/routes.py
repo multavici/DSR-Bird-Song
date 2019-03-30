@@ -16,6 +16,7 @@ sys.path.append(os.path.join(parent_dir, 'birdsong'))
 #from models import Zilpzalp
 #from models import Hawk
 from models import LstmModel
+from utils import avg_score, maxwindow_score, get_top5_prediction
 
 app = Flask(__name__)
 
@@ -62,60 +63,10 @@ def classify():
     except:
         os.remove(audio_path)
         return 'error', 500
-    
-    spect = librosa.feature.melspectrogram(
-        audio, sr=22050, n_fft=2048, hop_length=512, n_mels=256, fmin=0, fmax=12000)
 
-    # We test 2 ways of slicing the complete spectogram
+    scores, indices = maxwindow_score(model, audio, sr)
+    top5 = get_top5_prediction(label_dict, scores, indices)
 
-    # 1: We take the columns with most signal
-
-    colsum = np.sum(spect, axis=0)
-    # top_indices = colsum.argsort()[-216:][::-1]
-    # top_indices_sorted = np.sort(top_indices)
-    # slice_maxsignal = spect[:, top_indices_sorted].reshape((1, 1, 256, 216))
-
-    # 2: We take the first 5s seconds of signal
-
-    # slice_start = spect[:, 0:216].reshape((1, 1, 256, 216))
-
-    # 3 We take a sliding window with the most signal
-
-    maxdensity, i_start = 0, 0
-    for i in range(len(colsum) - 216):
-        density = np.sum(colsum[i:i + 216])
-        if density > maxdensity:
-            maxdensity = density
-            i_start = i
-    slice_maxwindow = spect[:, i_start:i_start + 216].reshape((1, 1, 256, 216))
-
-    # make prediction
-
-    # top5_maxsignal = get_top5_prediction(slice_maxsignal)
-
-    # top5_first5s = get_top5_prediction(slice_start)
-
-    top5_maxwindow = get_top5_prediction(slice_maxwindow)
-
-    # pred = "Plegadis falcinellus"
     return jsonify({
-        # 'top5_1': top5_maxsignal,
-        # 'top5_2': top5_first5s,
-        'predictions': top5_maxwindow,
+        'predictions': top5,
     })
-
-def get_top5_prediction(slice_):
-    output = model(torch.tensor(slice_).float()).reshape(100)
-    scores_raw = torch.nn.functional.softmax(output, dim=0)
-    scores, indices = scores_raw.sort(descending=True)
-
-    top5 = []
-    for code, score in zip(indices[0:5].tolist(), scores[0:5].tolist()):
-        top5.append([
-            label_dict[code]['name'],
-            label_dict[code]['img_source'],
-            label_dict[code]['img_link'],
-            label_dict[code]['wiki_link'],
-            f'{score:.2f}'],
-        )
-    return top5
