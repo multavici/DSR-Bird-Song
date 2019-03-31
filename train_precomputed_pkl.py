@@ -59,7 +59,7 @@ def main(config_file):
     enh = None #Exponent(0.17)
     
     # Augmentation
-    aug = SoundscapeNoise('storage/noise_slices', scaling=0.3)
+    aug = SoundscapeNoise('storage/noise_slices', scaling=0.4)
     
     # Datasets and Dataloaders
     ds_train = SpectralDataset(
@@ -130,7 +130,17 @@ def main(config_file):
         logger.write_summary(writer, epoch, train_stats, test_stats)
         logger.dump_log_txt(date, start_time, local_config,
                             train_stats, test_stats, best_acc, epoch+1, log_fname)
-
+        
+        if epoch == 9:
+            for param_group in optimizer.param_groups:
+                param_group['lr'] = 0.00005
+                print('Drop Learning Rate to ', param_group['lr'])
+        
+        if epoch == 14:
+            for param_group in optimizer.param_groups:
+                param_group['lr'] = 0.00001
+                print('Drop Learning Rate to ', param_group['lr'])
+                
     writer.close()
     print('Finished Training')
 
