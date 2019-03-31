@@ -34,6 +34,13 @@ PIN = torch.cuda.is_available()
 
 print(f'Training on {DEVICE}')
 
+def update_lr(optimizer, epoch, start_lr, decay):
+    lr =  start_lr * ((1-decay) ** (1 + epoch))
+    for param_group in optimizer.param_groups:
+        param_group['lr'] = lr
+    print('Drop Learning Rate to ', lr)
+    
+    
 
 def main(config_file):
     # read from config
@@ -59,7 +66,7 @@ def main(config_file):
     enh = None #Exponent(0.17)
     
     # Augmentation
-    aug = SoundscapeNoise('storage/noise_slices', scaling=0.3)
+    aug = SoundscapeNoise('storage/noise_slices', scaling=0.4)
     
     # Datasets and Dataloaders
     ds_train = SpectralDataset(
@@ -130,7 +137,10 @@ def main(config_file):
         logger.write_summary(writer, epoch, train_stats, test_stats)
         logger.dump_log_txt(date, start_time, local_config,
                             train_stats, test_stats, best_acc, epoch+1, log_fname)
-
+        
+        # LR schedule
+        update_lr(optimizer, epoch, learning_rate, 0.05)
+                
     writer.close()
     print('Finished Training')
 
