@@ -34,6 +34,13 @@ PIN = torch.cuda.is_available()
 
 print(f'Training on {DEVICE}')
 
+def update_lr(optimizer, epoch, start_lr, decay):
+    lr =  start_lr * ((1-decay) ** (1 + epoch))
+    for param_group in optimizer.param_groups:
+        param_group['lr'] = lr
+    print('Drop Learning Rate to ', lr)
+    
+    
 
 def main(config_file):
     # read from config
@@ -131,15 +138,8 @@ def main(config_file):
         logger.dump_log_txt(date, start_time, local_config,
                             train_stats, test_stats, best_acc, epoch+1, log_fname)
         
-        if epoch == 9:
-            for param_group in optimizer.param_groups:
-                param_group['lr'] = 0.00005
-                print('Drop Learning Rate to ', param_group['lr'])
-        
-        if epoch == 14:
-            for param_group in optimizer.param_groups:
-                param_group['lr'] = 0.00001
-                print('Drop Learning Rate to ', param_group['lr'])
+        # LR schedule
+        update_lr(optimizer, epoch, learning_rate, 0.05)
                 
     writer.close()
     print('Finished Training')
