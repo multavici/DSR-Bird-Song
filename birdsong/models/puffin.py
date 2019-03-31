@@ -11,7 +11,6 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 class Puffin(nn.Module):
-
     def __init__(self, freq_axis, time_axis, no_classes):
         super(Puffin, self).__init__()
         
@@ -22,8 +21,7 @@ class Puffin(nn.Module):
         self.input_features = 2560 #input_dim
         
         # Hyper parameters
-        # Hidden dimensions and number of hidden layers
-        
+        # Hidden dimensions and number of hidden layers 
         self.harmony = nn.Sequential(
             nn.Conv2d(1, 16, kernel_size=3, stride=1),
             nn.BatchNorm2d(16),
@@ -49,24 +47,19 @@ class Puffin(nn.Module):
             )
         
         # batch_first=True shapes Tensors : batch_dim, seq_dim, feature_dim)
-        self.lstm1 = nn.LSTM(self.input_features, 600, 3, dropout=0.5, batch_first=True)
+        self.lstm1 = nn.LSTM(self.input_features, 600, 2, dropout=0.5, batch_first=True)
        
-        self.lstm2 = nn.LSTM(600, 200, 1, batch_first=True)
+        self.lstm2 = nn.LSTM(600, 200, 2, dropout=0.3, batch_first=True)
         
         
         
-        self.fc = nn.Sequential(
-            #nn.Linear(self.hidden_dim, 200),
-            #nn.ReLU(),
-            #nn.Dropout(0.3),
-            
+        self.fc = nn.Sequential(            
             nn.Linear(200, self.no_classes),
             nn.ReLU(),
             )
 
         
     def forward(self, x):
-        batch_size = x.shape[0]
         out =  self.harmony(x)
         out = out.view(out.shape[0], -1, out.shape[3]).permute(0,2,1)   
         #print(out.shape)
@@ -80,7 +73,8 @@ class Puffin(nn.Module):
 
 def test():
     cnn = Puffin(256, 216, 100)
-    summary(cnn, (1, 256, 216))
+    img = torch.randn(2, 1, 256, 216)
+    cnn(img)
 
 if __name__=="__main__":
     from torchsummary import summary
