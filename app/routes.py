@@ -7,6 +7,7 @@ import os
 import sys
 import csv
 import uuid
+import json
 
 # Add the models directory to the path
 dir_path = os.path.dirname(os.path.realpath(__file__))
@@ -54,19 +55,32 @@ def index():
 def classify():
     # Get audio data from client
     input_ = request.data
+    
+    # Save audio date as .webm file
     audio_path = 'temp/' + str(uuid.uuid4()) +'.webm'
     with open(audio_path, 'wb+') as f:
         f.write(input_)
+
+    # Load audio
     try:
         audio, sr = librosa.load(audio_path)
-        os.remove(audio_path)
+        # os.remove(audio_path)
     except:
-        os.remove(audio_path)
+        # os.remove(audio_path)
         return 'error', 500
-
+    
+    # Make predictions
     scores, indices = maxwindow_score(model, audio, sr)
     top5 = get_top5_prediction(label_dict, scores, indices)
 
+    # Add to logs
+    with open('logs.txt', 'a+') as f:
+        f.write(json.dumps({
+            'input': audio_path,
+            'prediction': top5,
+        }) + '\n')
+
+    # Return predictions to client
     return jsonify({
         'predictions': top5,
     })
