@@ -18,7 +18,7 @@ class Puffin(nn.Module):
         self.time_axis = time_axis
         self.no_classes = no_classes
         
-        self.input_features = 2560 #input_dim
+        self.input_features = 1664 #input_dim
         
         # Hyper parameters
         # Hidden dimensions and number of hidden layers 
@@ -39,17 +39,23 @@ class Puffin(nn.Module):
             nn.Dropout(0.3),
             nn.MaxPool2d(kernel_size=2, stride=2),
             
-            nn.Conv2d(64, 64, kernel_size=5, stride=1),
+            nn.Conv2d(64, 128, kernel_size=3, stride=1),
             #nn.BatchNorm2d(64),
             nn.ReLU(),
             nn.Dropout(0.3),
             nn.MaxPool2d(kernel_size=(3,2), stride=(3,2)),
+            
+            nn.Conv2d(128, 128, kernel_size=3, stride=1),
+            #nn.BatchNorm2d(64),
+            nn.ReLU(),
+            nn.Dropout(0.3),
+            nn.MaxPool2d(kernel_size=(3,1), stride=(3,1)),
             )
         
         # batch_first=True shapes Tensors : batch_dim, seq_dim, feature_dim)
-        self.lstm1 = nn.LSTM(self.input_features, 600, 2, dropout=0.5, batch_first=True)
+        self.lstm1 = nn.LSTM(self.input_features, 500, 3, dropout=0.5, batch_first=True)
        
-        self.lstm2 = nn.LSTM(600, 200, 2, dropout=0.3, batch_first=True)
+        self.lstm2 = nn.LSTM(500, 200, 2, dropout=0.5, batch_first=True)
         
         
         
