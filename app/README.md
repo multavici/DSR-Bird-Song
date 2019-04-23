@@ -6,4 +6,4 @@ The webapp can be found on https://chirps.eu
 
 ## How it works
 
-We use Flask to serve the app. It consists of a simple index page with some <a href="/static/app.js">javascript</a> for recording audio.
+We use Flask to serve the app. It consists of a simple index page with some <a href="static/app.js">javascript</a> for recording audio.
