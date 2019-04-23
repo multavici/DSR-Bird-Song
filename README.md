@@ -1,14 +1,10 @@
 # DSR-Bird-Song
 
-## Live demo
+## Live demo: [chirps.eu](https://chirps.eu)
 
 Start page             |  Classification
 :-------------------------:|:-------------------------:
 [![screenshot](https://github.com/multavici/DSR-Bird-Song/blob/master/app/static/images/app_screenshot.png?raw=true)](https://chirps.eu)  |  [![screenshot](https://github.com/multavici/DSR-Bird-Song/blob/master/app/static/images/screenshot_app_classified.png?raw=true)](https://chirps.eu)
-
-
- 
-**[here](https://chirps.eu)**
 
 ## What is it?
 
