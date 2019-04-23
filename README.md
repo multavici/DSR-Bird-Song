@@ -1,19 +1,15 @@
 # DSR-Bird-Song
 
-## Live demo
-
-Solarized dark             |  Solarized Ocean
-:-------------------------:|:-------------------------:
-[![screenshot](https://github.com/multavici/DSR-Bird-Song/blob/master/app/static/images/app_screenshot.png?raw=true)](https://chirps.eu)  |  [![screenshot](https://github.com/multavici/DSR-Bird-Song/blob/master/app/static/images/screenshot_app_classified.png?raw=true)](https://chirps.eu)
-
-
- 
-**[here](https://chirps.eu)**
-
 ## What is it?
 
 This is the repo for our Portfolio project for [DSR](https://datascienceretreat.com/). The goal is to train a model that can reliably classify bird species from their songs and make it available as a webservice/app. 
 Our motivation is twofold: we want to contribute to the development of tools for automated biodiversity monitoring and provide bird enthusiasts with a handy tool.
+
+## Live demo: [chirps.eu](https://chirps.eu)
+
+Start page             |  Classification
+:-------------------------:|:-------------------------:
+[![screenshot](https://github.com/multavici/DSR-Bird-Song/blob/master/app/static/images/app_screenshot.png?raw=true)](https://chirps.eu)  |  [![screenshot](https://github.com/multavici/DSR-Bird-Song/blob/master/app/static/images/screenshot_app_classified.png?raw=true)](https://chirps.eu)
 
 Contributors: 
 * [Tim Bauer](https://github.com/bimtauer)
