@@ -6,10 +6,15 @@ from multiprocessing.pool import ThreadPool
 import librosa
 import matplotlib.pyplot as plt
 import pickle
+import pandas as pd
 
 RECORDINGS_DIR = 'storage/recordings/'
 PICKLES_DIR = 'storage/pickles/'
 DATABASE_DIR = 'storage/db.sqlite'
+
+top_100_csv = pd.read_csv('app/model/top100_img_codes.csv', names=['id1', 'id2', 'species'])
+top_100_genus_species = top_100_csv.species.tolist()
+top_100_species = [x.split('_')[1] for x in top_100_genus_species]
 
 conn = sqlite3.connect(DATABASE_DIR)
 c = conn.cursor()
@@ -17,13 +22,17 @@ c = conn.cursor()
 query = '''SELECT r.id, r.file
     FROM taxonomy AS t
     JOIN recordings AS r ON t.id = r.taxonomy_id
-    WHERE t.german = 1.0'''
+    WHERE t.german = 1.0 AND r.scraped_duration > 100 AND t.species in '''
 
-recordings = c.execute(query).fetchall()
+all_recordings = c.execute(query + str(tuple(top_100_species))).fetchall()
+print('all recordings: ', len(all_recordings))
+already_sliced = [int(x.split('_')[0]) for x in os.listdir(PICKLES_DIR)]
+print('already sliced: ', len(already_sliced))
+recordings = [x for x in all_recordings if x[0] not in already_sliced]
+print('recordings: ', len(recordings))
 
-batch_1 = recordings[:33_000]
-batch_2 = recordings[33_000:66_000]
-batch_3 = recordings[66_000:]
+import sys
+sys.exit()
 
 def download_and_slice(input_tuple):
     rec_id, download_path = input_tuple
@@ -60,4 +69,4 @@ def download_and_slice(input_tuple):
         pass
 
 pool = ThreadPool(4)
-pool.map(download_and_slice, batch_1)
+pool.map(download_and_slice, recordings)
