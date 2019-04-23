@@ -30,8 +30,7 @@ The audio recordings vary greatly in quality and number of species present. Assu
 Initially our aim was to store only raw audio and integrate the preprocessing of
 spectrograms into a [custom PyTorch Dataset](birdsong/datasets/dynamic_dataset.py). That way we would have retained flexibility in terms of the spectrogram functions and parameters. But despite extensive efforts in cutting down preprocessing time, data loading remained the main bottleneck in out training times.
 
-Thus the decision was made to precompute spectrogram slices according to a procedure common in the literature: 5 second slices with 2.5 second overlap where first converted into spectrograms using STFT (2048, hop length: 512) and then passed 
-through a 256 Mel filterbank resulting in Mel-Spectrograms with a dimension of 
+Thus the decision was made to precompute spectrogram slices according to a procedure common in the literature: 5 second slices with 2.5 second overlap where first converted into spectrograms using STFT (FFT window size: 2048, hop length: 512) and then passed through a 256 Mel filterbank resulting in Mel-Spectrograms with a dimension of 
 256 x 216 x 1 as input to our models.
 
 For our early approaches we rebuild models we found in the literature which all 
