@@ -25,14 +25,16 @@ python data_preparation/audio_acquisition/download_files_threaded.py
 
 The audio recordings vary greatly in quality and number of species present. Assuming that the foreground species is usually the loudest in a recording we follow the methodology described in [Sprengel et al., 2016](http://ceur-ws.org/Vol-1609/16090547.pdf) to extract signal sections from a noisy background. [This script](birdsong/data_preparation/audio_conversion/signal_extraction.py)  localizes spectrogram sections with amplitudes above 3 times frequency- and time-axis medians, allowing us to extract audio sections most likely containing foreground bird vocalizations. We run the script over all recordings in our storage and store the respective timestamps for signal sections in our database.
 
-To train the model the recordings first need to be converted in spectrograms. There are different ways of doing this:
-* Fourier transformation: stft_s
-* Mel spectrogram: mel_s
-* Chirp spectrogram: chirp_s
+Initially our aim was to store only raw audio and integrate the preprocessing of
+spectrograms into a [custom PyTorch Dataset](birdsong/datasets/dynamic_dataset.py). That way we would have retained flexibility in terms of the spectrogram functions and parameters. But despite extensive efforts in cutting down preprocessing time, data loading remained the main bottleneck in out training times.
 
-A key-challenge in pre-processing is that we want to maintain flexibility in terms of spectrogram functions and parameters. Storage space is limited and the amount of available recordings vast. Thus we developed a [custom implementation](birdsong/datasets/dynamic_dataset.py) of the PyTorch Dataset class that makes use of a background process to dynamically load and convert audio. Ideally this process should be fast enough to preload an entire batch during training time. But a major bottleneck for audio-loading is resampling. Thus we chose to resample all files in our database to 22050hz as a first step in order to be able to load them with native sample rate later on.
+Thus the decision was made to precompute spectrogram slices according to a procedure common in the literature: 5 second slices with 2.5 second overlap where first converted into spectrograms using STFT (2048, hop length: 512) and then passed 
+through a 256 Mel filterbank resulting in Mel-Spectrograms with a dimension of 
+256 x 216 x 1 as input to our models.
 
-For rapid model development we are currently using a small subsample of the data for which we have precomputed mel-spectrograms. 
+For our early approaches we rebuild models we found in the literature which all 
+treat the audio classification task as an image problem. Through experiments with
+non-square kernels we tried to take into account the different nature of information on the time axis versus the frequency axis of the spectrogram, leading to improved results (Hawk, Zilpzalp). A breakthrough came when we decided to couple a CNN with an LSTM, designing the former to pick up on timbral features and the latter to detect time-dependent patterns (Puffin).
 
 ## Model
 
@@ -41,22 +43,13 @@ We build the following [models](birdsong/models):
 * [Sparrow](birdsong/models/sparrow.py): [(Grill & Schlüter, 2017)](https://www.eurasip.org/Proceedings/Eusipco/Eusipco2017/papers/1570347092.pdf)
 * [SparrowExp](birdsong/models/sparrow_exp_a.py): [(Schlüter, 2018)](http://www.ofai.at/~jan.schlueter/pubs/2018_birdclef.pdf)
 * [Zipzalp](birdsong/models/zilpzalp.py): own creation by Tim 
+* [Hawk](birdsong/models/hawk.py): [(Pons et al., 2018)](http://ismir2018.ircam.fr/doc/pdfs/191_Paper.pdf )
+* [Puffin](birdsong/models/puffin.py): own creation by Tim 
 
 
 ## Model training
 Configure your run in scripts/config.py
 
-
 Running a job locally: 
 ```
-sh run.sh
-```
-Running a job on [Paperspace](https://www.paperspace.com/): 
-```
-paperspace jobs create --command "sh run.sh" --container "multavici/bird-song:latest" --apiKey <api-Key> --workspace "https://github.com/multavici/DSR-Bird-Song" --machineType "G1"
-```
-
-Enter bash in docker container with current PWD mounted:
-```
-docker run -it --mount src="$(pwd)",target=/test,type=bind multavici/bird-song /bin/bash
-```
+python train_precomputed.py
