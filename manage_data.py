@@ -1,26 +1,24 @@
 from birdsong.data_management.management import DatabaseManager
 
+# Iniate storage directory
 dbm = DatabaseManager('storage')
-dbm.make_selection(100, 1500)
 
-dbm.make_some_noise()
+# Top 100 species, aim for 1800 spectrogram slices each
+dbm.make_selection(100, 1800)
 
+# Cleaning residual files and wrong db entries (from previous donwloads)
+dbm.clean_storage()
 dbm.clean_db()
 
+# Prepare selection of background noise slices for augmentation
+dbm.make_some_noise()
 
+# Download and prepare recordings to make selection available
 dbm.download_missing()
 
-av = dbm.selection_df()
-av.groupby('label').count().sort_values(by='path')
-
-
+# Create training/validation split and store as .csv
 t, v, codes = dbm.train_validation_split()
 
-import pandas as pd
-c = pd.DataFrame.from_dict(codes, orient='index').reset_index()
-c= c.rename(columns={'index':'code', 0:'name'})
-c
-
-t.to_csv('top100_train.csv')
-v.to_csv('top100_val.csv')
-c.to_csv('top100_codes.csv')
+t.to_csv('storage/dev_train.csv')
+v.to_csv('storage/dev_val.csv')
+c.to_csv('storage/dev_codes.csv')
