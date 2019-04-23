@@ -189,7 +189,10 @@ class Hawk(nn.Module):
 
 
 
-#image = torch.randn(5, 1, 256, 216)
-#cnn = Hawk(256, 216, 10)
-#output = cnn(image)
+def test():
+    cnn = Hawk(256, 216, 100)
+    summary(cnn, (1, 256, 216))
 
+if __name__=="__main__":
+    from torchsummary import summary
+    test()

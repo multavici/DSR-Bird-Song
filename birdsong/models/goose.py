@@ -80,13 +80,9 @@ class Goose(nn.Module):
 
 
 def test():
-    image = torch.randn(5, 1, 256, 216)
-    cnn = Goose(256, 216, 10)
-    output = cnn(image)
-    print("input shape:")
-    print(image.shape)
-    print("output shape:")
-    print(output.shape)
+    cnn = Goose(256, 216, 100)
+    summary(cnn, (1, 256, 216))
 
-if __name__ == '__main__':
+if __name__=="__main__":
+    from torchsummary import summary
     test()

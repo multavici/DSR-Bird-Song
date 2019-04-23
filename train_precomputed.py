@@ -10,9 +10,9 @@ from torch.utils.data import DataLoader
 from torch import nn
 import numpy as np
 from birdsong.datasets.tools.sampling import upsample_df
-from birdsong.datasets.tools.augmentation import ImageSoundscapeNoise
+from birdsong.datasets.tools.augmentation import SoundscapeNoise
 from birdsong.datasets.tools.enhancement import Exponent
-from birdsong.datasets.sequential import SpectralImageDataset
+from birdsong.datasets.sequential import SpectralDataset
 from birdsong.training import train, evaluate, logger
 from birdsong.training.conf_mat import plot_confusion_matrix
 
@@ -23,9 +23,9 @@ if 'HOSTNAME' in os.environ:
     TEST = pd.read_csv('mel_slices_test.csv')
 else:
     # script runs locally
-    INPUT_DIR = 'storage/signal_images'
-    TRAIN = pd.read_csv('top100_img_train.csv')
-    TEST = pd.read_csv('top100_img_val.csv')
+    INPUT_DIR = 'storage/signal_slices'
+    TRAIN = pd.read_csv('storage/top100_train.csv')
+    TEST = pd.read_csv('storage/top100_val.csv')
 
 FILE_TYPE = TRAIN.path.iloc[0].split('.')[-1]
 
@@ -34,6 +34,13 @@ PIN = torch.cuda.is_available()
 
 print(f'Training on {DEVICE}')
 
+def update_lr(optimizer, epoch, start_lr, decay):
+    lr =  start_lr * ((1-decay) ** (1 + epoch))
+    for param_group in optimizer.param_groups:
+        param_group['lr'] = lr
+    print('Drop Learning Rate to ', lr)
+    
+    
 
 def main(config_file):
     # read from config
@@ -59,12 +66,12 @@ def main(config_file):
     enh = None #Exponent(0.17)
     
     # Augmentation
-    aug = None #ImageSoundscapeNoise('storage/noise_images', scaling=0.3)
+    aug = SoundscapeNoise('storage/noise_slices', scaling=0.4)
     
     # Datasets and Dataloaders
-    ds_train = SpectralImageDataset(
+    ds_train = SpectralDataset(
         TRAIN, INPUT_DIR, enhancement_func=enh, augmentation_func=aug)
-    ds_test = SpectralImageDataset(TEST, INPUT_DIR, enhancement_func=enh)
+    ds_test = SpectralDataset(TEST, INPUT_DIR, enhancement_func=enh)
 
     dl_train = DataLoader(ds_train, batch_size,
                           num_workers=4, pin_memory=PIN, shuffle=True)
@@ -130,7 +137,10 @@ def main(config_file):
         logger.write_summary(writer, epoch, train_stats, test_stats)
         logger.dump_log_txt(date, start_time, local_config,
                             train_stats, test_stats, best_acc, epoch+1, log_fname)
-
+        
+        # LR schedule
+        update_lr(optimizer, epoch, learning_rate, 0.05)
+                
     writer.close()
     print('Finished Training')
 

@@ -7,21 +7,21 @@ class Pigeon(nn.Module):
         
         self.layer1 = nn.Sequential(
             nn.Conv2d(1, 16, kernel_size=3, stride=1),
-            #nn.BatchNorm2d(16),
+            nn.BatchNorm2d(16),
             nn.ReLU(),
             #nn.Dropout(0.3),
             )
         
         self.layer2 = nn.Sequential(
             nn.Conv2d(16, 32, kernel_size=3, stride=1),
-            #nn.BatchNorm2d(16),
+            nn.BatchNorm2d(32),
             nn.ReLU(),
             #nn.Dropout(0.3),
             )
         
         self.layer3 = nn.Sequential(
             nn.Conv2d(32, 64, kernel_size=5, stride=1),
-            #nn.BatchNorm2d(16),
+            nn.BatchNorm2d(64),
             nn.ReLU(),
             #nn.Dropout(0.3),
             nn.MaxPool2d(kernel_size=2, stride=2)
@@ -40,7 +40,7 @@ class Pigeon(nn.Module):
             )
         
         self.layer6 = nn.Sequential(
-            nn.Conv2d(256, 256, kernel_size=7, stride=2),
+            nn.Conv2d(256, 256, kernel_size=5, stride=2),
             nn.ReLU(),
             nn.MaxPool2d(kernel_size=3, stride=3)
             )
@@ -70,29 +70,25 @@ class Pigeon(nn.Module):
     def forward(self, x):
         x = self.pad_wrap1d(x, 20)
         out = self.layer1(x)
-        #print(out.shape)
+        print('1.', out.shape)
         out = self.layer2(out)
-        #print(out.shape)
+        print('2.', out.shape)
         out = self.layer3(out)
-        #print(out.shape)
+        print('3.', out.shape)
         out = self.layer4(out)
-        #print(out.shape)
+        print('4.', out.shape)
         out = self.layer5(out)
-        #print(out.shape)
+        print('5.', out.shape)
         out = self.layer6(out)
-        #print(out.shape)
+        print('6.', out.shape)
         out = self.layer7(out)
         out = out.view(out.shape[0], 512)
-        #print(out.shape)
+        print('7.', out.shape)
         out = self.fc1(out)
-        #print(out.shape)
+        print('8.', out.shape)
         out = self.fc2(out)
-        #print(out.shape)
+        print('9.', out.shape)
         return out
-
-img = torch.randn(64,1,256,216)
-net = Pigeon(256, 216, 10)
-net(img)
 
 def test():
     cnn = Pigeon(256, 216, 100)

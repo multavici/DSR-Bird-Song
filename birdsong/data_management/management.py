@@ -1,4 +1,5 @@
 import os
+from shutil import copyfile
 from .utils.balanced_split import make_split
 from .utils import sql_selectors
 from .utils.encoding import LabelEncoder
@@ -10,6 +11,7 @@ import numpy as np
 import sqlite3
 import datetime
 from tqdm import tqdm
+import pickle
 
 class DatabaseManager(object):
     """ This class bundles the various functions for acquiring, inventorizing, 
@@ -62,12 +64,16 @@ class DatabaseManager(object):
         
     def train_validation_split(self):
         in_selection = self.selection_df()
-        min_slices = in_selection.groupby('label').count().min()
+        min_in_selection = int(in_selection.groupby('label').count().min())
+        min_slices = min(self.Selection.slices_per_class, min_in_selection)
         val_size = int(min_slices * 0.3)
         
         encoder = LabelEncoder(in_selection.label)
         in_selection.label = encoder.encode()
         codes = encoder.codes
+        codes = pd.DataFrame.from_dict(codes, orient='index').reset_index()
+        codes = codes.rename(columns={'index':'code', 0:'name'})
+        
         rest, validation = make_split(in_selection, test_samples=val_size)
         
         train_size = int(self.Selection.slices_per_class + self.Selection.slices_per_class/5)
@@ -78,6 +84,16 @@ class DatabaseManager(object):
 
         return train, validation, codes
         
+    def copy_selection(self, t, v):
+        """ Useful when having to move a smaller selection of files for a 
+        given training and validation set. """
+        input_dir = 'storage/signal_slices'
+        output_dir = 'storage/dev_slices'
+        df = pd.concat([t,v])
+        for path in df.path:
+            source = os.path.join(input_dir, path)
+            dest = os.path.join(output_dir, path)
+            copyfile(source, dest)
     
     def inventory_df(self):
         """ Retrieves class name for each slice currently in signal_dir 
@@ -156,6 +172,16 @@ class DatabaseManager(object):
         sql_selectors.reset_downloaded(self.conn)
         sql_selectors.set_downloaded(self.conn, rec_id_list)
 
+    def clean_storage(self):
+        count = 0
+        for file in tqdm(os.listdir(self.signal_dir)):
+            if file.endswith('.pkl'):
+                with open(os.path.join(self.signal_dir, file), 'rb') as f:
+                    slice_ = pickle.load(f)
+                    if slice_.max() == 0 or np.any(np.isnan(slice_)):
+                        print(f'{file} is empty')
+                        count += 1
+        print(count)
         
     def make_some_noise(self):
         labels = self.Selection.classes_in_selection.label.values
