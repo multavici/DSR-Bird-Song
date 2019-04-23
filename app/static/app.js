@@ -20,6 +20,11 @@ recordingAnimation.data = '../static/images/recording.svg';
 recordingAnimation.width = 50;
 recordingAnimation.height = 50;
 
+const linkIcon = document.createElement('img');
+linkIcon.src = '../static/images/info.png';
+linkIcon.width = 16;
+linkIcon.height = 16;
+
 var currentDate = new Date();
 var currentTime = currentDate.getTime();
 
@@ -75,23 +80,31 @@ function activateSubmitButton(rec) {
       imageEl.hidden = false;
       imgSourceEl.hidden = false;
 
-      top5_3 = document.createElement('ul')
+      top5 = document.createElement('ul');
       var i
       for (i = 1; i < 5; i++) {
-        species = document.createElement('li')
-        species.innerHTML = data.predictions[i][0]
-        top5_3.appendChild(species)
+        species = document.createElement('li');
+        console.log(species)
+        species.innerHTML = data.predictions[i][0] + " ";
+        var link = document.createElement('a')
+        link.href = data.predictions[i][3]
+        link.target = "_blank"
+        link.appendChild(linkIcon.cloneNode(true));
+        console.log(link)
+        species.appendChild(link)
+        console.log(species)
+        top5.appendChild(species);
       }
 
-      title = document.createElement('p')
-      title.innerHTML = 'But it could also be'
-      responseDiv.appendChild(title)
-      responseDiv.appendChild(top5_3);
+      title = document.createElement('p');
+      title.innerHTML = 'But it could also be';
+      responseDiv.appendChild(title);
+      responseDiv.appendChild(top5);
     }
     
     request.send(rec);
     console.log(request.status);
-    speciesEl.innerHTML = 'Sounds like ... '
+    speciesEl.innerHTML = 'Sounds like ... ';
   }
 }
 
@@ -114,8 +127,6 @@ if (navigator.mediaDevices) {
       connectionDiv.innerHTML = "Your browser doesn't support MediaRecorder, please use Chrome, Firefox or Opera";
       recordButton.disabled= true;
     }
-
-    // visualize(stream);
 
     recordButton.onclick = function() {
       
@@ -144,11 +155,9 @@ if (navigator.mediaDevices) {
         imgSourceEl.hidden = true;
 
         if (this.innerHTML === 'Try again') {
-          // responseDiv.removeChild(top5_1)
-          // responseDiv.removeChild(top5_2)
           try {
             responseDiv.removeChild(title)
-            responseDiv.removeChild(top5_3)
+            responseDiv.removeChild(top5)
           }
           catch(err) {}
         }
