@@ -3,7 +3,7 @@
 ## Live demo
 
 ![screenshot](https://github.com/multavici/DSR-Bird-Song/blob/master/app/static/images/app_screenshot.png?raw=true)
-**[here](https://chirps.eu)**
+<p align='justify'>**[here](https://chirps.eu)**</p>
 
 ## What is it?
 
