@@ -17,7 +17,7 @@ sys.path.append(os.path.join(parent_dir, 'birdsong'))
 #from models import Zilpzalp
 #from models import Hawk
 from models import LstmModel
-from utils import avg_score, maxwindow_score, get_top5_prediction
+from utils import avg_score, maxwindow_score, get_top5_prediction, max_score
 
 app = Flask(__name__)
 
@@ -70,7 +70,7 @@ def classify():
         return 'error', 500
     
     # Make predictions
-    scores, indices = maxwindow_score(model, audio, sr)
+    scores, indices = max_score(model, audio, sr)
     top5 = get_top5_prediction(label_dict, scores, indices)
 
     # Add to logs
