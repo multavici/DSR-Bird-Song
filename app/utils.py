@@ -33,10 +33,7 @@ def max_score(model, audio, sr):
     Slice the audio in overlapping slices and calculate the prediction as an 
     maximum of the predictions on the spectograms of the different slices
     """
-    signal, _ = signal_noise_separation(audio)
-    if len(signal) / sr < 5:
-        raise ValueError
-    slices = slice_audio(signal, sr, 5000, 2500)
+    slices = slice_audio(audio, sr, 5000, 2500)
     max_pred_score = 0
     for slice_ in slices:
         sliced_spect = librosa.feature.melspectrogram(
