@@ -2,6 +2,7 @@ import pickle
 import os
 from tqdm import tqdm
 from PIL import Image
+from tqdm import tqdm
 
 class Reformatter:
     def __init__(self, storage_dir, target_dir):
@@ -40,5 +41,5 @@ class Reformatter:
                     print('Problem with', file)
             
 
-ref = Reformatter('storage/noise_slices', 'storage/noise_images')
+ref = Reformatter('storage/signal_slices', 'storage/signal_images')
 ref()
