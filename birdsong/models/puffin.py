@@ -61,7 +61,6 @@ class Puffin(nn.Module):
         
         self.fc = nn.Sequential(            
             nn.Linear(200, self.no_classes),
-            nn.ReLU(),
             )
 
         
