@@ -5,16 +5,16 @@
 This is the repo for our Portfolio project for [DSR](https://datascienceretreat.com/). The goal is to train a model that can reliably classify bird species from their songs and make it available as a webservice/app. 
 Our motivation is twofold: we want to contribute to the development of tools for automated biodiversity monitoring and provide bird enthusiasts with a handy tool.
 
+Contributors: 
+* [Tim Bauer](https://github.com/bimtauer)
+* [Satyan Sharma](https://github.com/stynshrm)
+* [Falk Van der Meirsch](https://github.com/multavici)
+
 ## Live demo: [chirps.eu](https://chirps.eu)
 
 Start page             |  Classification
 :-------------------------:|:-------------------------:
 [![screenshot](https://github.com/multavici/DSR-Bird-Song/blob/master/app/static/images/app_screenshot.png?raw=true)](https://chirps.eu)  |  [![screenshot](https://github.com/multavici/DSR-Bird-Song/blob/master/app/static/images/screenshot_app_classified.png?raw=true)](https://chirps.eu)
-
-Contributors: 
-* [Tim Bauer](https://github.com/bimtauer)
-* [Satyan Sharma](https://github.com/stynshrm)
-* [Falk Van der Meirsch](https://github.com/multavici)
 
 ## Data
 
@@ -30,8 +30,7 @@ The audio recordings vary greatly in quality and number of species present. Assu
 Initially our aim was to store only raw audio and integrate the preprocessing of
 spectrograms into a [custom PyTorch Dataset](birdsong/datasets/dynamic_dataset.py). That way we would have retained flexibility in terms of the spectrogram functions and parameters. But despite extensive efforts in cutting down preprocessing time, data loading remained the main bottleneck in out training times.
 
-Thus the decision was made to precompute spectrogram slices according to a procedure common in the literature: 5 second slices with 2.5 second overlap where first converted into spectrograms using STFT (2048, hop length: 512) and then passed 
-through a 256 Mel filterbank resulting in Mel-Spectrograms with a dimension of 
+Thus the decision was made to precompute spectrogram slices according to a procedure common in the literature: 5 second slices with 2.5 second overlap where first converted into spectrograms using STFT (FFT window size: 2048, hop length: 512) and then passed through a 256 Mel filterbank resulting in Mel-Spectrograms with a dimension of 
 256 x 216 x 1 as input to our models.
 
 For our early approaches we rebuild models we found in the literature which all 

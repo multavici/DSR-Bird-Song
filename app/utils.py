@@ -28,6 +28,28 @@ def avg_score(model, audio, sr):
     return (scores, indices)
 
 
+def max_score(model, audio, sr):
+    """
+    Slice the audio in overlapping slices and calculate the prediction as an 
+    maximum of the predictions on the spectograms of the different slices
+    """
+    slices = slice_audio(audio, sr, 5000, 2500)
+    max_pred_score = 0
+    for slice_ in slices:
+        sliced_spect = librosa.feature.melspectrogram(
+            slice_, n_mels=256, fmin=0, fmax=12000)
+        sliced_spect = sliced_spect.reshape((1, 1, 256, 216))
+        output = model(torch.tensor(sliced_spect).float()).reshape(100)
+        scores_raw = torch.nn.functional.softmax(output, dim=0)
+        scores, indices = scores_raw.sort(descending=True)
+        if scores[0].item() > max_pred_score:
+            max_pred_score = scores[0].item()
+            scores_max = scores
+            indices_max = indices
+    return (scores_max, indices_max)
+
+
+
 def maxwindow_score(model, audio, sr):
     """
     Let a moving window of 5 seconds slide over a spectogram of the audio and
