@@ -51,6 +51,13 @@ def index():
     return render_template('index.html')
 
 
+@app.route("/about")
+def about():
+    list_of_birds = [value for key, value in label_dict.items()]
+
+    sorted_list = sorted(list_of_birds, key=lambda k: k['name'])
+    return render_template('about.html', bird_list=sorted_list)
+
 @app.route("/classify", methods=['POST'])
 def classify():
     # Get audio data from client

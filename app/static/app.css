@@ -16,6 +16,15 @@ div {
     text-align: center;
 }
 
+div#container_content p {
+    text-align: left;
+    align-content: left;
+}
+
+img#bird_info {
+    height: 60px;
+}
+
 div#recording {
     min-height: 50px;
 }

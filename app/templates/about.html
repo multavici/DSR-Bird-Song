@@ -1,0 +1,68 @@
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>About Chirps</title>
+
+  <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+
+  <link rel="icon" href="static/favicon.png"/>
+
+  <link href="../static/app.css" rel="stylesheet">
+
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-137363824-1"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'UA-137363824-1');
+  </script>
+
+</head>
+<body>
+  <p>
+    <a href="/">Home</a>
+  </p>  
+  <div id='container_content'>
+    <h1>About Chirps</h1>
+    <p>Can we use AI to connect people to wildlife while at the same time gathering 
+      important data on bird populations?
+      That is the idea behind Chirps, a project developed by 
+      <a href="https://github.com/stynshrm">Satyan Sharma</a>, 
+      <a href="https://github.com/multavici">Falk Van der Meirsch</a>, and 
+      <a href="https://github.com/bimtauer">Tim Bauer</a>, at 
+      <a href="https://datascienceretreat.com/">Data Science Retreat Berlin</a>.
+    </p>
+    <p>
+      Chirps is based on a neural network that has been trained on hundreds of hours 
+      of bird recordings from the Xeno-Canto database. Check out our 
+      <a href="https://github.com/multavici/DSR-Bird-Song">github repository</a> if you 
+      want to learn more about how it works. 
+    </p>
+    <p> 
+      Chirps currently works for 100 bird species common in central Europe. It can analyze your recordings and returns the 5 species it considers the best fit. 
+      Under good audio conditions, the correct bird is among the selection in 80% of cases.
+      On average 59% of the top predictions are correct. 
+    </p>
+    </div>
+    <div id='container_content'>
+      <h1>Included Species</h1>
+      <p>For now Chirps is able to detect the following 100 species: </p>
+      {% for bird in bird_list %}
+        <li>
+          <span> {{ bird["name"] }} </span>
+          <a href={{ bird["wiki_link"]}} target="_blank">
+            <img src="../static/images/info.png" width="12" height="12">
+          </a>
+        </li> 
+      {% endfor %}
+    </div>
+    <div id='footer'>
+      <p>See our <a href='https://github.com/multavici/DSR-Bird-Song'>github</a> for more information about the project. Data kindly provided by <a href='https://www.xeno-canto.org/'>xeno-canto.org</a></p>
+    </div>
+  </div>
+</body>
+</html>
