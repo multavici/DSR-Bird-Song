@@ -57,7 +57,6 @@ class Pigeon(nn.Module):
         
         self.fc2 = nn.Sequential(
             nn.Linear(256, no_classes),
-            nn.ReLU()
             )
         
     def pad_wrap1d(self, x, pad):

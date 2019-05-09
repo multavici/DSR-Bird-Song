@@ -68,8 +68,6 @@ class Zilpzalp(nn.Module):
             nn.Dropout(0.3),
 
             nn.Linear(256, no_classes),
-            nn.ReLU(),
-            
             )
 
     def forward(self, x):
