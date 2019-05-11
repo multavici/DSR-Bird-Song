@@ -1,0 +1,57 @@
+# Python support can be specified down to the minor or micro version
+# (e.g. 3.6 or 3.6.3).
+# OS Support also exists for jessie & stretch (slim and full).
+# See https://hub.docker.com/r/library/python/ for all supported Python
+# tags from Docker Hub.
+FROM python:3.7.2
+
+# If you prefer miniconda:
+#FROM continuumio/miniconda3
+#ENTRYPOINT [ “/bin/bash”, “-c” ]
+
+LABEL Name=dsr-bird-song Version=0.0.3
+EXPOSE 3000
+
+#WORKDIR /test
+#ADD . /test
+#COPY . .
+
+# Using pip:
+#RUN python3 -m pip install -r requirements.txt
+#RUN add-apt-repository ppa:mc3man/trusty-media
+#RUN apt-get update
+#RUN apt-get install ffmpeg gstreamer0.10-ffmpeg
+
+RUN apt-get -y update && apt-get install -y wget nano git vim build-essential yasm pkg-config
+# Compile and install ffmpeg from source
+RUN git clone https://github.com/FFmpeg/FFmpeg /root/ffmpeg && \
+    cd /root/ffmpeg && \
+    ./configure --enable-nonfree --disable-shared --extra-cflags=-I/usr/local/include && \
+    make -j8 && make install -j8
+# If you want to add some content to this image because the above takes a LONGGG time to build
+ARG CACHEBREAK=1
+RUN pip install matplotlib==3.0.2
+RUN pip install urllib3==1.24.1
+RUN pip install scikit-learn==0.20.2
+#RUN pip install pytorch==1.0.1
+RUN pip install pandas==0.24.0
+RUN pip install librosa==0.6.2
+RUN pip install torch torchvision
+RUN pip install lxml
+RUN pip install tensorboardX
+# RUN pip install requests
+
+#CMD ["python3", "-m", "dsr-bird-song"]
+#CMD ["ls"]
+#CMD ["python3", "test.py"]
+
+# Using pipenv:
+#RUN python3 -m pip install pipenv
+#RUN pipenv install --ignore-pipfile
+#CMD ["pipenv", "run", "python3", "-m", "dsr-bird-song"]
+
+# Using miniconda (make sure to replace 'myenv' w/ your environment name):
+#RUN [ “conda”, “bird_song”, “create” ]
+#RUN /bin/bash conda bird_song create -f environment.yml
+#CMD /bin/bash -c "source activate bird_song && python3 -m dsr-bird-song"
+#CMD [ “source activate bird_song && exec python application.py” ]
