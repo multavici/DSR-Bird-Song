@@ -13,6 +13,7 @@
 .directory
 config_*
 *.pyc
+*.abc
 
 # Keys
 *.pem
