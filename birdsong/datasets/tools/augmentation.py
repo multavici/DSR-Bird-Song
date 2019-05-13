@@ -66,8 +66,16 @@ class VerticalRoll(object):
         self.amount = amount
 
     def __call__(self, img):
-        roll = np.random.randint(-self.amount, self.amount)
-        return np.roll(img, roll, axis=0)
+        roll_axis = np.random.choice(10, 2)
+        roll_freq = np.random.randint(-self.amount, self.amount)
+        roll_time = np.random.randint(-self.amount, self.amount)
+        if roll_axis[0] >= 5:
+            return np.roll(np.roll(img, roll_freq, axis=0), roll_time, axis= 1)
+        elif roll_axis[1] >= 5:
+            return np.roll(img, roll_freq, axis=0)
+        else:
+            return np.roll(img, roll_time, axis=1)
+
 
     def __repr__(self):
         return self.__class__.__name__ + f' Amount={self.amount}'
