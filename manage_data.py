@@ -17,7 +17,7 @@ dbm.make_some_noise()
 dbm.download_missing()
 
 # Create training/validation split and store as .csv
-t, v, codes = dbm.train_validation_split()
+t, v, c = dbm.train_validation_split()
 
 t.to_csv('storage/dev_train.csv')
 v.to_csv('storage/dev_val.csv')

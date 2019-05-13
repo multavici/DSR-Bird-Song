@@ -15,6 +15,7 @@ config_*
 storage/
 **/temp/**
 logs.txt
+*.abc
 
 # Keys
 *.pem

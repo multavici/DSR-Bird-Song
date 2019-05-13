@@ -49,8 +49,8 @@ We build the following [models](birdsong/models):
 
 
 ## Model training
-Configure your run in scripts/config.py
+Configure your run in config.py
 
 Running a job locally: 
 ```
-python train_precomputed.py
+python train_precomputed.py config.py
