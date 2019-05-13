@@ -61,7 +61,7 @@ class ImageSoundscapeNoise(SoundscapeNoise):
         return transforms.ToTensor()(noise)
 
 
-class VerticalRoll(object):
+class Roll(object):
     def __init__(self, amount=10):
         self.amount = amount
 
