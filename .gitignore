@@ -5,7 +5,6 @@
 *.wav
 *.h5
 *.wav
-*.png
 *.h5
 *.mp3
 *.pkl
@@ -13,6 +12,9 @@
 .directory
 config_*
 *.pyc
+storage/
+**/temp/**
+logs.txt
 
 # Keys
 *.pem
@@ -33,12 +35,12 @@ storage/
 .ps_project
 
 # Docker files
-dockerfiles/
-.dockerignore
-Dockerfile
-docker-compose.debug.yml
-docker-compose.yml
-environment.yml
+# dockerfiles/
+# .dockerignore
+# Dockerfile
+# docker-compose.debug.yml
+# docker-compose.yml
+# environment.yml
 
 # Local test files
 test.py
@@ -53,3 +55,6 @@ import_test_local.py
 
 # Requirements
 requirements.txt
+
+# Some folders
+/plots/
