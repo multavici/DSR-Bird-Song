@@ -1,8 +1,6 @@
 from flask import Flask, render_template, jsonify, request, abort
 import librosa
 import torch
-import numpy as np
-import matplotlib.pyplot as plt
 import os
 import sys
 import csv
@@ -91,3 +89,6 @@ def classify():
     return jsonify({
         'predictions': top5,
     })
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0')
