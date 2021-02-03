@@ -14,7 +14,7 @@ variables:
   dockerRegistryServiceConnection: '3675753b-ca77-4d0c-be7c-ddc32a054bde'
   imageRepository: 'chirps'
   containerRegistry: 'webserverdevacr.azurecr.io'
-  dockerfilePath: '**/Dockerfile'
+  dockerfilePath: 'Dockerfile'
   tag: '$(Build.BuildId)'
   imagePullSecret: 'webserverdevacr106475cd-auth'
 
