@@ -11,7 +11,7 @@ resources:
 variables:
 
   # Container registry service connection established during pipeline creation
-  dockerRegistryServiceConnection: '3675753b-ca77-4d0c-be7c-ddc32a054bde'
+  dockerRegistryServiceConnection: 'a2f1c324-03ce-4733-a262-29318792afe6'
   imageRepository: 'chirps'
   containerRegistry: 'webserverdevacr.azurecr.io'
   dockerfilePath: 'Dockerfile'
