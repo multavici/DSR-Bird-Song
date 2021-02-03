@@ -1,0 +1,19 @@
+apiVersion : apps/v1
+kind: Deployment
+metadata:
+  name: chirps 
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: chirps
+  template:
+    metadata:
+      labels:
+        app: chirps 
+    spec:
+      containers:
+        - name: chirps 
+          image: webserverdevacr.azurecr.io/chirps
+          ports:
+          - containerPort: 5000
