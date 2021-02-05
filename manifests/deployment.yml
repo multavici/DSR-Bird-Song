@@ -16,4 +16,4 @@ spec:
         - name: chirps 
           image: webserverdevacr.azurecr.io/chirps
           ports:
-          - containerPort: 80
+          - containerPort: 5000
