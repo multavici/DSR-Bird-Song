@@ -8,9 +8,6 @@ trigger:
     exclude:
     - infrastructure/README.md
 
-resources:
-- repo: self
-
 variables:
   vmImageName: 'ubuntu-latest'
   resource_group: 'chirps'
@@ -18,11 +15,14 @@ variables:
   location: westeurope
   
 
-jobs:
-  - task: AzureResourceManagerTemplateDeployment@3
-    displayName: Create Storage Account
-    inputs:
-      ConnectedServiceName: $(service_connection)
-      resourceGroupName: $(resource_group)
-      location: $(location)
-      csmFile: infrastructure/storage.json
+steps:
+
+- checkout: self
+
+- task: AzureResourceManagerTemplateDeployment@3
+  displayName: Create Storage Account
+  inputs:
+    ConnectedServiceName: $(service_connection)
+    resourceGroupName: $(resource_group)
+    location: $(location)
+    csmFile: infrastructure/storage.json
