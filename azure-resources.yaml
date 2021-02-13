@@ -5,6 +5,7 @@ trigger:
   paths:
     include:
     - infrastructure/
+    - azure-resources.yaml
     exclude:
     - infrastructure/README.md
 
