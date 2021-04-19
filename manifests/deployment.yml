@@ -15,5 +15,6 @@ spec:
       containers:
         - name: chirps 
           image: webserverdevacr.azurecr.io/chirps
+          imagePullPolicy: Always
           ports:
           - containerPort: 5000
