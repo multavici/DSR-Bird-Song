@@ -1,0 +1,28 @@
+trigger:
+  branches:
+    include:
+    - master
+  paths:
+    include:
+    - manifests/
+
+resources:
+- repo: self
+
+variables:
+  service_connection: resources-chirps-dev-sc
+  registry: webserverdevacr001
+  registry_url: webserverdevacr001.azurecr.io
+  registry_repo: chirps
+  image_tag: $(Build.BuildId)
+
+steps:
+- task: AzureCLI@2
+  displayName: Deploy new image
+  inputs:
+    azureSubscription: $(service_connection)
+    scriptType: bash
+    scriptLocation: inlineScript
+    inlineScript: |
+      az aks get-credentials --resource-group webserver-dev-rg-001 --name webserver-dev-aks-001 
+      kubectl apply -f manifests --namespace chirps
