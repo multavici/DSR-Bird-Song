@@ -1,0 +1,33 @@
+trigger:
+  branches:
+    include:
+    - master
+  paths:
+    include:
+    - app/
+    - infrastructure/build-and-push.yaml
+    - Dockerfile
+    exclude:
+    - app/README.md
+
+resources:
+- repo: self
+
+variables:
+  service_connection: resources-chirps-dev-sc
+  registry: webserverdevacr001
+  registry_url: webserverdevacr001.azurecr.io
+  registry_repo: chirps
+  image_tag: $(Build.BuildId)
+
+steps:
+- task: AzureCLI@2
+  displayName: Azure CLI
+  inputs:
+    azureSubscription: $(service_connection)
+    scriptType: bash
+    scriptLocation: inlineScript
+    inlineScript: |
+      az acr login --name $(registry)
+      docker build -t $(registry_url)/$(registry_repo):$(image_tag) .
+      docker push $(registry_url)/$(registry_repo):$(image_tag)
