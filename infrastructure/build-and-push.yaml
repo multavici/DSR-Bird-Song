@@ -40,4 +40,4 @@ steps:
     scriptLocation: inlineScript
     inlineScript: |
       az aks get-credentials --resource-group webserver-dev-rg-001 --name webserver-dev-aks-001 
-      kubectl get pods
+      kubectl apply -f manifests --namespace chirps
