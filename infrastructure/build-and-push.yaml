@@ -22,7 +22,7 @@ variables:
 
 steps:
 - task: AzureCLI@2
-  displayName: Azure CLI
+  displayName: Build and push image
   inputs:
     azureSubscription: $(service_connection)
     scriptType: bash
@@ -31,3 +31,13 @@ steps:
       az acr login --name $(registry)
       docker build -t $(registry_url)/$(registry_repo):$(image_tag) .
       docker push $(registry_url)/$(registry_repo):$(image_tag)
+
+- task: AzureCLI@2
+  displayName: Deploy new image
+  inputs:
+    azureSubscription: $(service_connection)
+    scriptType: bash
+    scriptLocation: inlineScript
+    inlineScript: |
+      az aks get-credentials --resource-group webserver-dev-rg-001 --name webserver-dev-aks-001 
+      kubectl get pods
