@@ -29,8 +29,11 @@ steps:
     scriptLocation: inlineScript
     inlineScript: |
       az acr login --name $(registry)
-      docker build -t $(registry_url)/$(registry_repo):$(image_tag) .
-      docker push $(registry_url)/$(registry_repo):$(image_tag)
+      docker build \
+          -t $(registry_url)/$(registry_repo):$(image_tag) \
+          -t $(registry_url)/$(registry_repo):latest \
+          .
+      docker push $(registry_url)/$(registry_repo) --all-tags
 
 - task: AzureCLI@2
   displayName: Deploy new image
