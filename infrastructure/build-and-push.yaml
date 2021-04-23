@@ -15,8 +15,10 @@ resources:
 
 variables:
   service_connection: resources-chirps-dev-sc
-  registry: webserverdevacr001
-  registry_url: webserverdevacr001.azurecr.io
+  resource_group: webserver-dev-rg
+  cluster: webserver-dev-aks
+  registry: webserverdevacr
+  registry_url: webserverdevacr.azurecr.io
   registry_repo: chirps
   image_tag: $(Build.BuildId)
 
@@ -42,5 +44,5 @@ steps:
     scriptType: bash
     scriptLocation: inlineScript
     inlineScript: |
-      az aks get-credentials --resource-group webserver-dev-rg-001 --name webserver-dev-aks-001 
+      az aks get-credentials --resource-group $(resource_group) --name $(cluster) 
       kubectl apply -f manifests --namespace chirps
