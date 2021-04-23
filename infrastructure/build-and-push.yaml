@@ -14,7 +14,7 @@ resources:
 - repo: self
 
 variables:
-  service_connection: resources-chirps-dev-sc
+  service_connection: chirps-sc
   resource_group: webserver-dev-rg
   cluster: webserver-dev-aks
   registry: webserverdevacr
@@ -30,7 +30,9 @@ steps:
     scriptType: bash
     scriptLocation: inlineScript
     inlineScript: |
-      az acr login --name $(registry)
+      # ACR_PASSWORD=$(az acr credential show -n $(registry) --query "passwords[0].value")
+      # az acr login --username $(registry) --password $ACR_PASSWORD
+      az acr login -n $(registry)
       docker build \
           -t $(registry_url)/$(registry_repo):$(image_tag) \
           -t $(registry_url)/$(registry_repo):latest \
