@@ -9,8 +9,8 @@ on:
   workflow_dispatch:
 
 env:
-  RESTOURCE_GROUP: webserver-dev-rg
-  CLUSTER: webserver-dev-ak
+  RESOURCE_GROUP: webserver-dev-rg
+  CLUSTER: webserver-dev-aks
   REGISTRY: webserverdevacr
   REGISTRY_URL: webserverdevacr.azurecr.io
   REGISTRY_REPO: chirps
@@ -35,3 +35,9 @@ jobs:
             -t $REGISTRY_URL/$REGISTRY_REPO:latest \
             .
           docker push $REGISTRY_URL/$REGISTRY_REPO --all-tags
+
+      - name: Deploy new image
+        run: |
+          az aks get-credentials --resource-group $RESOURCE_GROUP --name $CLUSTER 
+          kubectl apply -f manifests --namespace chirps
+          kubectl rollout restart deployment chirps --namespace chirps
