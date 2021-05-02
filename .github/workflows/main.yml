@@ -14,7 +14,6 @@ env:
   REGISTRY: webserverdevacr
   REGISTRY_URL: webserverdevacr.azurecr.io
   REGISTRY_REPO: chirps
-  IMAGE_TAG: github$GITHUB_RUN_NUMBER
   
 jobs:
   build:
@@ -30,9 +29,9 @@ jobs:
     
       - name: Build and push image
         run: |
-          az acr login -n $(registry)
+          az acr login -n $REGISTRY
           docker build \
-            -t $REGISTRY_URL/$REGISTRY_REPO:$IMAGE_TAG \
+            -t $REGISTRY_URL/$REGISTRY_REPO:github$GITHUB_RUN_NUMBER \
             -t $REGISTRY_URL/$REGISTRY_REPO:latest \
             .
-          docker push $REGISTRY_URL/$REGISTRY_REPO --all-tag
+          docker push $REGISTRY_URL/$REGISTRY_REPO --all-tags
