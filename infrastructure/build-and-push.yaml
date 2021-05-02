@@ -48,3 +48,4 @@ steps:
     inlineScript: |
       az aks get-credentials --resource-group $(resource_group) --name $(cluster) 
       kubectl apply -f manifests --namespace chirps
+      kubectl rollout restart deployment chirps --namespace chirps
