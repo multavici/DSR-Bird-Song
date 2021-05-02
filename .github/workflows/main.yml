@@ -1,0 +1,38 @@
+name: Build, push and deploy
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+  workflow_dispatch:
+
+env:
+  RESTOURCE_GROUP: webserver-dev-rg
+  CLUSTER: webserver-dev-ak
+  REGISTRY: webserverdevacr
+  REGISTRY_URL: webserverdevacr.azurecr.io
+  REGISTRY_REPO: chirps
+  IMAGE_TAG: github$GITHUB_RUN_NUMBER
+  
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Azure Login
+        uses: Azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+    
+      - name: Build and push image
+        run: |
+          az acr login -n $(registry)
+          docker build \
+            -t $REGISTRY_URL/$REGISTRY_REPO:$IMAGE_TAG \
+            -t $REGISTRY_URL/$REGISTRY_REPO:latest \
+            .
+          docker push $REGISTRY_URL/$REGISTRY_REPO --all-tag
